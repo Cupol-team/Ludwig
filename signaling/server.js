@@ -16,8 +16,8 @@ const ACTIONS = {
   RELAY_ICE: 'relay-ice',
   ICE_CANDIDATE: 'ice-candidate',
   SESSION_DESCRIPTION: 'session-description',
-  GET_ROOMS: 'get-rooms',
-  CREATE_ROOM: 'create-room'
+  GET_ROOMS: 'get_rooms',
+  CREATE_ROOM: 'create_room'
 };
 
 // Создаём Express-приложение и HTTP-сервер
