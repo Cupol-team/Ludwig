@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  api:
+    build: ./API
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./API:/app
+      - api_uploads:/app/uploads
+    environment:
+      - UPLOAD_FOLDER=uploads
+      - PORT=8000
+      - HOST=0.0.0.0
+      - PRODUCTION=false
+    restart: unless-stopped
+
+  web:
+    build: ./WEB
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./WEB:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8000/api
+      - VITE_SIGNALING_URL=http://localhost:3000
+    depends_on:
+      - api
+      - signaling
+    restart: unless-stopped
+
+  signaling:
+    build: ./signaling
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./signaling:/app
+      - /app/node_modules
+    environment:
+      - PORT=3000
+      - CORS_ORIGIN=http://localhost:5173
+    restart: unless-stopped
+
+volumes:
+  api_uploads: 
