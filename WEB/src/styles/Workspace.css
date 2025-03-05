@@ -1,0 +1,10 @@
+.workspace-container {
+  width: 100%;
+  padding: 20px;
+  background-color: #f0f2f5;
+  min-height: calc(100vh - 100px);
+}
+
+.drag-overlay-wrapper {
+  pointer-events: none;
+} 

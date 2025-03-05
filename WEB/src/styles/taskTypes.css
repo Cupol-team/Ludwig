@@ -1,0 +1,25 @@
+/* Стили для компонента TaskTypes */
+
+.task-types-container {
+    padding: 16px;
+}
+
+.task-types-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.task-type-item {
+    padding: 8px;
+    border-bottom: 1px solid #ccc;
+}
+
+.task-type-name {
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.task-type-description {
+    color: #555;
+} 

@@ -1,0 +1,56 @@
+.org-details-page {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.org-details-header {
+    margin-bottom: 2rem;
+}
+
+.org-details-header h1 {
+    margin-bottom: 1rem;
+    font-size: 2rem;
+    color: #fff;
+}
+
+.org-details-header a {
+    color: #8B5CF6;
+    text-decoration: none;
+}
+
+.org-details-header a:hover {
+    text-decoration: underline;
+}
+
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.empty-project-card {
+    min-height: 200px;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px dashed rgba(139, 92, 246, 0.5);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 0.5rem;
+}
+
+.empty-project-card p {
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+    line-height: 1.5;
+}
+
+.empty-project-card p:first-child {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.9);
+}

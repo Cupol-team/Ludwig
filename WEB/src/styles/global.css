@@ -1,0 +1,115 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: #121212;
+    color: #ffffff;
+    min-height: 100vh;
+}
+
+h1 {
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #ffffff;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        top: 20px;
+    }
+    to {
+        opacity: 1;
+        top: 40px;
+    }
+}
+
+.notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ff4d4d;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: opacity 0.3s ease, top 0.3s ease;
+    z-index: 1000;
+}
+
+.notification.visible {
+    opacity: 1;
+    animation: slideDown 0.3s ease-out;
+}
+
+/* Убираем дублирующие стили из organizations.css */
+.container {
+    background: #121212; /* Добавляем фон контейнера */
+    color: #ffffff;
+}
+
+.organization-card {
+    background: #1e1e1e; /* Тёмный фон карточек */
+    border-color: #333;
+}
+
+.org-header h3 {
+    color: #ffffff;
+}
+
+.user-role {
+    background: #2c2c2c;
+    color: #9933FF;
+}
+
+.org-description {
+    color: #888;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+/* Общий стиль для кнопок создания */
+.create-entity-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 200px;
+    background: transparent;
+    border: 1px dashed rgba(139, 92, 246, 0.5);
+    border-radius: 12px;
+    color: #8B5CF6;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.create-entity-button:hover {
+    background: rgba(139, 92, 246, 0.1);
+    border-style: solid;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.create-entity-button .create-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.create-entity-button .create-text {
+    font-size: 1rem;
+}

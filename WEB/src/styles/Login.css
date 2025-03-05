@@ -1,0 +1,96 @@
+body {
+    background-color: #121212; /* Темный фон для всего сайта */
+    color: #ffffff; /* Белый текст */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+}
+
+.login-container {
+    background: #1e1e1e; /* Темный фон для контейнера */
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    width: 320px;
+    text-align: center;
+}
+
+.login-container h1 {
+    color: #ffffff; /* Белый текст для заголовка */
+    margin-bottom: 20px;
+}
+
+.login-container input {
+    width: calc(100% - 20px); /* Уменьшена ширина */
+    padding: 12px;
+    margin: 10px 0;
+    background: #2c2c2c; /* Темный фон для полей ввода */
+    color: #ffffff; /* Белый текст */
+    border: 1px solid #444; /* Темная граница */
+    border-radius: 5px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.login-container input:focus {
+    border-color: #9933FF;
+}
+
+.login-container button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #9933FF, #7a29cc);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    transition: background 0.3s ease;
+}
+
+.login-container button:hover {
+    background: linear-gradient(135deg, #7a29cc, #9933FF);
+}
+
+.error {
+    color: #ff4d4d; /* Красный для ошибок */
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.error.visible {
+    opacity: 1;
+}
+
+.error-icon {
+    margin-right: 8px;
+}
+
+.notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ff4d4d;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: opacity 0.3s ease, top 0.3s ease;
+    z-index: 1000;
+}
+
+.notification.visible {
+    opacity: 1;
+    top: 40px;
+}

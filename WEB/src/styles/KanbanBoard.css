@@ -1,0 +1,93 @@
+/* Глобальные стили для предотвращения прокрутки всей страницы */
+html, body {
+  overflow: hidden; /* Запрещаем прокрутку страницы */
+  height: 100%;
+  margin: 0;
+}
+
+/* Общие стили для доски */
+.kanban-board {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  overflow-x: auto;
+  /* Высота доски рассчитывается так, чтобы оставлять небольшой промежуток снизу */
+  height: calc(100vh - 150px);
+  margin-bottom: 20px;
+}
+
+/* Стили для каждой колонки доски */
+.kanban-column {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 15px;
+  flex: 0 0 350px;
+  min-height: 400px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.kanban-column-header {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 8px;
+}
+
+/* Прокрутка для содержимого колонки, если требуется */
+.kanban-column-content {
+  flex: 1;
+  overflow-y: auto;
+  /* Позволяем содержимому корректно масштабироваться внутри flex-контейнера */
+  min-height: 0;
+}
+
+.kanban-task-card {
+  background-color: #fff;
+  border-radius: 4px;
+  padding: 8px;
+  margin-bottom: 12px; /* Немного увеличиваем зазор между карточками */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.kanban-task-title {
+  font-size: 1em;
+  margin: 0 0 4px;
+}
+
+.kanban-task-description {
+  font-size: 0.9em;
+  color: #555;
+  margin: 0;
+}
+
+/* Добавляем отступ снизу у последней карточки задачи */
+.kanban-task-card:last-child {
+  margin-bottom: 100px;
+}
+
+/* Если в колонке нет задач, добавляем отступ в блоке «Нет задач» */
+.kanban-empty {
+  padding-bottom: 32px;
+}
+
+/* Адаптивная верстка: на экранах меньше 768px располагаем колонки вертикально */
+@media (max-width: 768px) {
+  .kanban-board {
+    flex-direction: column;
+    gap: 10px;
+    overflow-x: visible;
+    /* Для мобильных устройств доска занимает всю высоту, без фиксированной высоты */
+    height: auto;
+  }
+  
+  .kanban-column {
+    max-width: none;
+    width: 100%;
+    height: auto;
+  }
+} 

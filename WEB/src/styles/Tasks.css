@@ -1,0 +1,47 @@
+.tasks-container {
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  height: calc(100vh - 40px); /* фиксированная высота */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* скрываем лишнюю прокрутку внешнего контейнера */
+}
+
+.tasks-title {
+  margin-bottom: 20px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+.tasks-header {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 2px solid #bdbdbd;
+  font-weight: 600;
+  background-color: #fafafa;
+}
+
+.tasks-header .task-cell {
+  font-size: 14px;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 16px;
+}
+
+.tasks-header .task-cell:first-child {
+  flex: 2;
+}
+
+/* Новый блок для списка задач: занимает оставшуюся высоту и делает его прокручиваемым */
+.tasks-list {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-top: 10px;
+} 

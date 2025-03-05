@@ -1,0 +1,93 @@
+.custom-datepicker-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.custom-datepicker-input {
+  background-color: #2b2b2b;
+  border: 1px solid #6f42c1;
+  border-radius: 4px;
+  padding: 8px;
+  color: #fff;
+  width: 200px;
+  cursor: pointer;
+}
+
+.custom-datepicker-input:disabled {
+  background-color: #555;
+  color: #aaa;
+}
+
+.custom-datepicker-calendar {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  background-color: #1c1c1c;
+  border: 1px solid #6f42c1;
+  border-radius: 4px;
+  padding: 10px;
+  width: 250px;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.calendar-header button {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.calendar-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.calendar-table th {
+  color: #fff;
+  padding: 2px;
+  font-weight: normal;
+  font-size: 12px;
+}
+
+.calendar-table td {
+  text-align: center;
+  padding: 5px;
+  cursor: pointer;
+  color: #fff;
+  font-size: 14px;
+}
+
+.calendar-table td:hover {
+  background-color: #6f42c1;
+}
+
+.calendar-table td.selected {
+  background-color: #6f42c1;
+}
+
+.time-selector {
+  margin-top: 10px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+}
+
+.time-selector label {
+  margin-right: 5px;
+  font-size: 14px;
+}
+
+.time-selector input {
+  background-color: #2b2b2b;
+  border: 1px solid #6f42c1;
+  border-radius: 4px;
+  color: #fff;
+  padding: 5px;
+} 

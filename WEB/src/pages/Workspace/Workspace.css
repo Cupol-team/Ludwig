@@ -1,0 +1,22 @@
+.workspace-container {
+  padding: 20px;
+}
+
+.workspace-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #444;
+}
+
+.workspace-tabs a {
+  text-decoration: none;
+  color: #999;
+  padding: 10px 15px;
+  border-radius: 4px;
+}
+
+.workspace-tabs a.active-tab {
+  color: #fff;
+  background-color: #9933ff;
+} 

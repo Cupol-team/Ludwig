@@ -1,0 +1,155 @@
+/* Фон модального окна */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Контейнер модального окна */
+.modal-container {
+  background-color: #1c1c1c;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+  color: #fff;
+  position: relative;
+  border: 2px solid #6f42c1; /* Фиолетовый акцент */
+}
+
+/* Кнопка закрытия */
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* Заголовок модального окна */
+.modal-title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Стили формы */
+.modal-form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Группа для каждого поля формы */
+.form-group {
+  margin-bottom: 15px;
+}
+
+/* Метки полей */
+.form-group label {
+  font-size: 14px;
+  margin-bottom: 5px;
+  display: block;
+}
+
+/* Обозначение обязательного поля */
+.required {
+  color: #ff4d4d;
+}
+
+/* Стиль метки для выбора файла */
+.file-input-label {
+  display: block;
+  padding: 10px;
+  background-color: #2b2b2b;
+  border: 1px dashed #6f42c1;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+/* Скрытый инпут для файла */
+.file-input {
+  display: none;
+}
+
+/* Стили остальных инпутов */
+.modal-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #6f42c1;
+  border-radius: 4px;
+  background-color: #2b2b2b;
+  color: #fff;
+  font-size: 14px;
+}
+
+/* Кнопка отправки формы */
+.modal-submit {
+  padding: 10px;
+  background-color: #6f42c1;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.modal-submit:hover {
+  background-color: #5932a6;
+}
+
+/* Кастомный дизайн для чекбоксов */
+.custom-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: #2b2b2b;
+  border: 2px solid #6f42c1;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  position: relative;
+  cursor: pointer;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.custom-checkbox:checked {
+  background-color: #6f42c1;
+  border-color: #6f42c1;
+}
+
+.custom-checkbox:disabled {
+  background-color: #555;
+  border-color: #555;
+  cursor: not-allowed;
+}
+
+.custom-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 6px;
+  height: 12px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* Отключённые текстовые поля становятся более серыми */
+.modal-input:disabled {
+  background-color: #555;
+  color: #aaa;
+} 

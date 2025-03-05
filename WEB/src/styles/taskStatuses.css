@@ -1,0 +1,25 @@
+/* Стили для компонента TaskStatuses */
+
+.task-statuses-container {
+    padding: 16px;
+}
+
+.task-statuses-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.task-status-item {
+    padding: 8px;
+    border-bottom: 1px solid #ccc;
+}
+
+.task-status-name {
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.task-status-description {
+    color: #555;
+} 

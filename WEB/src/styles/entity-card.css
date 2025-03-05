@@ -1,0 +1,71 @@
+.entity-card {
+    background: #1e1e1e;
+    padding: 20px;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #333;
+}
+
+.entity-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.entity-card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.entity-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: #333;
+    flex-shrink: 0;
+}
+
+/* Обёртка заголовка с бейджем */
+.entity-title-wrapper {
+    flex-grow: 1;
+    min-width: 0; /* Для корректного переноса длинных названий */
+}
+
+.entity-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+    margin: 0 0 8px;
+    word-break: break-word;
+}
+
+.entity-role-badge {
+    display: inline-block;
+    background-color: #9933ff;
+    color: #fff;
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+.entity-description {
+    font-size: 14px;
+    color: #999;
+    margin: 0;
+    line-height: 1.5;
+    flex-grow: 1;
+    word-break: break-word;
+}
+
+.entity-extra {
+    margin-top: 16px;
+    font-size: 13px;
+    color: #666;
+} 

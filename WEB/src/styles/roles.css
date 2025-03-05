@@ -1,0 +1,11 @@
+.roles-container {
+  padding: 20px;
+  background-color: transparent;
+  min-height: calc(100vh - 60px);
+}
+
+.roles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+} 
