@@ -3,60 +3,9 @@ import ProfileCard from '../components/ProfileCard';
 import ProjectsList from '../components/ProjectsList';
 import OrganizationsList from '../components/OrganizationsList';
 import { useParams } from 'react-router-dom';
-// Заменяем импорты на заглушки
-// import { getUserProfile, getUserProjects, getUserOrganizations } from '../api/users';
 import { AuthContext } from '../context/AuthContext';
 import { ProfileContainer } from '../styles/ProfileComponentStyles';
-
-// Заглушки для API-функций
-const getUserProfile = async (userId) => {
-  console.log(`Fetching profile for user ${userId}`);
-  // Здесь можно добавить логику для проверки существования пользователя
-  if (userId === 'notfound') {
-    return null; // Симулируем, что пользователь не найден
-  }
-  return {
-    uuid: userId,
-    login: 'user123',
-    email: 'user@example.com',
-    avatarUrl: '/default-avatar.png'
-  };
-};
-
-const getUserProjects = async (userId) => {
-  console.log(`Fetching projects for user ${userId}`);
-  return [
-    {
-      uuid: 'proj-1',
-      name: 'Проект разработки',
-      organizationId: 'org-1'
-    },
-    {
-      uuid: 'proj-2',
-      name: 'Маркетинговая кампания',
-      organizationId: 'org-1'
-    },
-    {
-      uuid: 'proj-3',
-      name: 'Исследование рынка',
-      organizationId: 'org-2'
-    }
-  ];
-};
-
-const getUserOrganizations = async (userId) => {
-  console.log(`Fetching organizations for user ${userId}`);
-  return [
-    {
-      uuid: 'org-1',
-      name: 'Компания А'
-    },
-    {
-      uuid: 'org-2',
-      name: 'Стартап Б'
-    }
-  ];
-};
+import { updateUserProfile, uploadUserAvatar, getUserOrganizations, getUserProjects, getUserProfile } from '../api/profile';
 
 const ProfilePage = () => {
   const { userId } = useParams();
@@ -67,7 +16,7 @@ const ProfilePage = () => {
   const [organizations, setOrganizations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isCurrentUser, setIsCurrentUser] = useState(false);
-  const [userNotFound, setUserNotFound] = useState(false); // Состояние для отслеживания отсутствия пользователя
+  const [userNotFound, setUserNotFound] = useState(false);
   
   useEffect(() => {
     const isOwnProfile = !userId || userId === currentUserProfile?.uuid;
@@ -80,23 +29,25 @@ const ProfilePage = () => {
         const profileId = isOwnProfile ? currentUserProfile.uuid : userId;
         
         const profileData = await getUserProfile(profileId);
+        console.log('Profile Data:', profileData);
         
         if (!profileData) {
-          setUserNotFound(true); // Устанавливаем состояние, если пользователь не найден
-          return;
+            setUserNotFound(true);
+            return;
         }
         
         setProfile(profileData);
         
         if (isOwnProfile) {
-          const projectsData = await getUserProjects(profileId);
-          setProjects(projectsData);
+            const projectsData = await getUserProjects(profileId);
+            setProjects(projectsData);
         } else {
-          const orgsData = await getUserOrganizations(profileId);
-          setOrganizations(orgsData);
+            const orgsData = await getUserOrganizations(profileId);
+            setOrganizations(orgsData);
         }
       } catch (error) {
         console.error('Error fetching profile data:', error);
+        setUserNotFound(true);
       } finally {
         setLoading(false);
       }
@@ -109,10 +60,19 @@ const ProfilePage = () => {
   
   const handleProfileUpdate = async (updatedProfile) => {
     try {
-      console.log('Updating profile with:', updatedProfile);
-      setProfile(updatedProfile);
+      const response = await updateUserProfile(profile.uuid, updatedProfile);
+      setProfile(response);
     } catch (error) {
       console.error('Error updating profile:', error);
+    }
+  };
+  
+  const handleAvatarUpload = async (file) => {
+    try {
+      const response = await uploadUserAvatar(profile.uuid, file);
+      setProfile(prev => ({ ...prev, avatarUrl: response.avatarUrl }));
+    } catch (error) {
+      console.error('Error uploading avatar:', error);
     }
   };
   
@@ -135,6 +95,7 @@ const ProfilePage = () => {
         profile={profile} 
         isCurrentUser={isCurrentUser}
         onProfileUpdate={handleProfileUpdate}
+        onAvatarUpload={handleAvatarUpload}
       />
       
       {isCurrentUser ? (

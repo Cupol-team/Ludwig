@@ -15,9 +15,9 @@ const ProjectsList = ({ projects }) => {
       {projects.length > 0 ? (
         <List>
           {projects.map(project => (
-            <ListItem key={project.uuid}>
-              <ProjectLink to={`/organizations/${project.organizationId}/project/${project.uuid}/workspace`}>
-                {project.name}
+            <ListItem key={project.project_uuid}>
+              <ProjectLink to={`/organizations/${project.organizationId}/project/${project.project_uuid}/workspace`}>
+                {project.project_name}
               </ProjectLink>
             </ListItem>
           ))}
