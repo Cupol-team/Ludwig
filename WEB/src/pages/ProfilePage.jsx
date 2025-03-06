@@ -60,8 +60,10 @@ const ProfilePage = () => {
   
   const handleProfileUpdate = async (updatedProfile) => {
     try {
-      const response = await updateUserProfile(profile.uuid, updatedProfile);
-      setProfile(response);
+      await updateUserProfile(profile.uuid, updatedProfile);
+      // Обновляем профиль после успешного обновления
+      const refreshedProfile = await getUserProfile(profile.uuid);
+      setProfile(refreshedProfile);
     } catch (error) {
       console.error('Error updating profile:', error);
     }
@@ -69,8 +71,9 @@ const ProfilePage = () => {
   
   const handleAvatarUpload = async (file) => {
     try {
-      const response = await uploadUserAvatar(profile.uuid, file);
-      setProfile(prev => ({ ...prev, avatarUrl: response.avatarUrl }));
+      await uploadUserAvatar(profile.uuid, file);
+      // После загрузки аватара не нужно обновлять профиль,
+      // так как аватар загружается отдельно в ProfileCard
     } catch (error) {
       console.error('Error uploading avatar:', error);
     }

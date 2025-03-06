@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   AvatarContainer,
@@ -12,10 +12,40 @@ import {
   HiddenInput
 } from '../styles/ProfileCardStyles';
 import CustomDatePicker from './CustomDatePicker';
+import { getUserAvatar } from '../api/profile';
 
 const ProfileCard = ({ profile, isCurrentUser, onProfileUpdate, onAvatarUpload }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedProfile, setEditedProfile] = useState({ ...profile });
+  const [avatarUrl, setAvatarUrl] = useState('/default-avatar.png');
+  
+  useEffect(() => {
+    setEditedProfile({ ...profile });
+    
+    // Загружаем аватар при монтировании компонента и при изменении UUID профиля
+    if (profile && profile.uuid) {
+      loadAvatar(profile.uuid);
+    }
+    
+    // Очистка URL объекта при размонтировании компонента
+    return () => {
+      // Проверяем, что URL начинается с blob:, чтобы не пытаться освободить статические ресурсы
+      if (avatarUrl && avatarUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(avatarUrl);
+      }
+    };
+  }, [profile]);
+  
+  // Функция для загрузки аватара
+  const loadAvatar = async (uuid) => {
+    try {
+      const url = await getUserAvatar(uuid);
+      setAvatarUrl(url);
+    } catch (error) {
+      console.error('Failed to load avatar:', error);
+      setAvatarUrl('/default-avatar.png');
+    }
+  };
   
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -44,7 +74,11 @@ const ProfileCard = ({ profile, isCurrentUser, onProfileUpdate, onAvatarUpload }
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      onAvatarUpload(file); // Вызываем функцию загрузки аватара
+      onAvatarUpload(file);
+      // После успешной загрузки аватара обновляем его отображение
+      if (profile && profile.uuid) {
+        setTimeout(() => loadAvatar(profile.uuid), 1000); // Даем время на обработку загрузки
+      }
     }
   };
   
@@ -54,7 +88,7 @@ const ProfileCard = ({ profile, isCurrentUser, onProfileUpdate, onAvatarUpload }
   return (
     <Card>
       <AvatarContainer>
-        <Avatar src={editedProfile.avatarUrl || '/default-avatar.png'} alt="Аватар пользователя" />
+        <Avatar src={avatarUrl} alt="Аватар пользователя" />
         {isCurrentUser && isEditing && (
           <AvatarOverlay onClick={() => document.getElementById('avatar-input').click()}>
             <OverlayText>Изменить</OverlayText>
@@ -64,7 +98,7 @@ const ProfileCard = ({ profile, isCurrentUser, onProfileUpdate, onAvatarUpload }
           id="avatar-input" 
           type="file" 
           accept="image/*" 
-          onChange={handleAvatarChange} // Обработчик для изменения аватара
+          onChange={handleAvatarChange}
         />
       </AvatarContainer>
       
@@ -99,7 +133,7 @@ const ProfileCard = ({ profile, isCurrentUser, onProfileUpdate, onAvatarUpload }
       </ProfileField>
 
       <ProfileField>
-        <Label>Гендер</Label>
+        <Label>Пол</Label>
         <Input 
           name="gender"
           value={genderText} // Отображаем текст гендера
