@@ -1,14 +1,17 @@
 import React, { useEffect, useState, useCallback, useRef, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import { getMembers } from '../../api/members';
+import { getUserAvatar } from '../../api/profile';
 import Loader from '../../components/Loader';
 import Notification from '../../components/Notification';
 import { ProjectContext } from '../../context/ProjectContext';
 import '../../styles/members.css';
+import '../../styles/memberAvatars.css';
 
 function Members() {
   const { orgId, projectUuid } = useParams();
   const [members, setMembers] = useState([]);
+  const [memberAvatars, setMemberAvatars] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const controllerRef = useRef(null);
@@ -27,6 +30,46 @@ function Members() {
       setIsLoading(false);
     }
   }, [orgId, projectUuid]);
+
+  // Загрузка аватаров для всех участников
+  useEffect(() => {
+    if (members.length > 0) {
+      const avatarControllers = {};
+      const avatarPromises = members.map(member => {
+        // Создаем контроллер для каждого запроса аватара
+        avatarControllers[member.uuid] = new AbortController();
+        
+        return getUserAvatar(member.uuid, avatarControllers[member.uuid].signal)
+          .then(avatarUrl => ({ uuid: member.uuid, avatarUrl }))
+          .catch(error => {
+            console.error(`Failed to load avatar for member ${member.uuid}:`, error);
+            return { uuid: member.uuid, avatarUrl: null };
+          });
+      });
+
+      Promise.all(avatarPromises).then(results => {
+        const avatars = {};
+        results.forEach(result => {
+          avatars[result.uuid] = result.avatarUrl;
+        });
+        setMemberAvatars(avatars);
+      });
+
+      // Очистка при размонтировании
+      return () => {
+        Object.values(avatarControllers).forEach(controller => {
+          controller.abort();
+        });
+        
+        // Освобождаем URL объекты
+        Object.values(memberAvatars).forEach(url => {
+          if (url && url.startsWith('blob:')) {
+            URL.revokeObjectURL(url);
+          }
+        });
+      };
+    }
+  }, [members]);
 
   useEffect(() => {
     fetchMembers();
@@ -53,7 +96,15 @@ function Members() {
         {members.map(member => (
           <li key={member.uuid} className="member-item">
             <div className="member-avatar">
-              {member.name.charAt(0)}
+              {memberAvatars[member.uuid] ? (
+                <img 
+                  src={memberAvatars[member.uuid]} 
+                  alt={`${member.name} ${member.surname}`} 
+                  className="member-avatar-img"
+                />
+              ) : (
+                member.name.charAt(0)
+              )}
             </div>
             <div className="member-details">
               <p className="member-name">{member.name} {member.surname}</p>

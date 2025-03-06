@@ -1,0 +1,23 @@
+/* Стили для аватаров участников */
+.member-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #6f42c1; /* Фиолетовый фон для аватара */
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 600;
+  margin-right: 16px;
+  border: 2px solid #6f42c1; /* Фиолетовая обводка */
+  overflow: hidden; /* Чтобы изображение не выходило за пределы круга */
+}
+
+.member-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+} 
