@@ -160,26 +160,13 @@ const ProfileCard = ({ profile, isCurrentUser, onProfileUpdate, onAvatarUpload }
 
       <ProfileField>
         <Label>Дата рождения</Label>
-        <CustomDatePicker 
-          selected={editedProfile.date_of_birthday ? new Date(editedProfile.date_of_birthday) : null}
+        <CustomDatePicker
+          selectedDate={editedProfile.date_of_birthday}
           onChange={handleDateChange}
           disabled={!isEditing}
-          showTimeSelect={false} // Убираем отображение времени
         />
       </ProfileField>
 
-      {isCurrentUser && isEditing && ( // Поле для пароля только для текущего пользователя в режиме редактирования
-        <ProfileField>
-          <Label>Пароль</Label>
-          <Input 
-            name="password"
-            type="password"
-            onChange={handleInputChange}
-            placeholder="Введите новый пароль"
-          />
-        </ProfileField>
-      )}
-      
       {isCurrentUser && (
         <Button onClick={handleEditToggle}>
           {isEditing ? 'Сохранить' : 'Редактировать'}

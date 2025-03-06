@@ -1,10 +1,33 @@
 .app-header {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
   background-color: #1c1c1c;
   border-bottom: 1px solid #6f42c1;
+}
+
+/* Стили для логотипа */
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo-link {
+  font-size: 28px;
+  font-weight: 800;
+  color: #6f42c1;
+  text-decoration: none;
+  letter-spacing: 3px;
+  transition: all 0.3s ease;
+  font-family: 'Arial', sans-serif;
+  text-shadow: 0 0 12px rgba(111, 66, 193, 0.6);
+}
+
+.logo-link:hover {
+  color: #8a63d2;
+  text-shadow: 0 0 15px rgba(111, 66, 193, 0.8);
+  transform: scale(1.05);
 }
 
 .profile-settings {
@@ -18,12 +41,15 @@
   height: 40px;
   border-radius: 50%;
   cursor: pointer;
-  border: 2px solid #6f42c1;
-  transition: transform 0.2s;
+  border: 3px solid #6f42c1;
+  transition: all 0.2s ease;
+  box-shadow: 0 0 5px rgba(111, 66, 193, 0.5);
 }
 
 .profile-avatar:hover {
   transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(111, 66, 193, 0.8);
+  border-color: #8a63d2;
 }
 
 .settings-button {

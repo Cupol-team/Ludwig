@@ -40,6 +40,11 @@ const Header = () => {
 
   return (
     <header className="app-header">
+      <div className="logo-container">
+        <Link to="/" className="logo-link">
+          LUDWIG
+        </Link>
+      </div>
       <div className="profile-settings">
         <Link to="/profile">
           <img
