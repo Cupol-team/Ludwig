@@ -1587,9 +1587,9 @@ def is_user_in_organization(organization_uuid: uuid.UUID, user_uuid: uuid.UUID) 
 def update_user(user_uuid: uuid.UUID, 
                 name: Union[str, None] = None, 
                 surname: Union[str, None] = None, 
-                email: Union[str, None] = None, 
-                password: Union[str, None] = None, 
                 gender: Union[str, None] = None, 
+                password: Union[str, None] = None, 
+                email: Union[str, None] = None, 
                 date_of_birthday: Union[str, None] = None):
     """
     Обновляет данные пользователя. Все поля являются необязательными,

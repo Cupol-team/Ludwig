@@ -64,7 +64,14 @@ const ProfileCard = ({ profile, isCurrentUser, onProfileUpdate, onAvatarUpload }
   
   const handleEditToggle = () => {
     if (isEditing) {
-      onProfileUpdate(editedProfile);
+      // Создаем копию профиля для обновления
+      const updatedProfile = { ...editedProfile };
+      
+      // Отладочный вывод для проверки данных перед отправкой
+      console.log('Sending profile update:', updatedProfile);
+      
+      // Отправляем обновление
+      onProfileUpdate(updatedProfile);
     } else {
       setEditedProfile({ ...profile });
     }
