@@ -1,16 +1,52 @@
-import React from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
+import { getUserAvatar } from '../api/profile';
 import '../styles/Header.css';
 
 const Header = () => {
+  const { profile } = useContext(AuthContext);
+  const [avatarUrl, setAvatarUrl] = useState('/favicon.png');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Загружаем аватар только если есть профиль пользователя
+    if (profile && profile.uuid) {
+      setLoading(true);
+      
+      const controller = new AbortController();
+      
+      getUserAvatar(profile.uuid, controller.signal)
+        .then(url => {
+          setAvatarUrl(url);
+          setLoading(false);
+        })
+        .catch(error => {
+          console.error('Failed to load avatar in header:', error);
+          setAvatarUrl('/favicon.png'); // Используем заглушку в случае ошибки
+          setLoading(false);
+        });
+      
+      // Очистка при размонтировании компонента
+      return () => {
+        controller.abort();
+        // Освобождаем URL объект, если он был создан
+        if (avatarUrl && avatarUrl.startsWith('blob:')) {
+          URL.revokeObjectURL(avatarUrl);
+        }
+      };
+    }
+  }, [profile]); // Перезагружаем аватар при изменении профиля
+
   return (
     <header className="app-header">
       <div className="profile-settings">
         <Link to="/profile">
           <img
-            src="/favicon.png"
+            src={avatarUrl}
             alt="Профиль"
             className="profile-avatar"
+            style={{ opacity: loading ? 0.6 : 1 }}
           />
         </Link>
         <button className="settings-button">
