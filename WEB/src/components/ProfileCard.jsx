@@ -81,11 +81,21 @@ const ProfileCard = ({ profile, isCurrentUser, onProfileUpdate, onAvatarUpload }
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      onAvatarUpload(file);
-      // После успешной загрузки аватара обновляем его отображение
-      if (profile && profile.uuid) {
-        setTimeout(() => loadAvatar(profile.uuid), 1000); // Даем время на обработку загрузки
-      }
+      onAvatarUpload(file)
+        .then(() => {
+          // После успешной загрузки аватара обновляем его отображение
+          if (profile && profile.uuid) {
+            // Очищаем текущий URL объект, если он существует
+            if (avatarUrl && avatarUrl.startsWith('blob:')) {
+              URL.revokeObjectURL(avatarUrl);
+            }
+            // Загружаем новый аватар
+            loadAvatar(profile.uuid);
+          }
+        })
+        .catch(error => {
+          console.error('Failed to upload avatar:', error);
+        });
     }
   };
   

@@ -76,6 +76,99 @@ export async function updateUserProfile(uuid, { name = null, surname = null, gen
 }
 
 /**
+ * Сжимает изображение до указанного размера
+ * @param {File} file - Исходный файл изображения
+ * @param {number} maxSizeKB - Максимальный размер в килобайтах
+ * @returns {Promise<File>} - Сжатый файл
+ */
+async function compressImage(file, maxSizeKB = 500) {
+    return new Promise((resolve, reject) => {
+        // Проверяем, является ли файл изображением
+        if (!file.type.startsWith('image/')) {
+            reject(new Error('Файл не является изображением'));
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            
+            img.onload = () => {
+                // Создаем canvas для сжатия изображения
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                
+                // Ограничиваем размеры изображения
+                const MAX_WIDTH = 800;
+                const MAX_HEIGHT = 800;
+                
+                if (width > height) {
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
+                } else {
+                    if (height > MAX_HEIGHT) {
+                        width *= MAX_HEIGHT / height;
+                        height = MAX_HEIGHT;
+                    }
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // Начинаем с высокого качества
+                let quality = 0.9;
+                let compressedFile;
+                
+                // Функция для преобразования canvas в File
+                const canvasToFile = (q) => {
+                    return new Promise((res) => {
+                        canvas.toBlob((blob) => {
+                            const newFile = new File([blob], file.name, {
+                                type: 'image/jpeg',
+                                lastModified: Date.now()
+                            });
+                            res(newFile);
+                        }, 'image/jpeg', q);
+                    });
+                };
+                
+                // Рекурсивно уменьшаем качество, пока не достигнем нужного размера
+                const compress = async () => {
+                    compressedFile = await canvasToFile(quality);
+                    
+                    // Если размер все еще слишком большой и качество можно еще уменьшить
+                    if (compressedFile.size > maxSizeKB * 1024 && quality > 0.1) {
+                        quality -= 0.1;
+                        await compress();
+                    }
+                };
+                
+                compress().then(() => {
+                    console.log(`Изображение сжато: ${file.size} -> ${compressedFile.size} байт`);
+                    resolve(compressedFile);
+                });
+            };
+            
+            img.onerror = (error) => {
+                reject(error);
+            };
+        };
+        
+        reader.onerror = (error) => {
+            reject(error);
+        };
+    });
+}
+
+/**
  * Загрузка аватара пользователя.
  * @param {string} uuid - UUID пользователя.
  * @param {File} file - Файл изображения аватара.
@@ -83,15 +176,24 @@ export async function updateUserProfile(uuid, { name = null, surname = null, gen
  * @returns {Promise<Object>} - Ответ от сервера.
  */
 export async function uploadUserAvatar(uuid, file, signal) {
-    const formData = new FormData();
-    const cleanedUuid = cleanUuid(uuid);
-    
-    // Добавляем UUID в форму, а не в параметры запроса
-    formData.append('subject_uuid', cleanedUuid);
-    formData.append('file', file);
-
     try {
+        const cleanedUuid = cleanUuid(uuid);
+        
+        // Проверяем размер файла
+        const MAX_SIZE_KB = 500; // 500 KB
+        let fileToUpload = file;
+        
+        if (file.size > MAX_SIZE_KB * 1024) {
+            console.log(`Файл слишком большой (${Math.round(file.size / 1024)} KB), сжимаем...`);
+            fileToUpload = await compressImage(file, MAX_SIZE_KB);
+        }
+        
+        const formData = new FormData();
+        formData.append('subject_uuid', cleanedUuid);
+        formData.append('file', fileToUpload);
+        
         console.log('Uploading avatar with subject_uuid:', cleanedUuid);
+        console.log('File size after compression:', Math.round(fileToUpload.size / 1024), 'KB');
         
         const response = await api.post('/files/avatar_upload', formData, {
             headers: {
@@ -204,9 +306,16 @@ export async function getUserAvatar(uuid, signal) {
         // Удаляем дефисы из UUID
         const cleanedUuid = cleanUuid(uuid);
         
+        // Добавляем временную метку для предотвращения кэширования
+        const timestamp = new Date().getTime();
+        
         // Используем UUID без дефисов в запросе
         const response = await api.get(`/files/${cleanedUuid}`, {
-            params: { file_uuid: cleanedUuid, mode: 'avatar' },
+            params: { 
+                file_uuid: cleanedUuid, 
+                mode: 'avatar',
+                t: timestamp // Добавляем временную метку
+            },
             responseType: 'blob',
             signal
         });
