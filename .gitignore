@@ -42,9 +42,6 @@ ENV/
 *.swo
 .DS_Store
 
-# Docker
-.dockerignore
-
 # Uploads and databases
 uploads/
 *.db
