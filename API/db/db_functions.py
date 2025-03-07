@@ -2,6 +2,7 @@ import logging
 import os
 import shutil
 import importlib
+import datetime
 import sys
 import traceback
 from datetime import date
@@ -70,7 +71,57 @@ def dynamic_import(module_name):
         return None
 
 
+def check_user_exists(email: str) -> bool:
+    """
+    Проверяет, существует ли пользователь с указанным email
+    
+    Args:
+        email: Email пользователя для проверки
+        
+    Returns:
+        bool: True если пользователь существует, иначе False
+    """
+    session = db_session.create_session()
+    existing_user = session.query(UserLoginData).filter(UserLoginData.email == email).first()
+    session.close()
+    return existing_user is not None
+
 def new_user(name, surname, email, password, gender, date_of_birthday):
+    """
+    Создает нового пользователя
+    
+    Args:
+        name: Имя пользователя
+        surname: Фамилия пользователя
+        email: Email пользователя
+        password: Пароль пользователя
+        gender: Пол пользователя ("0" - женщина, "1" - мужчина)
+        date_of_birthday: Дата рождения пользователя (строка в формате YYYY-MM-DD)
+        
+    Returns:
+        tuple: (user, user_data, user_login_data, user_uuid)
+        
+    Raises:
+        ValueError: Если пользователь с таким email уже существует или отсутствуют обязательные поля
+    """
+    # Проверяем наличие всех обязательных полей
+    if not name or not surname or not email or not password or not gender or not date_of_birthday:
+        raise ValueError("All fields (name, surname, email, password, gender, date_of_birthday) are required")
+    
+    # Проверяем корректность значения gender
+    if gender not in ["0", "1"]:
+        raise ValueError('Gender must be "0" (female) or "1" (male)')
+    
+    # Проверяем, существует ли пользователь с таким email
+    if check_user_exists(email):
+        raise ValueError("User with this email already exists")
+    
+    # Преобразуем строковую дату в объект date
+    try:
+        parsed_date = datetime.date.fromisoformat(date_of_birthday)
+    except ValueError:
+        raise ValueError("Invalid date format. Use YYYY-MM-DD format for date_of_birthday")
+        
     user_uuid = uuid.uuid4()
 
     user = User()
@@ -81,7 +132,7 @@ def new_user(name, surname, email, password, gender, date_of_birthday):
     user_data.name = name
     user_data.surname = surname
     user_data.gender = gender
-    user_data.date_of_birthday = date_of_birthday
+    user_data.date_of_birthday = parsed_date  # Используем преобразованную дату
 
     user_login_data = UserLoginData()
     user_login_data.uuid = user_uuid

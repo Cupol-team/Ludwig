@@ -4,19 +4,20 @@ from fastapi.security import OAuth2PasswordBearer
 from typing import Dict, Annotated
 from contextlib import contextmanager
 
-from db import create_session
+from db import create_session, new_user
+
 import jwt
 from jwt.exceptions import InvalidTokenError
 from db import UserLoginData
-from db import User
 from passlib.context import CryptContext
 from datetime import datetime, timedelta, timezone
+from schemas.auth import RegisterRequest
 
 from schemas import TokenData, UserBase
 
 SECRET_KEY = "your_secret_key"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 1
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 REFRESH_TOKEN_EXPIRE_DAYS = 7  # Срок действия refresh token - 7 дней
 
 
@@ -103,3 +104,63 @@ def get_current_user(
     if user is None:
         raise credentials_exception
     return user
+
+def register_new_user(register_data: RegisterRequest) -> tuple:
+    """
+    Регистрирует нового пользователя и возвращает данные для создания токенов
+    
+    Args:
+        register_data: Данные для регистрации пользователя
+            - name: Имя пользователя
+            - surname: Фамилия пользователя
+            - email: Email пользователя
+            - password: Пароль пользователя
+            - gender: Пол пользователя ("0" - женщина, "1" - мужчина)
+            - date_of_birthday: Дата рождения в формате YYYY-MM-DD
+        
+    Returns:
+        tuple: (access_token, refresh_token)
+        
+    Raises:
+        HTTPException: Если пользователь с таким email уже существует или произошла ошибка при создании
+    """
+    # Проверяем наличие всех обязательных полей
+    required_fields = ["name", "surname", "email", "password", "gender", "date_of_birthday"]
+    for field in required_fields:
+        if not getattr(register_data, field, None):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Field '{field}' is required"
+            )
+    
+    # Создаем нового пользователя
+    try:
+        user, user_data, user_login_data, user_uuid = new_user(
+            name=register_data.name,
+            surname=register_data.surname,
+            email=register_data.email,
+            password=register_data.password,
+            gender=register_data.gender,
+            date_of_birthday=register_data.date_of_birthday
+        )
+    except ValueError as e:
+        # Обрабатываем ошибку, если пользователь уже существует
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
+    except Exception as e:
+        # Обрабатываем другие ошибки
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to create user: {str(e)}",
+        )
+    
+    # Создаем токены доступа и обновления
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": register_data.email}, expires_delta=access_token_expires
+    )
+    refresh_token = create_refresh_token(data={"sub": register_data.email})
+    
+    return access_token, refresh_token

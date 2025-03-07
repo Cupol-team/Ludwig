@@ -5,7 +5,12 @@ from fastapi.security import OAuth2PasswordRequestForm
 from schemas import UserBase
 from schemas.auth import RegisterRequest, Token
 from services import authenticate_user, create_access_token, get_current_user
-from services.auth import create_refresh_token, verify_refresh_token, get_user
+from services.auth import (
+    create_refresh_token, 
+    verify_refresh_token, 
+    get_user, 
+    register_new_user
+)
 from datetime import timedelta
 
 
@@ -70,13 +75,18 @@ def refresh_access_token(refresh_token: str) -> Token:
     
     return Token(access_token=access_token, refresh_token=new_refresh_token, token_type="bearer")
 
-# FIXME: ВОЗВРАЩАТЬ USER КЛАСС, А НЕ USER_LOGIN_DATA КЛАСС, ПОТОМУ ЧТО ВАЛИДАЦИЯ ПАДАЕТ, ПИЗДА КОРОЧЕ
-@router.get("/protected-data") # TODO: В создании пользователя,         нужно будет добавить валидацибю почты, иначе всё ляжет нахуй
-def read_current_user(
-    current_user: Annotated[UserBase, Depends(get_current_user)]
-) -> UserBase:
-    return UserBase(id=1, uuid=current_user.uuid)
-
 @router.get("/profile")
 def read_profile(current_user: Annotated[UserBase, Depends(get_current_user)]):
+    """
+    Получение профиля текущего пользователя
+    """
     return UserBase(id=1, uuid=current_user.uuid)
+
+@router.post("/register", response_model=Token)
+def register_user(register_data: RegisterRequest):
+    """
+    Регистрация нового пользователя
+    """
+    access_token, refresh_token = register_new_user(register_data)
+    
+    return Token(access_token=access_token, refresh_token=refresh_token, token_type="bearer")

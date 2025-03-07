@@ -26,12 +26,25 @@ class TokenData(BaseModel):
     email: Optional[EmailStr] = None
 
 class RegisterRequest(BaseModel):
-    """
-    Схема для регистрации нового пользователя.
-    """
-    username: Union[str, None] = None
+    """Схема запроса на регистрацию пользователя"""
+    name: str
+    surname: str
     email: str
     password: str
+    gender: str
+    date_of_birthday: str
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "name": "Иван",
+                "surname": "Иванов",
+                "email": "ivan@example.com",
+                "password": "securepassword123",
+                "gender": "1",
+                "date_of_birthday": "1990-01-01"
+            }
+        } 
 
 class UserResponse(BaseModel):
     """
