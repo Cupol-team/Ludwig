@@ -1,6 +1,9 @@
 from pydantic import BaseModel, EmailStr
 from typing import Optional, Union
 from uuid import UUID
+from pydantic import validator
+from datetime import date
+from uuid import UUID
 
 
 class LoginRequest(BaseModel):
@@ -33,6 +36,21 @@ class RegisterRequest(BaseModel):
     password: str
     gender: str
     date_of_birthday: str
+    avatar_uuid: UUID  # Добавляем обязательное поле для UUID аватарки
+    
+    @validator('date_of_birthday')
+    def validate_date_format(cls, v):
+        try:
+            date.fromisoformat(v)
+            return v
+        except ValueError:
+            raise ValueError('Invalid date format. Use YYYY-MM-DD format')
+    
+    @validator('gender')
+    def validate_gender(cls, v):
+        if v not in ["0", "1"]:
+            raise ValueError('Gender must be "0" (female) or "1" (male)')
+        return v
     
     class Config:
         json_schema_extra = {
@@ -42,7 +60,8 @@ class RegisterRequest(BaseModel):
                 "email": "ivan@example.com",
                 "password": "securepassword123",
                 "gender": "1",
-                "date_of_birthday": "1990-01-01"
+                "date_of_birthday": "1990-01-01",
+                "avatar_uuid": "550e8400-e29b-41d4-a716-446655440000"
             }
         } 
 

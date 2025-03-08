@@ -5,6 +5,7 @@ from uuid import UUID
 class ProjectCreate(BaseModel):
     name: str
     description: str | None = ""
+    avatar_uuid: UUID
 
 class ProjectResponse(BaseModel):
     uuid: UUID
