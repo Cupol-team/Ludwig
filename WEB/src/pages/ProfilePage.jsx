@@ -23,29 +23,29 @@ const ProfilePage = () => {
     // Если нет текущего пользователя, ждем его загрузки
     if (!currentUserProfile) return;
     
-    // Определяем, является ли это профилем текущего пользователя
-    // Это происходит если:
-    // 1. URL - /profile (без userId)
-    // 2. URL - /profile/{uuid}, где uuid совпадает с uuid текущего пользователя
-    const isOwnProfile = !userId || userId === currentUserProfile.uuid;
-    setIsCurrentUser(isOwnProfile);
-    
-    // Если URL /profile, но без userId, перенаправляем на /profile/{currentUserUuid}
+    // Если URL /profile без userId, перенаправляем на /profile/{currentUserUuid}
     if (!userId && currentUserProfile.uuid) {
       navigate(`/profile/${currentUserProfile.uuid}`, { replace: true });
       return;
     }
+    
+    // Простое определение: это мой профиль, если UUID совпадает с моим
+    const isOwnProfile = userId === currentUserProfile.uuid;
+    setIsCurrentUser(isOwnProfile);
     
     const fetchData = async () => {
       try {
         setLoading(true);
         
         // Определяем, какой профиль загружать
-        const profileId = isOwnProfile ? currentUserProfile.uuid : userId;
+        const profileId = userId; // Всегда используем userId из URL
         
         // Загружаем данные профиля
         const profileData = await getUserProfile(profileId);
-        
+        console.log('profileData:::::::::::');
+        console.log(profileId);
+        console.log(profileData);
+
         if (!profileData) {
           setUserNotFound(true);
           setLoading(false);

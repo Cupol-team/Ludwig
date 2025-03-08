@@ -221,7 +221,7 @@ export async function getUserOrganizations(uuid, signal) {
     try {
         const cleanedUuid = cleanUuid(uuid);
         const { data } = await api.get('/user/organizations', { 
-            params: { uuid: cleanedUuid },
+            params: { user_id: cleanedUuid },
             signal 
         });
         return data.response.map(org => ({
@@ -243,7 +243,7 @@ export async function getUserProjects(uuid, signal) {
     try {
         const cleanedUuid = cleanUuid(uuid);
         const { data } = await api.get('/user/projects', { 
-            params: { uuid: cleanedUuid },
+            params: { user_id: cleanedUuid },
             signal 
         });
         return data.response.items.map(project => ({
@@ -266,7 +266,7 @@ export async function getUserProfile(uuid, signal) {
     try {
         const cleanedUuid = cleanUuid(uuid);
         const { data } = await api.get('/user/profile', { 
-            params: { uuid: cleanedUuid },
+            params: { user_id: cleanedUuid },
             signal 
         });
 
