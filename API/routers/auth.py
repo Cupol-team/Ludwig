@@ -14,7 +14,7 @@ from services.auth import (
 from datetime import timedelta
 
 
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
 
 router = APIRouter(
     prefix="/auth",
