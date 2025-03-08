@@ -15,7 +15,7 @@ const OrganizationsList = ({ organizations }) => {
         <List>
           {organizations.map(org => (
             <ListItem key={org.uuid}>
-              <OrganizationLink to={`/organizations/${org.uuid}`}>
+              <OrganizationLink>
                 {org.name}
               </OrganizationLink>
             </ListItem>

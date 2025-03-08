@@ -6,6 +6,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { ProfileContainer } from '../styles/ProfileComponentStyles';
 import { updateUserProfile, uploadUserAvatar, getUserOrganizations, getUserProjects, getUserProfile } from '../api/profile';
+import Loader from '../components/Loader';
 
 const ProfilePage = () => {
   const { userId } = useParams();
@@ -111,7 +112,7 @@ const ProfilePage = () => {
   
   // Показываем загрузку, если данные еще не получены или нет текущего пользователя
   if (loading || !currentUserProfile) {
-    return <div>Загрузка...</div>;
+    return <Loader />;
   }
   
   // Показываем сообщение, если пользователь не найден
