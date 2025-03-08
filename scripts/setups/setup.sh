@@ -52,28 +52,25 @@ check_requirements() {
     log_success "All required tools found."
 }
 
-# Настройка Python окружения для API
+# Настройка Python окружения в корневой директории
 setup_python_env() {
-    log "Setting up Python environment for API..."
+    log "Setting up Python environment in root directory..."
     
-    cd API
-    
-    # Проверка наличия requirements.txt
-    if [ ! -f "requirements.txt" ]; then
+    # Проверка наличия requirements.txt в API
+    if [ ! -f "API/requirements.txt" ]; then
         log_warning "requirements.txt file not found in API directory."
         log "Creating empty virtual environment..."
     fi
     
-    # Создание виртуального окружения
+    # Создание виртуального окружения в корневой директории
     if [ -d ".venv" ]; then
         log_warning "Virtual environment already exists. Skipping creation."
     else
-        log "Creating virtual environment..."
+        log "Creating virtual environment in root directory..."
         python3 -m venv .venv
         
         if [ $? -ne 0 ]; then
             log_error "Failed to create virtual environment."
-            cd ..
             return 1
         fi
     fi
@@ -92,7 +89,6 @@ setup_python_env() {
     
     if [ $? -ne 0 ]; then
         log_error "Failed to activate virtual environment."
-        cd ..
         return 1
     fi
     
@@ -101,26 +97,23 @@ setup_python_env() {
     if [ $? -ne 0 ]; then
         log_error "pip not available in virtual environment."
         deactivate
-        cd ..
         return 1
     fi
     
-    # Установка зависимостей, если requirements.txt существует
-    if [ -f "requirements.txt" ]; then
-        log "Installing Python dependencies..."
-        python -m pip install -r requirements.txt
+    # Установка зависимостей, если requirements.txt существует в API
+    if [ -f "API/requirements.txt" ]; then
+        log "Installing Python dependencies from API/requirements.txt..."
+        python -m pip install -r API/requirements.txt
         
         if [ $? -ne 0 ]; then
             log_error "Failed to install Python dependencies."
             deactivate
-            cd ..
             return 1
         fi
     fi
     
     deactivate
-    cd ..
-    log_success "Python environment for API set up successfully."
+    log_success "Python environment set up successfully in root directory."
 }
 
 # Настройка Node.js окружения для WEB

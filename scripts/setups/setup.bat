@@ -15,14 +15,12 @@ if %ERRORLEVEL% neq 0 (
     exit /b 1
 )
 
-:: Проверка Node.js
 where node >nul 2>nul
 if %ERRORLEVEL% neq 0 (
     echo [ERROR] Node.js not found. Please install Node.js.
     exit /b 1
 )
 
-:: Проверка npm
 where npm >nul 2>nul
 if %ERRORLEVEL% neq 0 (
     echo [ERROR] npm not found. Please install npm.
@@ -31,12 +29,10 @@ if %ERRORLEVEL% neq 0 (
 
 echo [SUCCESS] All required tools found.
 
-:: Настройка Python окружения для API
-echo [SETUP] Setting up Python environment for API...
+:: Настройка Python окружения в корневой директории
+echo [SETUP] Setting up Python environment in root directory...
 
-cd API
-
-if not exist requirements.txt (
+if not exist API\requirements.txt (
     echo [WARNING] requirements.txt file not found in API directory.
     echo [SETUP] Creating empty virtual environment...
 )
@@ -44,12 +40,11 @@ if not exist requirements.txt (
 if exist .venv (
     echo [WARNING] Virtual environment already exists. Skipping creation.
 ) else (
-    echo [SETUP] Creating virtual environment...
+    echo [SETUP] Creating virtual environment in root directory...
     python -m venv .venv
     
     if %ERRORLEVEL% neq 0 (
         echo [ERROR] Failed to create virtual environment.
-        cd ..
         exit /b 1
     )
 )
@@ -60,7 +55,6 @@ call .venv\Scripts\activate.bat
 
 if %ERRORLEVEL% neq 0 (
     echo [ERROR] Failed to activate virtual environment.
-    cd ..
     exit /b 1
 )
 
@@ -69,25 +63,22 @@ python -m pip --version >nul 2>nul
 if %ERRORLEVEL% neq 0 (
     echo [ERROR] pip not available in virtual environment.
     call deactivate
-    cd ..
     exit /b 1
 )
 
-if exist requirements.txt (
-    echo [SETUP] Installing Python dependencies...
-    python -m pip install -r requirements.txt
+if exist API\requirements.txt (
+    echo [SETUP] Installing Python dependencies from API\requirements.txt...
+    python -m pip install -r API\requirements.txt
     
     if %ERRORLEVEL% neq 0 (
         echo [ERROR] Failed to install Python dependencies.
         call deactivate
-        cd ..
         exit /b 1
     )
 )
 
 call deactivate
-cd ..
-echo [SUCCESS] Python environment for API set up successfully.
+echo [SUCCESS] Python environment set up successfully in root directory.
 
 :: Настройка Node.js окружения для WEB
 echo [SETUP] Setting up Node.js environment for WEB...
