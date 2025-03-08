@@ -36,7 +36,6 @@ class RegisterRequest(BaseModel):
     password: str
     gender: str
     date_of_birthday: str
-    avatar_uuid: UUID  # Добавляем обязательное поле для UUID аватарки
     
     @validator('date_of_birthday')
     def validate_date_format(cls, v):
@@ -60,8 +59,7 @@ class RegisterRequest(BaseModel):
                 "email": "ivan@example.com",
                 "password": "securepassword123",
                 "gender": "1",
-                "date_of_birthday": "1990-01-01",
-                "avatar_uuid": "550e8400-e29b-41d4-a716-446655440000"
+                "date_of_birthday": "1990-01-01"
             }
         } 
 
