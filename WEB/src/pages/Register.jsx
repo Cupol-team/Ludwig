@@ -3,6 +3,9 @@ import { useNavigate, Link } from "react-router-dom";
 import CustomDatePicker from "../components/CustomDatePicker";
 import Notification from "../components/Notification";
 import "../styles/Register.css";
+import { registerApi } from "../api/auth";
+import { uploadUserAvatar } from "../api/profile";
+import { useAuth } from "../hooks/useAuth";
 
 const Register = () => {
     const navigate = useNavigate();
@@ -10,6 +13,8 @@ const Register = () => {
     const [errorMsg, setErrorMsg] = useState('');
     const [avatarFile, setAvatarFile] = useState(null);
     const [avatarPreview, setAvatarPreview] = useState(null);
+    const [userUuid, setUserUuid] = useState(null);
+    const { login } = useAuth();
     
     // Функция для проверки возраста
     const isAgeValid = (birthDate) => {
@@ -140,7 +145,7 @@ const Register = () => {
     };
     
     // Обработчик отправки формы первого шага
-    const handleFirstStepSubmit = (e) => {
+    const handleFirstStepSubmit = async (e) => {
         e.preventDefault();
         
         if (!isFormValid()) {
@@ -148,23 +153,49 @@ const Register = () => {
             return;
         }
         
-        // Здесь будет отправка запроса на API для регистрации
-        console.log("Отправка данных на API:", formData);
-        
-        // После успешной регистрации переходим ко второму шагу
-        setErrorMsg('');
-        setStep(2);
+        try {
+            // Отправляем запрос на регистрацию
+            const response = await registerApi(formData);
+            
+            // Сохраняем UUID пользователя из ответа API
+            if (response && response.user_uuid) {
+                setUserUuid(response.user_uuid);
+            }
+            
+            // Выполняем вход после успешной регистрации
+            await login(formData.email, formData.password);
+            
+            // После успешной регистрации переходим ко второму шагу
+            setErrorMsg('');
+            setStep(2);
+        } catch (error) {
+            setErrorMsg(error.message || 'Ошибка при регистрации. Попробуйте позже.');
+        }
     };
     
     // Обработчик завершения регистрации
-    const handleCompleteRegistration = () => {
-        // Здесь будет отправка аватара на API, если он был выбран
-        if (avatarFile) {
-            console.log("Отправка аватара на API:", avatarFile);
+    const handleCompleteRegistration = async () => {
+        try {
+            // Если выбран аватар и есть UUID пользователя, загружаем аватар
+            if (avatarFile && userUuid) {
+                console.log("userUuid", userUuid);
+                console.log("avatarFile", avatarFile);
+                await uploadUserAvatar(userUuid, avatarFile);
+            } else if (avatarFile) {
+                // Если аватар выбран, но UUID не найден
+                console.error("UUID пользователя не найден");
+                setErrorMsg('Не удалось загрузить аватар: UUID пользователя не найден');
+            }
+            
+            // Перенаправляем на главную страницу
+            navigate("/");
+        } catch (error) {
+            console.error("Ошибка при загрузке аватара:", error);
+            setErrorMsg('Ошибка при загрузке аватара. Вы будете перенаправлены на главную страницу.');
+            setTimeout(() => {
+                navigate("/");
+            }, 3000);
         }
-        
-        // Перенаправляем на главную страницу
-        navigate("/");
     };
     
     // Расчет надежности пароля (0-100%)
@@ -370,12 +401,6 @@ const Register = () => {
                     </div>
                     
                     <div className="avatar-actions">
-                        <button 
-                            onClick={() => setStep(1)} 
-                            className="back-button"
-                        >
-                            Назад
-                        </button>
                         <button 
                             onClick={handleCompleteRegistration}
                             className="complete-button"

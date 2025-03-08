@@ -163,4 +163,4 @@ def register_new_user(register_data: RegisterRequest) -> tuple:
     )
     refresh_token = create_refresh_token(data={"sub": register_data.email})
     
-    return access_token, refresh_token
+    return access_token, refresh_token, user_uuid

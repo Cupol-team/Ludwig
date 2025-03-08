@@ -43,9 +43,6 @@ const ProfilePage = () => {
         
         // Загружаем данные профиля
         const profileData = await getUserProfile(profileId);
-        console.log('profileData:::::::::::');
-        console.log(profileId);
-        console.log(profileData);
 
         if (!profileData) {
           setUserNotFound(true);

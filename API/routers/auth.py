@@ -87,6 +87,6 @@ def register_user(register_data: RegisterRequest):
     """
     Регистрация нового пользователя
     """
-    access_token, refresh_token = register_new_user(register_data)
+    access_token, refresh_token, user_uuid = register_new_user(register_data)
     
-    return Token(access_token=access_token, refresh_token=refresh_token, token_type="bearer")
+    return Token(access_token=access_token, refresh_token=refresh_token, token_type="bearer", user_uuid=user_uuid)

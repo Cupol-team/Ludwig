@@ -20,6 +20,7 @@ class Token(BaseModel):
     access_token: str
     refresh_token: str
     token_type: str = "bearer"
+    user_uuid: Optional[UUID] = None
 
 class TokenData(BaseModel):
     """

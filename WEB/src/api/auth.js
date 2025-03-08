@@ -23,6 +23,60 @@ export async function loginApi(email, password) {
     }
 }
 
+/**
+ * Функция для регистрации нового пользователя
+ * @param {Object} userData - Данные пользователя для регистрации
+ * @param {string} userData.name - Имя пользователя
+ * @param {string} userData.surname - Фамилия пользователя
+ * @param {string} userData.email - Email пользователя
+ * @param {string} userData.password - Пароль пользователя
+ * @param {string} userData.gender - Пол пользователя (1 - мужской, 0 - женский)
+ * @param {Date} userData.date_of_birthday - Дата рождения пользователя
+ * @returns {Promise<Object>} - Объект с токенами доступа
+ */
+export async function registerApi(userData) {
+    try {
+        // Форматируем дату рождения в формат YYYY-MM-DD
+        const formattedDate = userData.date_of_birthday instanceof Date 
+            ? userData.date_of_birthday.toISOString().split('T')[0]
+            : userData.date_of_birthday;
+
+        // Создаем объект с данными для отправки
+        const requestData = {
+            name: userData.name,
+            surname: userData.surname,
+            email: userData.email,
+            password: userData.password,
+            gender: userData.gender,
+            date_of_birthday: formattedDate
+        };
+
+        // Отправляем запрос на регистрацию с данными в теле запроса
+        const { data } = await axios.post('/auth/register', requestData, {
+            skipAuthRedirect: true,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        // Сохраняем полученные токены  
+        localStorage.setItem('token', data.access_token);
+        localStorage.setItem('refreshToken', data.refresh_token);
+        
+        return data;
+    } catch (error) {
+        // Обработка различных ошибок
+        if (error.response) {
+            if (error.response.status === 400) {
+                throw new Error('Некорректные данные для регистрации');
+            } else if (error.response.status === 409) {
+                throw new Error('Пользователь с таким email уже существует');
+            }
+        }
+        throw error;
+    }
+}
+
 // Добавляем функцию для обновления токена
 export async function refreshToken() {
     try {
@@ -75,7 +129,7 @@ export function logout() {
 }
 
 // export const getProfile = async () => {
-//     try {
+//     try {Ф
 //         const response = await api.get('/auth/profile');
 //         return response.data;
 //     } catch (error) {
