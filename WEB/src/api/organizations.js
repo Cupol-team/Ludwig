@@ -8,7 +8,8 @@ import api from './axios';
 export async function getOrganizations(signal) {
     try {
         const { data } = await api.get('/organizations/', { signal });
-        return data;
+        // Извлекаем массив организаций из data.items
+        return data.items || [];
     } catch (error) {
         throw error;
     }

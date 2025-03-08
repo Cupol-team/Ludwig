@@ -11,7 +11,7 @@ export async function getProjects(organizationId, signal) {
         //     "items": [ { "uuid": "...", "name": "...", "description": "..." }, ... ]
         //   }
         // }
-        return data.response?.items || [];
+        return data.items || [];
     } catch (error) {
         // Проверяем, отменён ли запрос
         if (axios.isCancel(error)) {

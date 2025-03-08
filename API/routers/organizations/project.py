@@ -41,9 +41,7 @@ async def get_projects_endpoint(current_user: Annotated[UserBase, Depends(get_cu
         )
     '''
     return {
-        "response": {
-            "items": projects
-        }
+        "items": projects
     }
 
 

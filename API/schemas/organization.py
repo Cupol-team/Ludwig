@@ -23,7 +23,7 @@ class OrganizationCreate(BaseModel):
     """Схема запроса на создание организации"""
     name: str
     description: Optional[str] = ""
-    avatar_uuid: UUID  # Обязательное поле для UUID аватарки
+    avatar_uuid: UUID
     
     class Config:
         json_schema_extra = {

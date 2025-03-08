@@ -34,7 +34,7 @@ def get_all_organizations_endpoint(db: Session = Depends(create_session), payloa
     return get_all_organizations(db)'''
 
 
-@router.get("/", response_model=List[OrganizationResponse])
+@router.get("/")
 def get_organizations(current_user: Annotated[UserBase, Depends(get_current_user)], db: Session = Depends(create_session)):
     """
     Получение всех организаций, в которых состоит пользователь.
@@ -47,13 +47,10 @@ def get_organizations(current_user: Annotated[UserBase, Depends(get_current_user
 
 
     organizations = get_user_organizations(db, user_uuid)
-    
-    if not organizations:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="No organizations found for the user"
-        )
-    return organizations
+
+    return {
+        "items": organizations
+    }
 
 
 @router.put("/create")

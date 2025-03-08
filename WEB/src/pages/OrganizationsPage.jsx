@@ -20,7 +20,8 @@ const OrganizationsPage = () => {
         try {
             setIsLoading(true);
             const data = await getOrganizations(controllerRef.current.signal);
-            setOrganizations(data);
+            const organizationsArray = data.items || data;
+            setOrganizations(organizationsArray);
             setError(null);
         } catch (error) {
             if (!axios.isCancel(error)) {
