@@ -94,3 +94,21 @@ body {
     opacity: 1;
     top: 40px;
 }
+
+.register-link {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.register-link a {
+    color: #6f42c1;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s;
+}
+
+.register-link a:hover {
+    color: #8a63d2;
+    text-decoration: underline;
+}

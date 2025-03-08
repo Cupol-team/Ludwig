@@ -1,0 +1,283 @@
+.register-container {
+    background: #1e1e1e;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    width: 450px;
+    text-align: center;
+    color: #ffffff;
+}
+
+.register-container h1 {
+    color: #ffffff;
+    margin-bottom: 20px;
+}
+
+.register-container input[type="text"],
+.register-container input[type="email"],
+.register-container input[type="password"] {
+    width: calc(100% - 20px);
+    padding: 12px;
+    margin: 10px 0;
+    background: #2c2c2c;
+    color: #ffffff;
+    border: 1px solid #444;
+    border-radius: 5px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.register-container input:focus {
+    border-color: #9933FF;
+}
+
+.register-container input.invalid {
+    border-color: #ff4d4d;
+}
+
+.validation-error {
+    color: #ff4d4d;
+    font-size: 12px;
+    text-align: left;
+    margin-top: -5px;
+    margin-bottom: 10px;
+}
+
+.register-container button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #9933FF, #7a29cc);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    transition: background 0.3s ease;
+}
+
+.register-container button:hover {
+    background: linear-gradient(135deg, #7a29cc, #9933FF);
+}
+
+.gender-selector {
+    margin: 15px 0;
+    text-align: left;
+}
+
+.gender-options {
+    display: flex;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.gender-options label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.gender-options input[type="radio"] {
+    margin-right: 8px;
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #6f42c1;
+    border-radius: 50%;
+    outline: none;
+    cursor: pointer;
+}
+
+.gender-options input[type="radio"]:checked {
+    background-color: #6f42c1;
+    box-shadow: inset 0 0 0 3px #2c2c2c;
+}
+
+.gender-options input[type="radio"]:hover {
+    background-color: rgba(111, 66, 193, 0.2);
+}
+
+.date-picker-container {
+    margin: 15px 0;
+    text-align: left;
+}
+
+.password-strength {
+    margin: 10px 0;
+    text-align: left;
+}
+
+.strength-bar {
+    height: 5px;
+    background-color: #444;
+    border-radius: 3px;
+    margin-bottom: 10px;
+}
+
+.strength-indicator {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s, background-color 0.3s;
+}
+
+.strength-requirements {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+    font-size: 12px;
+}
+
+.strength-requirements .valid {
+    color: #00cc00;
+}
+
+.strength-requirements .invalid {
+    color: #888;
+}
+
+.login-link {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.login-link a {
+    color: #6f42c1;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s;
+}
+
+.login-link a:hover {
+    color: #8a63d2;
+    text-decoration: underline;
+}
+
+/* Стили для второго шага - загрузка аватара */
+.avatar-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.avatar-preview-container {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 20px 0;
+    border: 3px solid #6f42c1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    background-color: #2c2c2c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    color: #6f42c1;
+}
+
+/* Унификация стилей кнопок на втором этапе */
+.upload-button, .clear-button {
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 14px;
+    border: none;
+    color: white;
+    display: inline-block;
+    text-align: center;
+}
+
+.upload-button {
+    background-color: #6f42c1;
+}
+
+.upload-button:hover {
+    background-color: #8a63d2;
+}
+
+.clear-button {
+    background-color: #444;
+}
+
+.clear-button:hover {
+    background-color: #555;
+}
+
+/* Обеспечиваем одинаковую ширину кнопок */
+.avatar-upload {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    width: 100%;
+    max-width: 320px;
+}
+
+.avatar-upload label, .avatar-upload button {
+    flex: 1;
+}
+
+/* Стили для кнопок завершения регистрации */
+.avatar-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 320px;
+}
+
+.back-button {
+    flex: 1;
+    background: #444 !important;
+}
+
+.back-button:hover {
+    background: #555 !important;
+}
+
+.complete-button {
+    flex: 2;
+}
+
+/* Специфичные стили для DatePicker на странице регистрации */
+.register-container .calendar-header button {
+    font-size: 14px;
+    padding: 0;
+    background: none;
+    border: none;
+    color: #fff;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.register-container .calendar-header button:hover {
+    color: #6f42c1;
+}
+
+.register-container .calendar-table td {
+    padding: 3px;
+    font-size: 12px;
+}
+
+.register-container .calendar-table th {
+    font-size: 10px;
+} 

@@ -33,6 +33,7 @@ const Roles = lazy(() => import("./pages/Workspace/Roles"));
 const FileSharing = lazy(() => import('./pages/Workspace/FileSharing'));
 const Calls = lazy(() => import('./pages/Workspace/Calls/CallsMain'));
 const CallsRoom = lazy(() => import('./pages/Workspace/Calls/CallsRoom'));
+const Register = lazy(() => import("./pages/Register"));
 
 const App = () => {
     const location = useLocation(); // Получаем текущий путь
@@ -40,7 +41,7 @@ const App = () => {
     return (
         <>
             <GlobalStyle />
-            {location.pathname !== '/login' && <Header />} {/* Условие для отображения Header */}
+            {location.pathname !== '/register' && location.pathname !== '/login' && <Header />} {/* Условие для отображения Header */}
             <Suspense fallback={<Loader />}>
                 <Routes>
                     <Route 
@@ -50,6 +51,14 @@ const App = () => {
                            <Login />
                         </CenteredContainer>
                       } 
+                    />
+                    <Route
+                        path="/register"
+                        element={
+                            <CenteredContainer>
+                                <Register />
+                            </CenteredContainer>
+                        }
                     />
                     <Route
                         path="/"

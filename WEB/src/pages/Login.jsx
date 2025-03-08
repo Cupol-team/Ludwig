@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useAuth } from '../hooks/useAuth';
 import Notification from "../components/Notification";
 import "../styles/Login.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import api from "../api/axios";
 
 const Login = () => {
@@ -47,7 +47,13 @@ const Login = () => {
                     onChange={handleChange}
                     required
                 />
+
+                <div className="register-link">
+                    <p>Нет аккаунта? <Link to="/register">Зарегистрироваться</Link></p>
+                </div>
+                
                 <button type="submit">Войти</button>
+
             </form>
         </div>
     );
