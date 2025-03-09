@@ -43,7 +43,9 @@ ENV/
 .DS_Store
 
 # Uploads and databases
-
+uploads/
+*.db
+*.sqlite3
 
 # Logs
 logs/
