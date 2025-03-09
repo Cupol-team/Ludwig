@@ -22,5 +22,7 @@ class UserLoginData(SqlAlchemyBase, SerializerMixin):
         self.password = generate_password_hash(password)
 
     def check_password(self, password):
+        print(self.password)
+        print(generate_password_hash(password))
         return check_password_hash(self.password, password) # TODO: Расскоментить после всех тестов
         return self.password == password
