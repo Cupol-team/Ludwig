@@ -122,6 +122,7 @@ export async function getProfile() {
     }
 }
 
+
 export function logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');
@@ -129,7 +130,7 @@ export function logout() {
 }
 
 // export const getProfile = async () => {
-//     try {Ф
+//     try {
 //         const response = await api.get('/auth/profile');
 //         return response.data;
 //     } catch (error) {
