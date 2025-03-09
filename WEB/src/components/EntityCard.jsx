@@ -2,11 +2,17 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/entity-card.css';
 
-const EntityCard = ({ title, description, avatarUrl, linkTo, role, extraContent }) => {
+const EntityCard = ({ title, description, avatarUrl, initial, linkTo, role, extraContent }) => {
     return (
         <Link to={linkTo} className="entity-card">
             <div className="entity-card-header">
-                <img src={avatarUrl} alt="Entity Avatar" className="entity-avatar" />
+                {avatarUrl ? (
+                    <img src={avatarUrl} alt={title} className="entity-avatar" />
+                ) : (
+                    <div className="entity-avatar-initials">
+                        <span>{initial}</span>
+                    </div>
+                )}
                 <div className="entity-title-wrapper">
                     <h3 className="entity-title">{title}</h3>
                     {role && <span className="entity-role-badge">{role}</span>}

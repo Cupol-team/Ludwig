@@ -254,4 +254,27 @@
     align-items: center;
     padding: 10px 20px;
     background-color: #f5f5f5; /* или другой фон */
+}
+
+/* Обновляем стили для инициалов и аватарок */
+.entity-avatar-initials {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #1e1e1e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #7a29cc; /* Фиолетовый цвет для буквы */
+    font-weight: bold;
+    font-size: 24px;
+    border: 2px solid #333;
+}
+
+.entity-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #333;
 } 

@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { getOrganizations } from '../api/organizations';
+import { getUserAvatar } from '../api/profile';
 import Loader from '../components/Loader';
 import '../styles/organizations.css';
 import axios from 'axios';
@@ -12,6 +13,7 @@ const OrganizationsPage = () => {
     const [organizations, setOrganizations] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [avatars, setAvatars] = useState({});
     const controllerRef = useRef(null);
 
     const fetchOrganizations = useCallback(async () => {
@@ -32,6 +34,38 @@ const OrganizationsPage = () => {
         }
     }, []);
 
+    const loadOrganizationAvatars = useCallback(async (orgs) => {
+        if (!orgs || orgs.length === 0) return;
+        
+        const controller = new AbortController();
+        const avatarPromises = orgs.map(async (org) => {
+            try {
+                const avatarUrl = await getUserAvatar(org.uuid, controller.signal);
+                return { uuid: org.uuid, url: avatarUrl };
+            } catch (error) {
+                console.error(`Error loading avatar for organization ${org.name}:`, error);
+                return { uuid: org.uuid, url: null };
+            }
+        });
+        
+        const results = await Promise.all(avatarPromises);
+        const avatarMap = {};
+        results.forEach(result => {
+            avatarMap[result.uuid] = result.url;
+        });
+        
+        setAvatars(avatarMap);
+        
+        return () => {
+            controller.abort();
+            Object.values(avatarMap).forEach(url => {
+                if (url && url.startsWith('blob:')) {
+                    URL.revokeObjectURL(url);
+                }
+            });
+        };
+    }, []);
+
     useEffect(() => {
         fetchOrganizations();
         
@@ -41,6 +75,21 @@ const OrganizationsPage = () => {
             }
         };
     }, [fetchOrganizations]);
+
+    useEffect(() => {
+        if (organizations) {
+            const cleanup = loadOrganizationAvatars(organizations);
+            return () => {
+                if (cleanup && typeof cleanup === 'function') {
+                    cleanup();
+                }
+            };
+        }
+    }, [organizations, loadOrganizationAvatars]);
+
+    const getOrganizationInitial = (name) => {
+        return name ? name.charAt(0).toUpperCase() : '?';
+    };
 
     if (isLoading || organizations === null) {
         return <Loader />;
@@ -69,7 +118,8 @@ const OrganizationsPage = () => {
                             key={org.uuid}
                             title={org.name}
                             description={org.description}
-                            avatarUrl={org.avatar || "favicon.png"}
+                            avatarUrl={avatars[org.uuid] && avatars[org.uuid] !== '/default-avatar.png' ? avatars[org.uuid] : null}
+                            initial={getOrganizationInitial(org.name)}
                             linkTo={`/organizations/${org.uuid}`}
                             role={org.role || "Участник"}
                         />
