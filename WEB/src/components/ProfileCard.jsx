@@ -9,7 +9,8 @@ import {
   Label,
   Input,
   Button,
-  HiddenInput
+  HiddenInput,
+  AvatarInitials
 } from '../styles/ProfileCardStyles';
 import CustomDatePicker from './CustomDatePicker';
 import { getUserAvatar } from '../api/profile';
@@ -17,13 +18,15 @@ import { getUserAvatar } from '../api/profile';
 const ProfileCard = ({ profile, isCurrentUser, onProfileUpdate, onAvatarUpload }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedProfile, setEditedProfile] = useState({ ...profile });
-  const [avatarUrl, setAvatarUrl] = useState('/default-avatar.png');
+  const [avatarUrl, setAvatarUrl] = useState(null);
+  const [loading, setLoading] = useState(true);
   
   useEffect(() => {
     setEditedProfile({ ...profile });
     
     // Загружаем аватар при монтировании компонента и при изменении UUID профиля
     if (profile && profile.uuid) {
+      setLoading(true);
       loadAvatar(profile.uuid);
     }
     
@@ -40,11 +43,27 @@ const ProfileCard = ({ profile, isCurrentUser, onProfileUpdate, onAvatarUpload }
   const loadAvatar = async (uuid) => {
     try {
       const url = await getUserAvatar(uuid);
-      setAvatarUrl(url);
+      if (url !== '/default-avatar.png') {
+        setAvatarUrl(url);
+      } else {
+        setAvatarUrl(null); // Если получен дефолтный аватар, устанавливаем null для отображения инициалов
+      }
+      setLoading(false);
     } catch (error) {
       console.error('Failed to load avatar:', error);
-      setAvatarUrl('/default-avatar.png');
+      setAvatarUrl(null); // При ошибке загрузки аватара устанавливаем null
+      setLoading(false);
     }
+  };
+  
+  // Получаем инициалы из имени и фамилии пользователя
+  const getInitials = () => {
+    if (profile && profile.name && profile.surname) {
+      return `${profile.name.charAt(0)}${profile.surname.charAt(0)}`;
+    } else if (profile && profile.email) {
+      return profile.email.charAt(0).toUpperCase();
+    }
+    return '?';
   };
   
   const handleInputChange = (e) => {
@@ -102,10 +121,21 @@ const ProfileCard = ({ profile, isCurrentUser, onProfileUpdate, onAvatarUpload }
   // Преобразуем гендер в строку
   const genderText = editedProfile.gender === '1' ? 'Мужской' : 'Женский';
 
+  // Рендерим содержимое аватара в зависимости от состояния
+  const renderAvatarContent = () => {
+    if (loading) {
+      return <AvatarInitials>...</AvatarInitials>;
+    } else if (avatarUrl) {
+      return <Avatar src={avatarUrl} alt="Аватар пользователя" />;
+    } else {
+      return <AvatarInitials>{getInitials()}</AvatarInitials>;
+    }
+  };
+
   return (
     <Card>
       <AvatarContainer>
-        <Avatar src={avatarUrl} alt="Аватар пользователя" />
+        {renderAvatarContent()}
         {isCurrentUser && isEditing && (
           <AvatarOverlay onClick={() => document.getElementById('avatar-input').click()}>
             <OverlayText>Изменить</OverlayText>

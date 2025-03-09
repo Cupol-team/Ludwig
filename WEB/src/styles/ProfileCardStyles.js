@@ -100,4 +100,17 @@ export const Button = styled.button`
 
 export const HiddenInput = styled.input`
   display: none;
+`;
+
+export const AvatarInitials = styled.div`
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #2c2c2c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  font-weight: bold;
+  color: #6f42c1;
 `; 
