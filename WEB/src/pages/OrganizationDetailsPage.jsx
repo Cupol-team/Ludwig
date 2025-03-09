@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getProjects } from '../api/projects';
+import { getUserAvatar } from '../api/profile';
 import Loader from '../components/Loader';
 import Notification from '../components/Notification';
 import axios from 'axios';
@@ -13,6 +14,7 @@ const OrganizationDetailsPage = () => {
     const [projects, setProjects] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [avatars, setAvatars] = useState({});
     const controllerRef = useRef(null);
 
     const fetchProjects = useCallback(async () => {
@@ -31,6 +33,42 @@ const OrganizationDetailsPage = () => {
         }
     }, [orgId]);
 
+    const loadProjectAvatars = useCallback(async (projectsList) => {
+        if (!projectsList || projectsList.length === 0) return;
+        
+        const controller = new AbortController();
+        const avatarPromises = projectsList.map(async (project) => {
+            try {
+                const avatarUrl = await getUserAvatar(project.uuid, controller.signal);
+                return { uuid: project.uuid, url: avatarUrl };
+            } catch (error) {
+                console.error(`Error loading avatar for project ${project.name}:`, error);
+                return { uuid: project.uuid, url: null };
+            }
+        });
+        
+        const results = await Promise.all(avatarPromises);
+        const avatarMap = {};
+        results.forEach(result => {
+            avatarMap[result.uuid] = result.url;
+        });
+        
+        setAvatars(avatarMap);
+        
+        return () => {
+            controller.abort();
+            Object.values(avatarMap).forEach(url => {
+                if (url && url.startsWith('blob:')) {
+                    URL.revokeObjectURL(url);
+                }
+            });
+        };
+    }, []);
+
+    const getProjectInitial = (name) => {
+        return name ? name.charAt(0).toUpperCase() : '?';
+    };
+
     useEffect(() => {
         fetchProjects();
         return () => {
@@ -39,6 +77,17 @@ const OrganizationDetailsPage = () => {
             }
         };
     }, [fetchProjects]);
+
+    useEffect(() => {
+        if (projects && projects.length > 0) {
+            const cleanup = loadProjectAvatars(projects);
+            return () => {
+                if (cleanup && typeof cleanup === 'function') {
+                    cleanup();
+                }
+            };
+        }
+    }, [projects, loadProjectAvatars]);
 
     if (isLoading) return <Loader />;
 
@@ -75,7 +124,8 @@ const OrganizationDetailsPage = () => {
                             key={project.uuid}
                             title={project.name}
                             description={project.description || "Тестовое описание проекта"}
-                            avatarUrl={project.avatar || "../favicon.png"}
+                            avatarUrl={avatars[project.uuid] && avatars[project.uuid] !== '/default-avatar.png' ? avatars[project.uuid] : null}
+                            initial={getProjectInitial(project.name)}
                             linkTo={`/organizations/${orgId}/project/${project.uuid}/workspace`}
                         />
                     ))}
