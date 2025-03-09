@@ -1,29 +1,41 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { getUserAvatar } from '../api/profile';
+import { getUserAvatar, getUserProfile } from '../api/profile';
 import '../styles/Header.css';
 
 const Header = () => {
   const { profile } = useContext(AuthContext);
-  const [avatarUrl, setAvatarUrl] = useState('/favicon.png');
+  const [avatarUrl, setAvatarUrl] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [userProfile, setUserProfile] = useState(null);
 
   useEffect(() => {
-    // Загружаем аватар только если есть профиль пользователя
+    // Загружаем профиль пользователя для получения имени и фамилии
     if (profile && profile.uuid) {
-      setLoading(true);
-      
       const controller = new AbortController();
       
+      // Получаем данные профиля
+      getUserProfile(profile.uuid, controller.signal)
+        .then(profileData => {
+          setUserProfile(profileData);
+        })
+        .catch(error => {
+          console.error('Failed to load user profile in header:', error);
+        });
+      
+      // Получаем аватар
       getUserAvatar(profile.uuid, controller.signal)
         .then(url => {
-          setAvatarUrl(url);
+          if (url !== '/default-avatar.png') {
+            setAvatarUrl(url);
+          } else {
+            setAvatarUrl(null); // Если получен дефолтный аватар, устанавливаем null для отображения инициалов
+          }
           setLoading(false);
         })
         .catch(error => {
-          console.error('Failed to load avatar in header:', error);
-          setAvatarUrl('/favicon.png'); // Используем заглушку в случае ошибки
+          setAvatarUrl(null); // При ошибке загрузки аватара устанавливаем null
           setLoading(false);
         });
       
@@ -36,7 +48,17 @@ const Header = () => {
         }
       };
     }
-  }, [profile]); // Перезагружаем аватар при изменении профиля
+  }, [profile]); // Перезагружаем данные при изменении профиля
+
+  // Получаем инициалы из имени и фамилии пользователя
+  const getInitials = () => {
+    if (userProfile && userProfile.name && userProfile.surname) {
+      return `${userProfile.name.charAt(0)}${userProfile.surname.charAt(0)}`;
+    } else if (profile && profile.email) {
+      return profile.email.charAt(0).toUpperCase();
+    }
+    return '?';
+  };
 
   return (
     <header className="app-header">
@@ -47,12 +69,21 @@ const Header = () => {
       </div>
       <div className="profile-settings">
         <Link to="/profile">
-          <img
-            src={avatarUrl}
-            alt="Профиль"
-            className="profile-avatar"
-            style={{ opacity: loading ? 0.6 : 1 }}
-          />
+          {loading ? (
+            <div className="profile-avatar-placeholder">
+              <span>...</span>
+            </div>
+          ) : avatarUrl ? (
+            <img
+              src={avatarUrl}
+              className="profile-avatar"
+              style={{ opacity: loading ? 0.6 : 1 }}
+            />
+          ) : (
+            <div className="profile-avatar-initials">
+              <span>{getInitials()}</span>
+            </div>
+          )}
         </Link>
         <button className="settings-button">
           <svg
