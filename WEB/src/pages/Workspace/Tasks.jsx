@@ -30,7 +30,6 @@ const Tasks = () => {
       })
       .catch((err) => {
         if (axios.isCancel(err)) {
-          // Ошибка вызвана отменой запроса, не устанавливаем состояние ошибки
           return;
         }
         setError(err.message);
@@ -46,37 +45,45 @@ const Tasks = () => {
   };
 
   if (loading) return <Loader />;
-  if (error) return <div>Error: {error}</div>;
-  if (!tasks || tasks.length === 0) return <div>No tasks available.</div>;
+  if (error) return <div>Ошибка: {error}</div>;
 
   return (
     <div className="tasks-container" style={{ padding: "20px" }}>
-      <h1 className="tasks-title">Tasks</h1>
       <CreateTaskButton onTaskCreated={handleTaskCreated} />
       <div className="tasks-header">
-        <div className="task-cell">Name</div>
-        <div className="task-cell">Status</div>
-        <div className="task-cell">Priority</div>
-        <div className="task-cell">Type</div>
-        <div className="task-cell">Date</div>
-        <div className="task-cell">Executors</div>
+        <div className="task-cell">Название</div>
+        <div className="task-cell">Статус</div>
+        <div className="task-cell">Приоритет</div>
+        <div className="task-cell">Тип</div>
+        <div className="task-cell">Дата</div>
+        <div className="task-cell">Исполнители</div>
       </div>
       <div className="tasks-list">
-        {tasks.map((task, index) => {
-          // Преобразуем данные задачи, заменяя идентификаторы типа и статуса на соответствующие имена из контекста.
-          const completeTask = { ...task };
-          const foundType = taskTypes.find((t) => t.uuid === task.type);
-          const foundStatus = taskStatuses.find((s) => s.uuid === task.status);
-          if (foundType) completeTask.type = foundType.name;
-          if (foundStatus) completeTask.status = foundStatus.name;
-          return (
-            <TaskItem
-              key={task.uuid || index}
-              task={completeTask}
-              onClick={(uuid) => setSelectedTaskUuid(uuid)}
-            />
-          );
-        })}
+        {tasks && tasks.length > 0 ? (
+          tasks.map((task, index) => {
+            const completeTask = { ...task };
+            const foundType = taskTypes.find((t) => t.uuid === task.type);
+            const foundStatus = taskStatuses.find((s) => s.uuid === task.status);
+            if (foundType) completeTask.type = foundType.name;
+            if (foundStatus) completeTask.status = foundStatus.name;
+            return (
+              <TaskItem
+                key={task.uuid || index}
+                task={completeTask}
+                onClick={(uuid) => setSelectedTaskUuid(uuid)}
+              />
+            );
+          })
+        ) : (
+          <div className="empty-tasks-message" style={{ 
+            padding: "20px", 
+            textAlign: "center", 
+            gridColumn: "1 / -1",
+            color: "#666"
+          }}>
+            Нет доступных задач
+          </div>
+        )}
       </div>
       {selectedTaskUuid && (
         <TaskDetailsModal

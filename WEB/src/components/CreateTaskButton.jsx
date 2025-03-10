@@ -9,13 +9,13 @@ const CreateTaskButton = ({ onTaskCreated }) => {
   const { orgId, projectUuid } = useParams();
   const { taskTypes, taskStatuses, members } = useContext(ProjectContext);
   
-  // Инициализируем форму: если в контексте есть типы/статусы - выбираем первый из списков по умолчанию.
+  // Изменили начальное состояние: теперь тип и статус оставляем пустыми, чтобы пользователь мог не выбирать их
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    type: taskTypes && taskTypes.length > 0 ? taskTypes[0].uuid : '',
+    type: '', // по умолчанию пусто
     priority: 0,
-    status: taskStatuses && taskStatuses.length > 0 ? taskStatuses[0].uuid : '',
+    status: '', // по умолчанию пусто
     date: new Date().toISOString().slice(0, 10),
     executors: [] // Массив UUID исполнителей
   });
@@ -23,6 +23,14 @@ const CreateTaskButton = ({ onTaskCreated }) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  
+  // Форма считается валидной, если заполнены "Название" и "Дата"
+  // а также в системе есть данные для типов и статусов задач
+  const isFormValid =
+    formData.name.trim() !== '' &&
+    formData.date.trim() !== '' &&
+    (taskTypes && taskTypes.length > 0) &&
+    (taskStatuses && taskStatuses.length > 0);
   
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -67,34 +75,52 @@ const CreateTaskButton = ({ onTaskCreated }) => {
             <h2>Создание задачи</h2>
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label>Название</label>
+                <label htmlFor="task-name">Название</label>
                 <input 
+                  id="task-name"
                   type="text" 
                   name="name" 
+                  placeholder="Введите название задачи"
                   value={formData.name} 
                   onChange={handleChange} 
                   required 
                 />
               </div>
               <div className="form-group">
-                <label>Описание</label>
+                <label htmlFor="task-description">Описание</label>
                 <textarea 
+                  id="task-description"
                   name="description" 
+                  placeholder="Введите описание задачи (не обязательно)"
                   value={formData.description} 
                   onChange={handleChange}
                 />
               </div>
               <div className="form-group">
-                <label>Тип</label>
-                <select name="type" value={formData.type} onChange={handleChange}>
-                  {taskTypes && taskTypes.map((t) => (
+                <label htmlFor="task-type">Тип (не обязательно)</label>
+                <select 
+                  id="task-type"
+                  name="type" 
+                  value={formData.type} 
+                  onChange={handleChange}
+                  disabled={!(taskTypes && taskTypes.length > 0)}
+                >
+                  <option value="">
+                    {taskTypes && taskTypes.length > 0 ? "Пусто" : "Типы отсутствуют"}
+                  </option>
+                  {taskTypes && taskTypes.length > 0 && taskTypes.map((t) => (
                     <option key={t.uuid} value={t.uuid}>{t.name}</option>
                   ))}
                 </select>
               </div>
               <div className="form-group">
-                <label>Приоритет</label>
-                <select name="priority" value={formData.priority} onChange={handleChange}>
+                <label htmlFor="task-priority">Приоритет</label>
+                <select 
+                  id="task-priority"
+                  name="priority" 
+                  value={formData.priority} 
+                  onChange={handleChange}
+                >
                   <option value={-2}>Минимальный</option>
                   <option value={-1}>Низкий</option>
                   <option value={0}>Средний</option>
@@ -103,16 +129,26 @@ const CreateTaskButton = ({ onTaskCreated }) => {
                 </select>
               </div>
               <div className="form-group">
-                <label>Статус</label>
-                <select name="status" value={formData.status} onChange={handleChange}>
-                  {taskStatuses && taskStatuses.map((s) => (
+                <label htmlFor="task-status">Статус (не обязательно)</label>
+                <select 
+                  id="task-status"
+                  name="status" 
+                  value={formData.status} 
+                  onChange={handleChange}
+                  disabled={!(taskStatuses && taskStatuses.length > 0)}
+                >
+                  <option value="">
+                    {taskStatuses && taskStatuses.length > 0 ? "Пусто" : "Статусы отсутствуют"}
+                  </option>
+                  {taskStatuses && taskStatuses.length > 0 && taskStatuses.map((s) => (
                     <option key={s.uuid} value={s.uuid}>{s.name}</option>
                   ))}
                 </select>
               </div>
               <div className="form-group">
-                <label>Дата</label>
+                <label htmlFor="task-date">Дата</label>
                 <input 
+                  id="task-date"
                   type="date" 
                   name="date" 
                   value={formData.date} 
@@ -121,8 +157,9 @@ const CreateTaskButton = ({ onTaskCreated }) => {
                 />
               </div>
               <div className="form-group">
-                <label>Исполнители</label>
+                <label htmlFor="task-executors">Исполнители (не обязательно)</label>
                 <select
+                  id="task-executors"
                   name="executors"
                   multiple
                   value={formData.executors}
@@ -136,7 +173,18 @@ const CreateTaskButton = ({ onTaskCreated }) => {
                 </select>
               </div>
               {error && <div className="error">{error}</div>}
-              <button type="submit" disabled={loading}>
+              <button 
+                type="submit" 
+                disabled={loading || !isFormValid}
+                style={{
+                  backgroundColor: loading || !isFormValid ? "#ccc" : "#8b5cf6",
+                  color: loading || !isFormValid ? "#666" : "#fff",
+                  padding: "8px 16px",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: loading || !isFormValid ? "not-allowed" : "pointer"
+                }}
+              >
                 {loading ? 'Создание...' : 'Создать'}
               </button>
             </form>
