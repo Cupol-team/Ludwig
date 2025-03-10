@@ -22,28 +22,10 @@ function Workspace() {
           Таски
         </NavLink>
         <NavLink 
-          to={`${baseUrl}/task-statuses`} 
+          to={`${baseUrl}/settings`} 
           className={({ isActive }) => isActive ? "active-tab" : ""}
         >
-          Статусы Тасков
-        </NavLink>
-        <NavLink 
-          to={`${baseUrl}/task-types`} 
-          className={({ isActive }) => isActive ? "active-tab" : ""}
-        >
-          Типы Тасков
-        </NavLink>
-        <NavLink 
-          to={`${baseUrl}/members`} 
-          className={({ isActive }) => isActive ? "active-tab" : ""}
-        >
-          Участники
-        </NavLink>
-        <NavLink 
-          to={`${baseUrl}/roles`} 
-          className={({ isActive }) => isActive ? "active-tab" : ""}
-        >
-          Роли проекта
+          Настройки
         </NavLink>
         <NavLink
             to={`${baseUrl}/files`}

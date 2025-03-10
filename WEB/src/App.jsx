@@ -8,6 +8,7 @@ import WorkspaceRedirector from "./pages/Workspace/WorkspaceRedirector";
 import GlobalStyle from "./styles/GlobalStyles";
 import ProfilePage from './pages/ProfilePage';
 import Header from './components/Header';
+import Settings from "./pages/Workspace/Settings";
 
 // Новый контейнер для центрирования окна входа
 const CenteredContainer = styled.div`
@@ -108,10 +109,13 @@ const App = () => {
                         <Route index element={<WorkspaceRedirector />} />
                         <Route path="board" element={<Board />} />
                         <Route path="tasks" element={<Tasks />} />
-                        <Route path="task-statuses" element={<TaskStatuses />} />
-                        <Route path="task-types" element={<TaskTypes />} />
-                        <Route path="members" element={<Members />} />
-                        <Route path="roles" element={<Roles />} />
+                        <Route path="settings/*" element={<Settings />}>
+                            <Route path="roles" element={<Roles />} />
+                            <Route path="task-types" element={<TaskTypes />} />
+                            <Route path="task-statuses" element={<TaskStatuses />} />
+                            <Route path="members" element={<Members />} />
+                            <Route index element={<Roles />} />
+                        </Route>
                         <Route path="files" element={<FileSharing />} />
                         <Route path="calls" element={<Calls />} />
                     </Route>
