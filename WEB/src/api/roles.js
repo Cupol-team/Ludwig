@@ -45,4 +45,30 @@ export async function createProjectRole(orgId, projectUuid, roleData, signal) {
         }
         throw error;
     }
-} 
+}
+
+/**
+ * Получение всех прав для списка ролей.
+ * @param {string} orgId - UUID организации.
+ * @param {string} projectUuid - UUID проекта.
+ * @param {string[]} roleUuids - массив UUID ролей.
+ * @param {AbortSignal} signal - сигнал для отмены запроса.
+ * @returns {Promise<string[]>} - массив уникальных прав.
+ */
+export async function getAllPermissions(orgId, projectUuid, roleUuids, signal) {
+    const permissionsSet = new Set();
+    try {
+        for (const roleUuid of roleUuids) {
+            const { data } = await api.get(`/organizations/${orgId}/projects/${projectUuid}/role/${roleUuid}/get_permissions`, { signal });
+            const permissions = data.permissions || [];
+            permissions.forEach(permission => permissionsSet.add(permission));
+        }
+    } catch (error) {
+        if (axios.isCancel(error)) {
+            return [];
+        }
+        throw error;
+    }
+
+    return Array.from(permissionsSet);
+}

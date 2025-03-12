@@ -4,6 +4,7 @@ import { getRoles as getProjectRoles, createProjectRole } from '../../api/roles'
 import Loader from '../../components/Loader';
 import Notification from '../../components/Notification';
 import '../../styles/roles.css';
+import RestrictedComponent from '../../components/RestrictedComponent';
 
 function Roles() {
   const { orgId, projectUuid } = useParams();
@@ -60,6 +61,9 @@ function Roles() {
       <button className="create-role-btn" onClick={() => setIsCreating(true)}>
         Создать роль
       </button>
+
+
+
       {isCreating && (
         <div className="modal-overlay">
           <div className="modal-container">

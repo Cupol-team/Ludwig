@@ -88,7 +88,6 @@ function Members() {
 
   if (isLoading) return <Loader />;
   if (error) return <Notification message={error} type="error" />;
-
   return (
     <div className="members-container">
       <h2>Участники</h2>

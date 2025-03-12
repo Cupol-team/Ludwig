@@ -773,7 +773,6 @@ def delete_permission(organization_uuid, project_uuid, role_uuid, permissions):
 def get_permissions(organization_uuid, project_uuid, role_uuid):
     _org_uuid = f"_{str(organization_uuid).replace('-', '_')}"
     _project_uuid = f"_{str(project_uuid).replace('-', '_')}"
-
     RolePermissions = eval(
         f"importlib.import_module('.role_permissions', package='db.organizations.db.{_org_uuid}.projects.{_project_uuid}')").RolePermissions
 
