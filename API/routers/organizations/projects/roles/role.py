@@ -25,9 +25,7 @@ async def delete_project_role_endpoint(organization_uuid: UUID, project_uuid: UU
                                               project_uuid=project_uuid,
                                               role_uuid=role_uuid)
     if method_exec: return {
-        "items": {
-            "response": 1
-        }
+        "response": 1
     }
 
 @router.post('/edit/')
@@ -38,9 +36,7 @@ async def edit_project_role_endpoint(organization_uuid: UUID, project_uuid: UUID
                                       name=data.name, description=data.description, permissions=data.permissions)
 
     if method_exec: return {
-        "items": {
-            "response": 1
-        }
+        "response": 1
     }
 
 
@@ -51,9 +47,7 @@ async def new_permission_endpoint(organization_uuid: UUID, project_uuid: UUID, r
                                       permissions=permissions)
     
     if method_exec: return {
-        "items": {
-            "response": 1
-        }
+        "response": 1
     }
 
 
@@ -64,7 +58,5 @@ async def delete_permission_endpoint(organization_uuid: UUID, project_uuid: UUID
                                       permissions=permissions)
     
     if method_exec: return {
-        "items": {
-            "response": 1
+        "response": 1
         }
-    }
