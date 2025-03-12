@@ -769,6 +769,26 @@ def delete_permission(organization_uuid, project_uuid, role_uuid, permissions):
 
     return True
 
+
+def get_permissions(organization_uuid, project_uuid, role_uuid):
+    _org_uuid = f"_{str(organization_uuid).replace('-', '_')}"
+    _project_uuid = f"_{str(project_uuid).replace('-', '_')}"
+
+    RolePermissions = eval(
+        f"importlib.import_module('.role_permissions', package='db.organizations.db.{_org_uuid}.projects.{_project_uuid}')").RolePermissions
+
+    exec(
+        f"from db.organizations.db.{_org_uuid}.projects.{_project_uuid} import db_session "
+        f"as db_session{_project_uuid}")
+    eval(
+        f"db_session{_project_uuid}.global_init('db/organizations/db/{_org_uuid}/projects/{_project_uuid}/project_db.db')"
+    )
+    session = eval(f"db_session{_project_uuid}.create_session()")
+
+    permissions = session.query(RolePermissions).filter(RolePermissions.uuid == role_uuid).all()
+    return [permission.permission for permission in permissions]
+
+
 '''==========================db functions: project_status=========================='''
 
 

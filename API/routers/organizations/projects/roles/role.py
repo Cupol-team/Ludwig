@@ -4,7 +4,7 @@ from schemas import UserBase
 from schemas.organizations.projects.roles import EditProjectRole
 
 from services import get_current_user
-from services.organizations.projects.roles import delete_project_role_service, update_project_role, create_new_permission_service, delete_permission_service
+from services.organizations.projects.roles import delete_project_role_service, update_project_role, create_new_permission_service, delete_permission_service, get_permissions_service
 
 from uuid import UUID
 from typing import Annotated, List
@@ -46,17 +46,33 @@ async def new_permission_endpoint(organization_uuid: UUID, project_uuid: UUID, r
     method_exec = create_new_permission_service(organization_uuid=organization_uuid, project_uuid=project_uuid, role_uuid=role_uuid,
                                       permissions=permissions)
     
-    if method_exec: return {
-        "response": 1
-    }
+    if method_exec:
+        return {
+            "response": 1
+        }
 
 
-@router.post('/delete_permission/')
+@router.delete('/delete_permission/')
 async def delete_permission_endpoint(organization_uuid: UUID, project_uuid: UUID, role_uuid: UUID, permissions: List[str],
                                   current_user: Annotated[UserBase, Depends(get_current_user)]):
     method_exec = delete_permission_service(organization_uuid=organization_uuid, project_uuid=project_uuid, role_uuid=role_uuid,
                                       permissions=permissions)
     
-    if method_exec: return {
-        "response": 1
+    if method_exec:
+        return {
+            "response": 1
         }
+    
+
+
+@router.get('/get_permissions/')
+async def get_permissions_endpoint(organization_uuid: UUID, project_uuid: UUID, role_uuid: UUID,
+                                  current_user: Annotated[UserBase, Depends(get_current_user)]):
+    method_exec = get_permissions_service(organization_uuid=organization_uuid, project_uuid=project_uuid, role_uuid=role_uuid)
+    if method_exec:
+        return {
+            "permissions": method_exec
+        }
+
+
+
