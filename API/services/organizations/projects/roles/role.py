@@ -1,6 +1,6 @@
-from db import delete_project_role, update_project_role
+from db import delete_project_role, update_project_role, create_new_permission, delete_permission
 
-from typing import Union
+from typing import List, Union
 from uuid import UUID
 
 
@@ -16,3 +16,17 @@ def edit_project_role_service(organization_uuid: UUID, project_uuid: UUID, role_
                                       role_uuid=role_uuid,
                                       name=name, description=description, permissions=permissions)
     if method_exec: return True
+
+
+def create_new_permission_service(organization_uuid: UUID, project_uuid: UUID, role_uuid: UUID, permissions: List[str]) -> Union[bool, None]:
+    method_exec = create_new_permission(organization_uuid=organization_uuid, project_uuid=project_uuid,
+                                      role_uuid=role_uuid, permissions=permissions)
+    if method_exec:
+        return True
+
+
+def delete_permission_service(organization_uuid: UUID, project_uuid: UUID, role_uuid: UUID, permissions: List[str]) -> Union[bool, None]:
+    method_exec = delete_permission(organization_uuid=organization_uuid, project_uuid=project_uuid,
+                                      role_uuid=role_uuid, permissions=permissions)
+    if method_exec:
+        return True

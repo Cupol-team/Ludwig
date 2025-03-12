@@ -205,11 +205,9 @@ def new_organization(name, description=""):
         shutil.copy("organizations/base/project_member.py",
                     f"organizations/db/{_org_uuid}/project_member.py")
 
-        logger.info("Я ТУТ")
         os.chdir(os.path.join(os.getcwd(), 'organizations', 'base'))
         # if '' not in sys.path:
         #    sys.path.insert(0, '')
-        logger.info(os.getcwd())
         # exec(f"import role")
         # exec(f"import role_data")
         # exec(f"import status")
@@ -228,7 +226,6 @@ def new_organization(name, description=""):
              f"as db_session{_org_uuid}")
         eval(
             f"db_session{_org_uuid}.global_init(f'../db/{_org_uuid}/org_db.db')")
-        logger.info("Я ТАМААА")
         session.close()
 
         os.chdir(os.path.join(os.getcwd(), '..', 'db', _org_uuid))
@@ -241,18 +238,8 @@ def new_organization(name, description=""):
         # Создаем таблицы
         SqlAlchemyOrgBase.metadata.create_all(engine)
 
-        logger.info(f'ИМЕЕМ {os.getcwd()}')
-
     except Exception as ex:
         logger.info(ex)
-
-        exc_type, exc_value, exc_tb = sys.exc_info()
-        line_number = exc_tb.tb_lineno
-        print("Полная информация об ошибке в функции:")
-        logger.info(line_number)
-        logger.info(f'текущая директория: {os.getcwd()}')
-        logger.info(ex)
-        logger.info(exc_tb)
     reset_to_project_root(4)
     return organization, organization_data, organization_uuid
 
@@ -560,14 +547,6 @@ def new_project(organization_uuid, name, description=""):
         session.close()
     except Exception as ex:
         logger.info(ex)
-
-        exc_type, exc_value, exc_tb = sys.exc_info()
-        line_number = exc_tb.tb_lineno
-        print("Полная информация об ошибке в функции:")
-        logger.info(line_number)
-        logger.info(f'текущая директория: {os.getcwd()}')
-        logger.info(ex)
-        logger.info(exc_tb)
     reset_to_project_root(6)
     return project, project_data, project_uuid
 
@@ -739,6 +718,56 @@ def update_project_role(organization_uuid, project_uuid, role_uuid, name: str | 
 
     return True
 
+
+def create_new_permission(organization_uuid, project_uuid, role_uuid, permissions):
+    _org_uuid = f"_{str(organization_uuid).replace('-', '_')}"
+    _project_uuid = f"_{str(project_uuid).replace('-', '_')}"
+
+    RolePermissions = eval(
+        f"importlib.import_module('.role_permissions', package='db.organizations.db.{_org_uuid}.projects.{_project_uuid}')").RolePermissions
+
+    exec(
+        f"from db.organizations.db.{_org_uuid}.projects.{_project_uuid} import db_session "
+        f"as db_session{_project_uuid}")
+    eval(
+        f"db_session{_project_uuid}.global_init('db/organizations/db/{_org_uuid}/projects/{_project_uuid}/project_db.db')"
+    )
+    session = eval(f"db_session{_project_uuid}.create_session()")
+
+    for permission in permissions:
+        new_permission = RolePermissions(uuid=role_uuid, permission=permission)
+        session.add(new_permission)
+
+    session.commit()
+    session.close()
+
+    return True
+
+
+def delete_permission(organization_uuid, project_uuid, role_uuid, permissions):
+    _org_uuid = f"_{str(organization_uuid).replace('-', '_')}"
+    _project_uuid = f"_{str(project_uuid).replace('-', '_')}"
+
+    RolePermissions = eval(
+        f"importlib.import_module('.role_permissions', package='db.organizations.db.{_org_uuid}.projects.{_project_uuid}')").RolePermissions
+
+    exec(
+        f"from db.organizations.db.{_org_uuid}.projects.{_project_uuid} import db_session "
+        f"as db_session{_project_uuid}")
+    eval(
+        f"db_session{_project_uuid}.global_init('db/organizations/db/{_org_uuid}/projects/{_project_uuid}/project_db.db')"
+    )
+    session = eval(f"db_session{_project_uuid}.create_session()")
+
+    for permission in permissions:
+        permission_to_delete = session.query(RolePermissions).filter(RolePermissions.uuid == role_uuid, RolePermissions.permission == permission).first()   
+        if permission_to_delete:
+            session.delete(permission_to_delete)
+
+    session.commit()
+    session.close()
+
+    return True
 
 '''==========================db functions: project_status=========================='''
 
