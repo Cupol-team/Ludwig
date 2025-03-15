@@ -1839,3 +1839,39 @@ def get_user_profile(user_uuid: uuid.UUID) -> dict:
         return None
     finally:
         session.close()
+
+def get_organization_members(organization_uuid: uuid.UUID) -> list:
+    """
+    Возвращает список пользователей, которые есть в организации.
+    
+    :param organization_uuid: UUID организации
+    :return: Список словарей с информацией о пользователях (uuid, name, second_name)
+    """
+    session = db_session.create_session()
+    
+    try:
+        # Получаем всех членов организации
+        org_members = session.query(OrganizationMember).filter(
+            OrganizationMember.organization_uuid == organization_uuid
+        ).all()
+        
+        members_list = []
+        
+        for member in org_members:
+            # Получаем данные пользователя
+            user_data = session.query(UserData).filter(UserData.uuid == member.user_uuid).first()
+            
+            if user_data:
+                member_info = {
+                    "uuid": str(member.user_uuid),
+                    "name": user_data.name if user_data.name else "",
+                    "second_name": user_data.surname if user_data.surname else ""
+                }
+                members_list.append(member_info)
+        
+        return members_list
+    except Exception as e:
+        logger.error(f"Error getting organization members for organization {organization_uuid}: {str(e)}")
+        return []
+    finally:
+        session.close()

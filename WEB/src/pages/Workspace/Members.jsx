@@ -5,11 +5,14 @@ import { getUserAvatar } from '../../api/profile';
 import Loader from '../../components/Loader';
 import Notification from '../../components/Notification';
 import { ProjectContext } from '../../context/ProjectContext';
+import AddMemberButton from '../../components/AddMemberButton';
 import '../../styles/members.css';
 import '../../styles/memberAvatars.css';
+import '../../styles/Members.css';
 
 function Members() {
   const { orgId, projectUuid } = useParams();
+  const { project } = useContext(ProjectContext);
   const [members, setMembers] = useState([]);
   const [memberAvatars, setMemberAvatars] = useState({});
   const [isLoading, setIsLoading] = useState(true);
@@ -86,34 +89,44 @@ function Members() {
     return roleObj ? roleObj.name : roleUuid;
   };
 
+  const handleMemberAdded = () => {
+    // Перезагружаем список участников после добавления нового
+    fetchMembers();
+  };
+
   if (isLoading) return <Loader />;
   if (error) return <Notification message={error} type="error" />;
   return (
     <div className="members-container">
-      <h2>Участники</h2>
-      <ul className="members-list">
-        {members.map(member => (
-          <li key={member.uuid} className="member-item">
-            <div className="member-avatar">
-              {memberAvatars[member.uuid] ? (
-                <img 
-                  src={memberAvatars[member.uuid]} 
-                  alt={`${member.name} ${member.surname}`} 
-                  className="member-avatar-img"
-                />
-              ) : (
-                member.name.charAt(0)
-              )}
+      <h2>Участники проекта {project?.name}</h2>
+      
+      <AddMemberButton onMemberAdded={handleMemberAdded} />
+      
+      {members.length === 0 ? (
+        <p>В проекте пока нет участников</p>
+      ) : (
+        <div className="members-list">
+          {members.map(member => (
+            <div key={member.uuid} className="member-card">
+              <div className="member-avatar">
+                {memberAvatars[member.uuid] ? (
+                  <img 
+                    src={memberAvatars[member.uuid]} 
+                    alt={`${member.name} ${member.surname}`} 
+                    className="member-avatar-img"
+                  />
+                ) : (
+                  member.name?.charAt(0) || '?'
+                )}
+              </div>
+              <div className="member-info">
+                <h3>{member.name} {member.surname}</h3>
+                {member.role && <span className="member-role">{getRoleName(member.role)}</span>}
+              </div>
             </div>
-            <div className="member-details">
-              <p className="member-name">{member.name} {member.surname}</p>
-              <p className="member-role">
-                Роль: <span className="role-highlight">{getRoleName(member.role)}</span>
-              </p>
-            </div>
-          </li>
-        ))}
-      </ul>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

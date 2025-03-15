@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends
 from schemas import NewOrganizationMember, UserBase
 
 from services.organizations import add_member_to_organization
+from services.organizations.members import get_organization_members_service
 from services import get_current_user
 
 from typing import Annotated
@@ -33,3 +34,21 @@ def add_organization_member_endpoint(organization_uuid: UUID,
     if method_exec: return {
         "items": {"response": 1}
     }
+
+
+@router.get("/get")
+def get_organization_members_endpoint(organization_uuid: UUID,
+                                      current_user: Annotated[UserBase, Depends(get_current_user)],
+                                      ):
+    """
+    Получение списка участников организации
+    """
+    method_exec = get_organization_members_service(organization_uuid=organization_uuid)
+    
+    if method_exec:
+        return {
+            "response": {
+                "items": method_exec
+            }
+        }
+

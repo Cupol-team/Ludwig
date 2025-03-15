@@ -18,4 +18,49 @@ export async function getMembers(orgId, projectUuid, signal) {
     }
     throw error;
   }
+}
+
+/**
+ * Получение всех участников организации.
+ * @param {string} orgId - Идентификатор организации.
+ * @param {AbortSignal} signal - сигнал для отмены запроса.
+ * @returns {Promise<Object[]>} - массив участников организации.
+ */
+export async function getOrganizationMembers(orgId, signal) {
+  try {
+    const { data } = await api.get(`/organizations/${orgId}/members/get`, { signal });
+    return data.response?.items || [];
+  } catch (error) {
+    if (axios.isCancel(error)) {
+      return [];
+    }
+    throw error;
+  }
+}
+
+/**
+ * Добавление участника в проект.
+ * @param {string} orgId - Идентификатор организации.
+ * @param {string} projectUuid - Идентификатор проекта.
+ * @param {string} memberUuid - Идентификатор участника.
+ * @param {AbortSignal} signal - сигнал для отмены запроса.
+ * @returns {Promise<Object>} - результат операции.
+ */
+export async function addMemberToProject(orgId, projectUuid, memberUuid, signal) {
+  try {
+    const { data } = await api.post(
+      `/organizations/${orgId}/project/${projectUuid}/members/add`,
+      { user_uuid: memberUuid },
+      { 
+        signal,
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
+    return data;
+  } catch (error) {
+    if (axios.isCancel(error)) {
+      return null;
+    }
+    throw error;
+  }
 } 
