@@ -1,3 +1,113 @@
+.project-members-container {
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-height: 100vh;
+}
+
+.project-members-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.project-members-header h2 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+.add-member-button {
+    background-color: #8b5cf6;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.add-member-button:hover {
+    background-color: #7a4de0;
+}
+
+.member-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    transition: background-color 0.3s;
+    background-color: #ffffff;
+}
+
+.member-item:hover {
+    background-color: #e9e9e9;
+}
+
+.member-item:last-child {
+    border-bottom: none;
+}
+
+.member-info {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    color: #333;
+}
+
+.member-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 10px;
+}
+
+.member-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.member-role {
+    font-size: 14px;
+    color: #666;
+    background-color: #e0e0e0;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-left: 10px;
+}
+
+.member-actions {
+    display: flex;
+    align-items: center;
+}
+
+.member-action-button {
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: color 0.3s;
+}
+
+.member-action-button:hover {
+    color: #333;
+}
+
 .members-container {
   padding: 20px;
   background-color: #f9f9f9;
@@ -26,32 +136,10 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.member-avatar {
-  background-color: #8b5cf6;
-  color: white;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 18px;
-  margin-right: 10px;
-}
-
-.member-info {
-  flex-grow: 1;
-}
-
 .member-info h3 {
   margin: 0;
   font-size: 16px;
   color: #333;
-}
-
-.member-role {
-  font-size: 14px;
-  color: #666;
 }
 
 .role-highlight {
@@ -60,4 +148,50 @@
   background-color: rgba(74, 144, 226, 0.1);
   padding: 2px 6px;
   border-radius: 4px;
+}
+
+.member-menu-container {
+    position: relative;
+}
+
+.member-menu-button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0 8px;
+    color: #666;
+}
+
+.member-menu-button:hover {
+    color: #8b5cf6;
+}
+
+.member-menu {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background: white;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    min-width: 150px;
+}
+
+.member-menu-option {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 8px 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    color: #333;
+}
+
+.member-menu-option:hover {
+    background-color: #f5f5f5;
+    color: #8b5cf6;
 } 

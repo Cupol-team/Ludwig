@@ -3,16 +3,20 @@ from uuid import UUID
 from typing import Annotated, List
 
 from services import get_current_user
-from services.organizations.projects.members import add_project_member, service_get_project_members
+from services.organizations.projects.member import add_project_member, service_get_project_members
 
 from schemas import UserBase
 from schemas.organizations.projects import AddProjectMember
+
+from .members import projects_member_controller_router
 
 router = APIRouter(
     prefix="/{project_uuid}/members",
     tags=["Projects Members"],
 )
 
+
+router.include_router(projects_member_controller_router)
 
 @router.put("/add")
 def add_organization_member_endpoint(organization_uuid: UUID, project_uuid: UUID,

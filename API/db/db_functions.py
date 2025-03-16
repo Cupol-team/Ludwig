@@ -1875,3 +1875,65 @@ def get_organization_members(organization_uuid: uuid.UUID) -> list:
         return []
     finally:
         session.close()
+
+
+
+#TODO: DELETE PROJECT MEMBER (С УДАЛЕНИЕМ ОТОВСЮДУ)
+
+def update_project_member(organization_uuid: uuid.UUID, project_uuid: uuid.UUID, member_uuid: uuid.UUID, role_uuid: uuid.UUID) -> bool:
+    """
+    Обновляет данные пользователя в проекте (в настоящее время только роль).
+    
+    Args:
+        organization_uuid: UUID организации
+        project_uuid: UUID проекта
+        user_uuid: UUID пользователя, данные которого нужно изменить
+        role: Новая роль пользователя в проекте
+        
+    Returns:
+        bool: True в случае успешного обновления
+        
+    Raises:
+        Exception: Если пользователь не найден в проекте
+    """
+    print(f"Updating project member: org={organization_uuid}, project={project_uuid}, member={member_uuid}, new_role={role_uuid}")
+    
+    try:
+        _org_uuid = f"_{str(organization_uuid).replace('-', '_')}"
+        _project_uuid = f"_{str(project_uuid).replace('-', '_')}"
+        
+        # Импортируем класс User из проекта
+        User = eval(
+            f"importlib.import_module('.user', package='db.organizations.db.{_org_uuid}.projects.{_project_uuid}')").User
+        
+        # Настраиваем сессию для проекта
+        exec(
+            f"from db.organizations.db.{_org_uuid}.projects.{_project_uuid} import db_session "
+            f"as db_session{_project_uuid}")
+        eval(
+            f"db_session{_project_uuid}.global_init('db/organizations/db/{_org_uuid}/projects/{_project_uuid}/project_db.db')")
+        session = eval(f"db_session{_project_uuid}.create_session()")
+        
+        # Находим пользователя в проекте
+        user = session.query(User).filter(User.uuid == member_uuid).first()
+        if not user:
+            print(f"User with UUID {member_uuid} not found in project {project_uuid}")
+            session.close()
+            raise Exception(f"User with UUID {member_uuid} not found in project {project_uuid}")
+        
+        print(f"Found user in project, current role: {user.role}, updating to: {role_uuid}")
+        
+        # Обновляем роль пользователя
+        user.role = role_uuid
+        
+        session.commit()
+        print(f"Successfully updated role for user {member_uuid} in project {project_uuid}")
+        
+        return True
+    except Exception as e:
+        print(f"Error updating project member: {str(e)}")
+        raise
+    finally:
+        if 'session' in locals():
+            session.close()
+            print("Database session closed")

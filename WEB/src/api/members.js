@@ -63,4 +63,22 @@ export async function addMemberToProject(orgId, projectUuid, memberUuid, signal)
     }
     throw error;
   }
+}
+
+// Добавляем функцию для обновления роли участника проекта
+export async function updateMemberRole(organizationUuid, projectUuid, memberUuid, roleUuid, signal) {
+  try {
+    const { data } = await api.put(
+      `/organizations/${organizationUuid}/project/${projectUuid}/members/${memberUuid}/edit`,
+      {}, // Пустое тело запроса
+      {
+        signal,
+        params: { role_uuid: roleUuid }, // Передаем role_uuid как query-параметр
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
+    return data;
+  } catch (error) {
+    throw error;
+  }
 } 
