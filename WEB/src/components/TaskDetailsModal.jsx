@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useContext } from 'react';
 import { useParams } from 'react-router-dom';
+import AsyncSelect from 'react-select/async';
 import '../styles/TaskDetailsModal.css';
 import { getTaskDetail, editTask } from '../api/tasks';
 import axios from 'axios';
@@ -18,6 +19,30 @@ const TaskDetailsModal = ({ taskUuid, onClose }) => {
   const [editFormData, setEditFormData] = useState(null);
   const [updating, setUpdating] = useState(false);
   const [previewMarkdown, setPreviewMarkdown] = useState(false);
+
+  // Функция для фильтрации участников (для AsyncSelect)
+  const filterMembers = (inputValue) => {
+    return members
+      .filter(member => {
+        const fullName = `${member.name} ${member.surname || ''}`.toLowerCase();
+        return fullName.includes(inputValue.toLowerCase()) ||
+               (member.email && member.email.toLowerCase().includes(inputValue.toLowerCase()));
+      })
+      .map(member => ({
+        value: member.uuid,
+        label: member.surname 
+          ? `${member.name} ${member.surname}${member.email ? ` (${member.email})` : ''}` 
+          : `${member.name}${member.email ? ` (${member.email})` : ''}`
+      }));
+  };
+
+  // Асинхронное получение опций для поиска участников
+  const promiseOptions = (inputValue) =>
+    new Promise(resolve => {
+      setTimeout(() => {
+        resolve(filterMembers(inputValue));
+      }, 500);
+    });
 
   useEffect(() => {
     const controller = new AbortController();
@@ -50,7 +75,6 @@ const TaskDetailsModal = ({ taskUuid, onClose }) => {
     e.preventDefault();
     setUpdating(true);
     try {
-      // Формируем payload, отправляя только те поля, которые изменились
       let payload = {};
       if (editFormData.name !== taskDetail.name) {
          payload.name = editFormData.name;
@@ -75,7 +99,6 @@ const TaskDetailsModal = ({ taskUuid, onClose }) => {
       if (JSON.stringify(editFormData.executors) !== JSON.stringify(taskDetail.executors)) {
          payload.executors = editFormData.executors;
       }
-      // Если никаких изменений нет, можно не отправлять запрос (опционально)
       const updatedData = await editTask(orgId, projectUuid, taskUuid, payload);
       const foundType = taskTypes.find((t) => t.uuid === updatedData.response.type);
       const foundStatus = taskStatuses.find((s) => s.uuid === updatedData.response.status);
@@ -236,22 +259,44 @@ const TaskDetailsModal = ({ taskUuid, onClose }) => {
                 </div>
                 <div className="section">
                   <h3>Executors</h3>
-                  <select
-                    multiple
-                    value={editFormData?.executors || []}
-                    onChange={(e) =>
+                  <AsyncSelect
+                    isMulti
+                    cacheOptions
+                    defaultOptions
+                    loadOptions={promiseOptions}
+                    onChange={(selectedOptions) => {
                       setEditFormData({
                         ...editFormData,
-                        executors: Array.from(e.target.selectedOptions, option => option.value),
-                      })
+                        executors: selectedOptions ? selectedOptions.map(option => option.value) : []
+                      });
+                    }}
+                    value={
+                      editFormData?.executors
+                        ? members
+                            .filter(member => editFormData.executors.includes(member.uuid))
+                            .map(member => ({
+                              value: member.uuid,
+                              label: member.surname 
+                                ? `${member.name} ${member.surname}${member.email ? ` (${member.email})` : ''}`
+                                : `${member.name}${member.email ? ` (${member.email})` : ''}`
+                            }))
+                        : []
                     }
-                  >
-                    {members && members.map((member) => (
-                      <option key={member.uuid} value={member.uuid}>
-                        {member.name}
-                      </option>
-                    ))}
-                  </select>
+                    placeholder="Поиск исполнителей..."
+                    styles={{
+                      control: (provided) => ({
+                        ...provided,
+                        backgroundColor: 'white'
+                      }),
+                      option: (provided, state) => ({
+                        ...provided,
+                        color: 'black',
+                        backgroundColor: state.isFocused ? '#eee' : 'white'
+                      }),
+                    }}
+                    noOptionsMessage={() => 'Ничего не найдено'}
+                    loadingMessage={() => 'загрузка...'}
+                  />
                 </div>
                 <div className="section form-buttons">
                   <button type="button" onClick={() => setEditMode(false)}>

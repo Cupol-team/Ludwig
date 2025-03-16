@@ -1,4 +1,4 @@
-.task-creation-modal-overlay {
+.modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -11,7 +11,7 @@
   z-index: 1100;
 }
 
-.task-creation-modal-content {
+.task-creation-modal {
   background: #fff;
   padding: 20px;
   border-radius: 8px;
@@ -81,4 +81,42 @@
 .task-creation-modal-content textarea {
   resize: none;
   height: 100px;
-} 
+}
+
+.task-creation-modal input,
+.task-creation-modal textarea,
+.task-creation-modal select {
+  color: #333;
+  background-color: #fff;
+}
+
+.task-creation-modal label {
+  color: #333;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.create-task-container {
+  background-color: #fff;
+  padding: 20px;
+  border: 1px solid #ddd;
+}
+
+.task-input {
+  width: 100%;
+  height: 100px;
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.markdown-preview {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #f9f9f9; /* светлый фон для предосмотра */
+  color: #333; /* тёмный цвет текста */
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  word-break: break-all;
+}
