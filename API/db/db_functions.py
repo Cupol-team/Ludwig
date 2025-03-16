@@ -36,6 +36,7 @@ from .base.db_session import global_init, SqlAlchemyBase, create_session
 
 import uuid
 
+from sqlalchemy import text
 import sqlalchemy as sa
 import sqlalchemy.orm as orm
 
@@ -1937,3 +1938,108 @@ def update_project_member(organization_uuid: uuid.UUID, project_uuid: uuid.UUID,
         if 'session' in locals():
             session.close()
             print("Database session closed")
+
+def update_project_data(organization_uuid, project_uuid, name=None, description=None):
+    """
+    Обновляет данные проекта (имя и/или описание).
+    
+    Args:
+        organization_uuid: UUID организации
+        project_uuid: UUID проекта
+        name: Новое имя проекта (опционально)
+        description: Новое описание проекта (опционально)
+        
+    Returns:
+        bool: True в случае успешного обновления
+        
+    Raises:
+        Exception: Если проект не найден
+    """
+    print(f"Updating project data: org={organization_uuid}, project={project_uuid}, name={name}, description={description}")
+    
+    try:
+        _org_uuid = f"_{str(organization_uuid).replace('-', '_')}"
+        _project_uuid = f"_{str(project_uuid).replace('-', '_')}"
+        
+        # Импортируем класс Project из проекта
+        Project = eval(
+            f"importlib.import_module('.project', package='db.organizations.db.{_org_uuid}.projects.{_project_uuid}')").Project
+        
+        # Настраиваем сессию для проекта
+        exec(
+            f"from db.organizations.db.{_org_uuid}.projects.{_project_uuid} import db_session "
+            f"as db_session{_project_uuid}")
+        eval(
+            f"db_session{_project_uuid}.global_init('db/organizations/db/{_org_uuid}/projects/{_project_uuid}/project_db.db')")
+        session = eval(f"db_session{_project_uuid}.create_session()")
+        
+        # Находим проект
+        project = session.query(Project).filter(Project.uuid == project_uuid).first()
+        if not project:
+            print(f"Project with UUID {project_uuid} not found")
+            session.close()
+            raise Exception(f"Project with UUID {project_uuid} not found")
+        
+        # Обновляем данные проекта
+        if name is not None:
+            project.name = name
+        if description is not None:
+            project.description = description
+        
+        session.commit()
+        print(f"Successfully updated project {project_uuid} data")
+        
+        return True
+    except Exception as e:
+        print(f"Error updating project data: {str(e)}")
+        raise
+    finally:
+        if 'session' in locals():
+            session.close()
+            print("Database session closed")
+
+def delete_project(organization_uuid, project_uuid):
+    """
+    Удаляет проект полностью из системы.
+    
+    Args:
+        organization_uuid: UUID организации
+        project_uuid: UUID проекта
+        
+    Returns:
+        bool: True в случае успешного удаления
+        
+    Raises:
+        Exception: Если проект не найден или возникла ошибка при удалении
+    """
+    print(f"Deleting project: org={organization_uuid}, project={project_uuid}")
+    
+    try:
+        _org_uuid = f"_{str(organization_uuid).replace('-', '_')}"
+        _project_uuid = f"_{str(project_uuid).replace('-', '_')}"
+        
+        exec(
+            f"from db.organizations.db.{_org_uuid}.projects.{_project_uuid} import db_session as db_session{_org_uuid}")
+        eval(
+            f"db_session{_org_uuid}.global_init('db/organizations/db/{_org_uuid}/organization_db.db')")
+        org_session = eval(f"db_session{_org_uuid}.create_session()")
+        
+        # Удаляем запись о проекте из базы данных организации
+        org_session.execute(text(f"DELETE FROM projects WHERE uuid = '{project_uuid}'"))
+        org_session.commit()
+        
+        # Удаляем директорию проекта
+        project_path = f"db/organizations/db/{_org_uuid}/projects/{_project_uuid}"
+        if os.path.exists(project_path):
+            shutil.rmtree(project_path)
+            print(f"Project directory {project_path} removed")
+        
+        print(f"Successfully deleted project {project_uuid}")
+        return True
+    except Exception as e:
+        print(f"Error deleting project: {str(e)}")
+        raise
+    finally:
+        if 'org_session' in locals():
+            org_session.close()
+            print("Organization database session closed")
