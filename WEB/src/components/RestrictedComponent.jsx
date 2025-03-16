@@ -7,7 +7,6 @@ const RestrictedComponent = ({ children, permissions }) => {
     const { roles } = useContext(ProjectContext);
     const { orgId, projectUuid } = useParams();
     const [hasPermission, setHasPermission] = useState(false);
-    console.log('roles', roles);
     useEffect(() => {
         const checkPermissions = async () => {
             const controller = new AbortController();
