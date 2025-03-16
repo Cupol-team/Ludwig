@@ -59,7 +59,7 @@ export async function getAllPermissions(orgId, projectUuid, roleUuids, signal) {
     const permissionsSet = new Set();
     try {
         for (const roleUuid of roleUuids) {
-            const { data } = await api.get(`/organizations/${orgId}/projects/${projectUuid}/role/${roleUuid}/get_permissions`, { signal });
+            const { data } = await api.get(`/organizations/${orgId}/project/${projectUuid}/role/${roleUuid}/get_permissions/`, { signal });
             const permissions = data.permissions || [];
             permissions.forEach(permission => permissionsSet.add(permission));
         }
@@ -67,6 +67,7 @@ export async function getAllPermissions(orgId, projectUuid, roleUuids, signal) {
         if (axios.isCancel(error)) {
             return [];
         }
+        console.error('Error fetching permissions:', error);
         throw error;
     }
 
