@@ -5,7 +5,22 @@ import { getTaskTypes } from '../api/taskTypes';
 import { getTaskStatuses } from '../api/taskStatuses';
 import { getMembers } from '../api/members';
 
-export const ProjectContext = createContext();
+export const ProjectContext = createContext({
+  members: [],
+  taskTypes: [],
+  taskStatuses: [],
+  roles: [],
+  projectName: '',
+  projectDescription: '',
+  setProjectName: () => {},
+  setProjectDescription: () => {},
+  loadingRoles: true,
+  rolesError: null,
+  loadingTaskTypes: true,
+  taskTypesError: null,
+  loadingTaskStatuses: true,
+  taskStatusesError: null,
+});
 
 export function ProjectProvider({ children }) {
   const { orgId, projectUuid } = useParams();
@@ -24,6 +39,8 @@ export function ProjectProvider({ children }) {
   const [taskStatusesError, setTaskStatusesError] = useState(null);
 
   const [members, setMembers] = useState([]);
+  const [projectName, setProjectName] = useState('');
+  const [projectDescription, setProjectDescription] = useState('');
 
   useEffect(() => {
     const controller = new AbortController();
@@ -103,6 +120,14 @@ export function ProjectProvider({ children }) {
         loadingTaskStatuses,
         taskStatusesError,
         members,
+        setMembers,
+        setTaskTypes,
+        setTaskStatuses,
+        setRoles,
+        projectName,
+        setProjectName,
+        projectDescription,
+        setProjectDescription,
       }}
     >
       {children}

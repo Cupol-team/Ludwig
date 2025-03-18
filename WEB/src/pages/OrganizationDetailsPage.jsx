@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import React, { useEffect, useState, useRef, useCallback, useContext } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { getProjects } from '../api/projects';
 import { getUserAvatar } from '../api/profile';
 import Loader from '../components/Loader';
@@ -8,6 +8,7 @@ import axios from 'axios';
 import EntityCard from '../components/EntityCard';
 import CreateEntityButton from '../components/CreateEntityButton';
 import '../styles/organization-details.css';
+import { ProjectContext } from '../context/ProjectContext';
 
 const OrganizationDetailsPage = () => {
     const { orgId } = useParams();
@@ -16,6 +17,8 @@ const OrganizationDetailsPage = () => {
     const [error, setError] = useState(null);
     const [avatars, setAvatars] = useState({});
     const controllerRef = useRef(null);
+    const { setProjectName, setProjectDescription } = useContext(ProjectContext);
+    const navigate = useNavigate();
 
     const fetchProjects = useCallback(async () => {
         controllerRef.current = new AbortController();
@@ -89,6 +92,16 @@ const OrganizationDetailsPage = () => {
         }
     }, [projects, loadProjectAvatars]);
 
+    // Функция для перехода к проекту с сохранением данных в контексте
+    const navigateToProject = (project) => {
+        // Сохраняем имя и описание проекта в контексте
+        setProjectName(project.name);
+        setProjectDescription(project.description || '');
+        
+        // Переходим на страницу проекта
+        navigate(`/organizations/${orgId}/project/${project.uuid}/workspace`);
+    };
+
     if (isLoading) return <Loader />;
 
     if (error) {
@@ -126,7 +139,11 @@ const OrganizationDetailsPage = () => {
                             description={project.description || "Тестовое описание проекта"}
                             avatarUrl={avatars[project.uuid] && avatars[project.uuid] !== '/default-avatar.png' ? avatars[project.uuid] : null}
                             initial={getProjectInitial(project.name)}
-                            linkTo={`/organizations/${orgId}/project/${project.uuid}/workspace`}
+                            linkTo="#"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                navigateToProject(project);
+                            }}
                         />
                     ))}
                 </div>

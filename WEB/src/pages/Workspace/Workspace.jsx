@@ -1,10 +1,19 @@
 import { NavLink, Outlet, useParams } from "react-router-dom";
-import { ProjectProvider } from "../../context/ProjectContext";
+import { ProjectProvider, ProjectContext } from "../../context/ProjectContext";
 import "./Workspace.css";
+import { useContext, useEffect } from "react";
 
 function Workspace() {
   const { orgId, projectUuid } = useParams();
   const baseUrl = `/organizations/${orgId}/project/${projectUuid}/workspace`;
+  const { projectName, projectDescription } = useContext(ProjectContext);
+  
+  useEffect(() => {
+    if (!projectName && projectUuid) {
+      // Здесь можно добавить код для загрузки данных проекта, если они не были переданы через контекст
+      // Например, запрос к API для получения деталей проекта
+    }
+  }, [projectName, projectUuid]);
 
   return (
     <div className="workspace-container">

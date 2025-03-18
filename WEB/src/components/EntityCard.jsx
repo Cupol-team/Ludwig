@@ -2,9 +2,15 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/entity-card.css';
 
-const EntityCard = ({ title, description, avatarUrl, initial, linkTo, role, extraContent }) => {
+const EntityCard = ({ title, description, avatarUrl, initial, linkTo, role, extraContent, onClick }) => {
+    // Если есть onClick, используем div вместо Link
+    const CardComponent = onClick ? 'div' : Link;
+    const cardProps = onClick 
+        ? { className: "entity-card", onClick } 
+        : { to: linkTo, className: "entity-card" };
+
     return (
-        <Link to={linkTo} className="entity-card">
+        <CardComponent {...cardProps}>
             <div className="entity-card-header">
                 {avatarUrl ? (
                     <img src={avatarUrl} alt={title} className="entity-avatar" />
@@ -20,7 +26,7 @@ const EntityCard = ({ title, description, avatarUrl, initial, linkTo, role, extr
             </div>
             <p className="entity-description">{description}</p>
             {extraContent && <div className="entity-extra">{extraContent}</div>}
-        </Link>
+        </CardComponent>
     );
 };
 
