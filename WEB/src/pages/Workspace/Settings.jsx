@@ -11,6 +11,9 @@ const Settings = () => {
       <h2 className="settings-header">Настройки проекта</h2>
       <div className="settings-container">
         <div className="sidebar">
+          <NavLink className="sidebar-item" to={`${baseSettingsUrl}/general`}>
+            Общие
+          </NavLink>
           <NavLink className="sidebar-item" to={`${baseSettingsUrl}/roles`}>
             Роли
           </NavLink>

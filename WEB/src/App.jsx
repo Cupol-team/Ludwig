@@ -9,6 +9,7 @@ import GlobalStyle from "./styles/GlobalStyles";
 import ProfilePage from './pages/ProfilePage';
 import Header from './components/Header';
 import Settings from "./pages/Workspace/Settings";
+import GeneralSettings from "./pages/Workspace/Settings/General";
 
 // Новый контейнер для центрирования окна входа
 const CenteredContainer = styled.div`
@@ -114,6 +115,7 @@ const App = () => {
                             <Route path="task-types" element={<TaskTypes />} />
                             <Route path="task-statuses" element={<TaskStatuses />} />
                             <Route path="members" element={<Members />} />
+                            <Route path="general" element={<GeneralSettings />} />
                             <Route index element={<Roles />} />
                         </Route>
                         <Route path="files" element={<FileSharing />} />
