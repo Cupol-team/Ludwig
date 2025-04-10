@@ -1,4 +1,4 @@
-from db import new_project_member, get_project_members, is_project_accessible_in_org
+from db import new_project_member, get_project_members, is_user_in_organization
 
 from fastapi import HTTPException
 
@@ -9,8 +9,8 @@ from uuid import UUID
 
 def add_project_member(organization_uuid: UUID, project_uuid: UUID, user_uuid: UUID, role_uuid: UUID) -> Union[bool, None]:
 
-    # Проверка, существует ли проект в организации
-    if not is_project_accessible_in_org(organization_uuid, project_uuid, user_uuid):
+    # Проверка, есть ли пользователь в организации
+    if not is_user_in_organization(organization_uuid, user_uuid):
         raise HTTPException(status_code=403, detail="Access denied")
 
     method_exec = new_project_member(organization_uuid=organization_uuid, project_uuid=project_uuid,

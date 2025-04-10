@@ -8,37 +8,106 @@
 
 .settings-container {
   display: flex;
-  height: calc(100% - 40px); /* Регулируем высоту, если нужно */
+  gap: 24px;
+  margin-top: 24px;
 }
 
 .sidebar {
-  width: 250px;
-  border-right: 1px solid #ccc;
-  padding: 20px;
-  box-sizing: border-box;
+  width: 200px;
+  border-right: 1px solid #8B5CF6;
+  padding-right: 16px;
 }
 
 .sidebar-item {
   display: block;
-  padding: 10px 15px;
-  margin-bottom: 10px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  color: #fff;
   text-decoration: none;
-  color: #333;
   border-radius: 4px;
-  transition: background 0.3s;
-}
-
-.sidebar-item.active {
-  background-color: #e0e0e0;
-  font-weight: bold;
+  transition: all 0.2s ease;
 }
 
 .sidebar-item:hover {
-  background-color: #f0f0f0;
+  background: rgba(139, 92, 246, 0.1);
+}
+
+.sidebar-item.active {
+  background: #8B5CF6;
+  color: white;
 }
 
 .settings-content {
   flex: 1;
-  padding: 20px;
-  box-sizing: border-box;
+  padding: 16px;
+  background: #1c1c1c;
+  border-radius: 8px;
+}
+
+.settings-section {
+  padding: 24px;
+}
+
+.settings-section h2 {
+  color: #8B5CF6;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #8B5CF6;
+}
+
+.settings-section .form-group {
+  margin-bottom: 16px;
+}
+
+.settings-section label {
+  display: block;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.settings-section input,
+.settings-section textarea,
+.settings-section select {
+  width: 100%;
+  max-width: 400px;
+  padding: 8px;
+  border: 1px solid #8B5CF6;
+  border-radius: 4px;
+  background: transparent;
+  color: #fff;
+}
+
+.settings-section button {
+  background: #8B5CF6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.settings-section button:hover {
+  background: #7C3AED;
+}
+
+.settings-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.settings-list-item {
+  padding: 12px;
+  margin-bottom: 8px;
+  background: #2c2c2c;
+  border-radius: 4px;
+}
+
+.settings-modal {
+  background: #1c1c1c;
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 500px;
+  margin: 0 auto;
 } 

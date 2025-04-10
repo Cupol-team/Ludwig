@@ -12,7 +12,8 @@ const AddMemberButton = ({ onMemberAdded }) => {
   const [error, setError] = useState(null);
   const [organizationMembers, setOrganizationMembers] = useState([]);
   const [selectedMember, setSelectedMember] = useState('');
-  const { members } = useContext(ProjectContext);
+  const [selectedRole, setSelectedRole] = useState('');
+  const { members, roles } = useContext(ProjectContext);
 
   // Загрузка участников организации при открытии модального окна
   useEffect(() => {
@@ -49,13 +50,19 @@ const AddMemberButton = ({ onMemberAdded }) => {
       return;
     }
     
+    if (!selectedRole) {
+      setError('Выберите роль для участника');
+      return;
+    }
+    
     setLoading(true);
     setError(null);
     
     try {
-      await addMemberToProject(orgId, projectUuid, selectedMember);
+      await addMemberToProject(orgId, projectUuid, selectedMember, selectedRole);
       setOpen(false);
       setSelectedMember('');
+      setSelectedRole('');
       if (onMemberAdded) onMemberAdded();
     } catch (err) {
       console.error('Error adding member to project:', err);
@@ -108,11 +115,30 @@ const AddMemberButton = ({ onMemberAdded }) => {
                   ))}
                 </select>
               </div>
+
+              <div className="form-group">
+                <label htmlFor="role-select">Выберите роль</label>
+                <select
+                  id="role-select"
+                  value={selectedRole}
+                  onChange={(e) => setSelectedRole(e.target.value)}
+                  disabled={loading || !roles || roles.length === 0}
+                >
+                  <option value="">
+                    {roles && roles.length > 0 ? 'Выберите роль' : 'Роли отсутствуют'}
+                  </option>
+                  {roles && roles.map((role) => (
+                    <option key={role.uuid} value={role.uuid}>
+                      {role.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
               
               <button 
                 type="submit" 
                 className="submit-button"
-                disabled={loading || !selectedMember}
+                disabled={loading || !selectedMember || !selectedRole}
               >
                 {loading ? 'Добавление...' : 'Добавить'}
               </button>

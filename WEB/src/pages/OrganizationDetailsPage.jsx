@@ -92,13 +92,10 @@ const OrganizationDetailsPage = () => {
         }
     }, [projects, loadProjectAvatars]);
 
-    // Функция для перехода к проекту с сохранением данных в контексте
     const navigateToProject = (project) => {
-        // Сохраняем имя и описание проекта в контексте
         setProjectName(project.name);
         setProjectDescription(project.description || '');
         
-        // Переходим на страницу проекта
         navigate(`/organizations/${orgId}/project/${project.uuid}/workspace`);
     };
 

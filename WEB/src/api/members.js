@@ -43,14 +43,15 @@ export async function getOrganizationMembers(orgId, signal) {
  * @param {string} orgId - Идентификатор организации.
  * @param {string} projectUuid - Идентификатор проекта.
  * @param {string} memberUuid - Идентификатор участника.
+ * @param {string} roleUuid - Идентификатор роли участника.
  * @param {AbortSignal} signal - сигнал для отмены запроса.
  * @returns {Promise<Object>} - результат операции.
  */
-export async function addMemberToProject(orgId, projectUuid, memberUuid, signal) {
+export async function addMemberToProject(orgId, projectUuid, memberUuid, roleUuid, signal) {
   try {
     const { data } = await api.post(
       `/organizations/${orgId}/project/${projectUuid}/members/add`,
-      { user_uuid: memberUuid },
+      { user_uuid: memberUuid, role_uuid: roleUuid },
       { 
         signal,
         headers: { 'Content-Type': 'application/json' }

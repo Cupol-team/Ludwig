@@ -12,74 +12,92 @@
 /* Основной контейнер */
 .roles-container {
   padding: 24px;
-  background-color: var(--background-color);
+  background: #1c1c1c;
   min-height: calc(100vh - 60px);
   font-family: 'Roboto', sans-serif;
-  color: var(--text-color);
+  color: #fff;
 }
 
 /* Заголовок */
 .roles-container h2 {
-  font-size: 28px;
+  font-size: 24px;
   margin-bottom: 20px;
-  text-align: center;
+  color: #8B5CF6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #8B5CF6;
+  padding-bottom: 10px;
 }
 
 /* Кнопка создания роли */
 .create-role-btn {
-  display: block;
-  margin: 0 auto 20px auto;
-  background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
-  color: #fff;
+  background: #8B5CF6;
+  color: white;
   border: none;
-  padding: 14px 28px;
-  border-radius: 50px;
-  font-size: 18px;
-  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease;
-  box-shadow: var(--box-shadow);
+  transition: background 0.2s ease;
+  margin-bottom: 16px;
 }
 
 .create-role-btn:hover {
-  background: linear-gradient(135deg, var(--primary-hover), var(--primary-color));
-  transform: translateY(-3px);
-}
-
-.create-role-btn:active {
-  background: var(--primary-active);
-  transform: translateY(1px);
+  background: #7C3AED;
 }
 
 /* Список ролей */
 .roles-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .role-item {
-  background: #fff;
-  padding: 16px;
-  margin-bottom: 12px;
-  border-radius: 8px;
-  box-shadow: var(--box-shadow);
-  transition: transform 0.2s;
+  padding: 20px;
+  background: #2c2c2c;
+  border-radius: 12px;
+  border: 1px solid #8B5CF6;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  transition: transform 0.2s ease;
 }
 
 .role-item:hover {
   transform: translateY(-2px);
 }
 
-.role-name {
-  font-size: 20px;
+.role-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  background: #8B5CF6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: white;
   font-weight: bold;
-  margin-bottom: 6px;
+}
+
+.role-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.role-name {
+  color: #8B5CF6;
+  font-size: 20px;
+  font-weight: 600;
 }
 
 .role-description {
+  color: #999;
   font-size: 16px;
-  color: #666;
+  line-height: 1.5;
 }
 
 /* Модальное окно */

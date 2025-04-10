@@ -1,7 +1,17 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import '../../../styles/General.css';
+import { ProjectContext } from '../../../context/ProjectContext';
+import { useParams } from 'react-router-dom';
 
 function GeneralSettings() {
+  const { projectName, projectDescription, setProjectName, setProjectDescription } = useContext(ProjectContext);
+  const { projectUuid, orgId } = useParams();
+
+  useEffect(() => {
+    if (!projectName || projectName === '') {
+    }
+  }, [projectName, projectUuid, orgId, setProjectName, setProjectDescription]);
+
   return (
     <div className="general-container">
       <h2 className="general-header">Основные настройки</h2>
@@ -13,6 +23,8 @@ function GeneralSettings() {
             type="text"
             placeholder="Введите название проекта"
             className="project-input"
+            value={projectName || 'Загрузка...'}
+            disabled
           />
 
           <div className="project-description">
@@ -20,6 +32,9 @@ function GeneralSettings() {
             <textarea
               placeholder="Введите описание проекта"
               className="project-textarea"
+              value={projectDescription || ''}
+              disabled
+              rows={4}
             />
           </div>
         </div>

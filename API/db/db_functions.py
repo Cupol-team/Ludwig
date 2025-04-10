@@ -1665,6 +1665,8 @@ def is_project_accessible_in_org(organization_uuid: uuid.UUID, project_uuid: uui
     return False
 
 
+
+
 ### ПРОВЕРКА НАХОЖДЕНИЯ ПОЛЬЗОВАТЕЛЯ В ОРГАНИЗАЦИИ
 def is_user_in_organization(organization_uuid: uuid.UUID, user_uuid: uuid.UUID) -> bool:
     """

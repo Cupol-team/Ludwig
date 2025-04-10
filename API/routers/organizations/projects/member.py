@@ -18,7 +18,7 @@ router = APIRouter(
 
 router.include_router(projects_member_controller_router)
 
-@router.put("/add")
+@router.post("/add")
 def add_organization_member_endpoint(organization_uuid: UUID, project_uuid: UUID,
                                      current_user: Annotated[UserBase, Depends(get_current_user)],
                                      member_data: AddProjectMember):
