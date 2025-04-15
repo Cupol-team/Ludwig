@@ -7,14 +7,14 @@ import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
 import SortableTask from './SortableTask';
 
 // Убираем обработку нативного drag & drop
-const TaskColumn = ({ status, tasks }) => {
+const TaskColumn = ({ status, tasks, avatars }) => {
   // Делаем колонку droppable-областью с id равным статусу и передаём data для идентификации
   const { setNodeRef } = useDroppable({ id: status.uuid, data: { container: status.uuid } });
 
   return (
     <div className="kanban-column">
       <h3 className="kanban-column-header">
-          {status.name} <span className="task-count">({tasks.length})</span>
+        {status.name} <span className="task-count">({tasks.length})</span>
       </h3>
       <div ref={setNodeRef} className="kanban-column-content">
         {tasks.length > 0 ? (
@@ -23,7 +23,12 @@ const TaskColumn = ({ status, tasks }) => {
             strategy={rectSortingStrategy}
           >
             {tasks.map((task) => (
-              <SortableTask key={task.id} task={task} containerId={status.uuid} />
+              <SortableTask 
+                key={task.id} 
+                task={task} 
+                containerId={status.uuid}
+                avatars={avatars}
+              />
             ))}
           </SortableContext>
         ) : (
@@ -39,14 +44,8 @@ TaskColumn.propTypes = {
     uuid: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
   }).isRequired,
-  tasks: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-      title: PropTypes.string.isRequired,
-      description: PropTypes.string,
-      status: PropTypes.string.isRequired,
-    })
-  ).isRequired,
+  tasks: PropTypes.array.isRequired,
+  avatars: PropTypes.object.isRequired,
 };
 
 export default TaskColumn; 

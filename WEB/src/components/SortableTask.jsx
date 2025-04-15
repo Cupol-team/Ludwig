@@ -5,7 +5,7 @@ import '../styles/TaskCard.css';
 import { ProjectContext } from '../context/ProjectContext';
 import PriorityIcon from './PriorityIcon';
 
-const SortableTask = ({ task, containerId }) => {
+const SortableTask = ({ task, containerId, avatars }) => {
   const { taskTypes } = useContext(ProjectContext);
   const taskTypeObj = taskTypes ? taskTypes.find(t => t.uuid === task.type) : null;
   const taskTypeName = taskTypeObj ? taskTypeObj.name : task.type;
@@ -58,15 +58,21 @@ const SortableTask = ({ task, containerId }) => {
           </span>
         </div>
         { task.executors && task.executors.length > 0 && (
-          <div className="footer-right">
-            <div className="task-card-avatars">
-              { task.executors.slice(0, 2).map((executor, idx) => (
-                <img key={idx} className="executor-avatar" src="/favicon.png" alt="Avatar" />
-              ))}
-              { task.executors.length > 2 && (
-                <div className="more-executors">+{task.executors.length - 2}</div>
-              )}
-            </div>
+          <div className="task-card-avatars">
+            {task.executors.slice(0, 2).map((executorId, index) => (
+              <div key={index} className="executor-avatar">
+                {avatars[executorId] ? (
+                  <img src={avatars[executorId]} alt="Executor Avatar" />
+                ) : (
+                  <div className="avatar-placeholder">
+                    {executorId ? executorId.charAt(0) : '?'}
+                  </div>
+                )}
+              </div>
+            ))}
+            {task.executors.length > 2 && (
+              <div className="more-executors">+{task.executors.length - 2}</div>
+            )}
           </div>
         )}
       </div>

@@ -8,6 +8,7 @@ import { ProjectContext } from '../../context/ProjectContext';
 import TaskDetailsModal from '../../components/TaskDetailsModal';
 import CreateTaskButton from '../../components/CreateTaskButton';
 import Loader from '../../components/Loader';
+import { getUserAvatar } from '../../api/profile';
 
 const Tasks = () => {
   const { orgId, projectUuid } = useParams();
@@ -16,6 +17,7 @@ const Tasks = () => {
   const [error, setError] = useState(null);
   const { taskTypes, taskStatuses } = useContext(ProjectContext);
   const [selectedTaskUuid, setSelectedTaskUuid] = useState(null);
+  const [avatars, setAvatars] = useState({});
 
   useEffect(() => {
     const controller = new AbortController();
@@ -24,6 +26,7 @@ const Tasks = () => {
       .then((data) => {
         if (data && data.response && data.response.items) {
           setTasks(data.response.items);
+          loadAvatars(data.response.items);
         } else {
           setTasks([]);
         }
@@ -40,8 +43,37 @@ const Tasks = () => {
     return () => controller.abort();
   }, [orgId, projectUuid]);
 
+  const loadAvatars = (tasks) => {
+    const avatarPromises = [];
+    const avatarMap = {};
+
+    tasks.forEach(task => {
+      if (task.executors && task.executors.length > 0) {
+        task.executors.forEach(executorId => {
+          if (!avatarMap[executorId]) {
+            avatarPromises.push(
+              getUserAvatar(executorId)
+                .then(url => {
+                  avatarMap[executorId] = url !== '/default-avatar.png' ? url : null;
+                })
+                .catch(error => {
+                  console.error(`Failed to load avatar for executor ${executorId}:`, error);
+                  avatarMap[executorId] = null;
+                })
+            );
+          }
+        });
+      }
+    });
+
+    Promise.all(avatarPromises).then(() => {
+      setAvatars(avatarMap);
+    });
+  };
+
   const handleTaskCreated = (newTask) => {
     setTasks((prevTasks) => [...prevTasks, newTask]);
+    loadAvatars([newTask]);
   };
 
   if (loading) return <Loader />;
@@ -70,6 +102,7 @@ const Tasks = () => {
               <TaskItem
                 key={task.uuid || index}
                 task={completeTask}
+                avatars={avatars}
                 onClick={(uuid) => setSelectedTaskUuid(uuid)}
               />
             );
@@ -89,6 +122,7 @@ const Tasks = () => {
         <TaskDetailsModal
           taskUuid={selectedTaskUuid}
           onClose={() => setSelectedTaskUuid(null)}
+          avatars={avatars}
         />
       )}
     </div>

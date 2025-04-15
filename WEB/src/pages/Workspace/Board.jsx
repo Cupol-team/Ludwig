@@ -10,6 +10,7 @@ import Loader from '../../components/Loader';
 import '../../styles/KanbanBoard.css'; // Добавьте стили для канбан доски по необходимости
 import SortableTask from '../../components/SortableTask';
 import Notification from '../../components/Notification';
+import { getUserAvatar } from '../../api/profile';
 
 const Board = () => {
     const { orgId, projectUuid } = useParams();
@@ -18,21 +19,49 @@ const Board = () => {
     const [statuses, setStatuses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeId, setActiveId] = useState(null);
+    const [avatars, setAvatars] = useState({});
+
+    const loadAvatars = (tasks) => {
+        const avatarPromises = [];
+        const avatarMap = {};
+
+        tasks.forEach(task => {
+            if (task.executors && task.executors.length > 0) {
+                task.executors.forEach(executorId => {
+                    if (!avatarMap[executorId]) {
+                        avatarPromises.push(
+                            getUserAvatar(executorId)
+                                .then(url => {
+                                    avatarMap[executorId] = url !== '/default-avatar.png' ? url : null;
+                                })
+                                .catch(error => {
+                                    console.error(`Failed to load avatar for executor ${executorId}:`, error);
+                                    avatarMap[executorId] = null;
+                                })
+                        );
+                    }
+                });
+            }
+        });
+
+        Promise.all(avatarPromises).then(() => {
+            setAvatars(avatarMap);
+        });
+    };
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const statusesData = await getTaskStatuses(orgId, projectUuid);
                 const tasksData = await getTasks(orgId, projectUuid);
-                // Предполагаем, что задачи приходят либо как tasksData, либо в tasksData.response.items
                 const rawTasks = tasksData.response?.items || tasksData;
-                // Преобразуем задачи, чтобы гарантировать наличие поля id (используем task.uuid, если task.id отсутствует)
                 const tasksArray = rawTasks.map(task => ({
                     ...task,
                     id: task.id || task.uuid,
                 }));
                 setStatuses(statusesData);
                 setTasks(tasksArray);
+                loadAvatars(tasksArray);
             } catch (error) {
                 console.error("Error fetching tasks or statuses:", error);
             } finally {
@@ -117,13 +146,14 @@ const Board = () => {
                             key={status.uuid}
                             status={status}
                             tasks={tasksByStatus[status.uuid] || []}
+                            avatars={avatars}
                         />
                     ))}
                 </div>
                 <DragOverlay>
                     {activeTask ? (
                         <div className="drag-overlay-wrapper">
-                            <SortableTask task={activeTask} containerId={activeTask.status} />
+                            <SortableTask task={activeTask} containerId={activeTask.status} avatars={avatars} />
                         </div>
                     ) : null}
                 </DragOverlay>
