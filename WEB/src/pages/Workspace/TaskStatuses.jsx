@@ -1,13 +1,14 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import { getTaskStatuses, createTaskStatus } from '../../api/taskStatuses';
+import { ProjectContext } from '../../context/ProjectContext';
 import Loader from '../../components/Loader';
 import Notification from '../../components/Notification';
 import '../../styles/taskStatuses.css'; // При необходимости создайте/подключите стили
 
 function TaskStatuses() {
   const { orgId, projectUuid } = useParams();
-  const [statuses, setStatuses] = useState([]);
+  const { taskStatuses, setTaskStatuses } = useContext(ProjectContext);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [isCreating, setIsCreating] = useState(false);
@@ -19,14 +20,14 @@ function TaskStatuses() {
     try {
       setIsLoading(true);
       const data = await getTaskStatuses(orgId, projectUuid, controllerRef.current.signal);
-      setStatuses(data);
+      setTaskStatuses(data);
       setError('');
     } catch (err) {
       setError(err.message || 'Ошибка загрузки статусов задач');
     } finally {
       setIsLoading(false);
     }
-  }, [orgId, projectUuid]);
+  }, [orgId, projectUuid, setTaskStatuses]);
 
   useEffect(() => {
     fetchTaskStatuses();
@@ -43,7 +44,7 @@ function TaskStatuses() {
     const controller = new AbortController();
     try {
       const created = await createTaskStatus(orgId, projectUuid, newStatus, controller.signal);
-      setStatuses(prev => [...prev, created]);
+      setTaskStatuses(prev => [...prev, created]);
       setNewStatus({ name: '', description: '' });
       setIsCreating(false);
     } catch (err) {
@@ -104,7 +105,7 @@ function TaskStatuses() {
         </div>
       )}
       <ul className="task-statuses-list">
-        {statuses.map((status) => (
+        {taskStatuses.map((status) => (
           <li key={status.uuid} className="task-status-item">
             <div className="task-status-name">{status.name}</div>
             <div className="task-status-description">{status.description || 'Нет описания'}</div>

@@ -83,15 +83,27 @@ const Board = () => {
 
     const handleDragEnd = async (event) => {
         const { active, over } = event;
-        if (!over) return;
+        
+        // Если элемент перемещён за пределы допустимой области
+        if (!over) {
+            setActiveId(null);
+            return;
+        }
 
         const oldStatus = active.data.current.sortable?.containerId;
         const newStatus = over.id;
 
-        if (!oldStatus || oldStatus === newStatus) return;
+        // Если статус не изменился
+        if (!oldStatus || oldStatus === newStatus) {
+            setActiveId(null);
+            return;
+        }
 
         const movedTask = tasks.find(task => task.id.toString() === active.id);
-        if (!movedTask) return;
+        if (!movedTask) {
+            setActiveId(null);
+            return;
+        }
 
         // Сохраняем копию предшествующего состояния задач для возможности отката
         const previousTasks = [...tasks];
@@ -110,9 +122,10 @@ const Board = () => {
             await editTask(orgId, projectUuid, active.id, payload);
         } catch (error) {
             console.error("Ошибка обновления задачи:", error);
-            Notification.error("Ошибка обновления задачи");
             // Если ошибка – откатываем состояние
             setTasks(previousTasks);
+        } finally {
+            setActiveId(null);
         }
     };
 
@@ -136,7 +149,6 @@ const Board = () => {
                 onDragStart={handleDragStart}
                 onDragEnd={(event) => {
                     handleDragEnd(event);
-                    setActiveId(null);
                 }}
                 onDragCancel={() => setActiveId(null)}
             >
