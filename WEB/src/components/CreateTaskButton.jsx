@@ -133,12 +133,42 @@ const CreateTaskButton = ({ onTaskCreated }) => {
   const customStyles = {
     control: (provided) => ({
       ...provided,
-      backgroundColor: 'white'
+      backgroundColor: '#252525',
+      borderColor: '#333',
+      color: '#e0e0e0'
+    }),
+    menu: (provided) => ({
+      ...provided,
+      backgroundColor: '#252525'
     }),
     option: (provided, state) => ({
       ...provided,
-      color: 'black',
-      backgroundColor: state.isFocused ? '#eee' : 'white'
+      color: '#e0e0e0',
+      backgroundColor: state.isFocused ? '#333' : '#252525'
+    }),
+    singleValue: (provided) => ({
+      ...provided,
+      color: '#e0e0e0'
+    }),
+    multiValue: (provided) => ({
+      ...provided,
+      backgroundColor: '#8B5CF6',
+    }),
+    multiValueLabel: (provided) => ({
+      ...provided,
+      color: 'white',
+    }),
+    multiValueRemove: (provided) => ({
+      ...provided,
+      color: 'white',
+      ':hover': {
+        backgroundColor: '#7C3AED',
+        color: 'white',
+      },
+    }),
+    input: (provided) => ({
+      ...provided,
+      color: '#e0e0e0'
     }),
   };
   
@@ -152,165 +182,167 @@ const CreateTaskButton = ({ onTaskCreated }) => {
       </button>
       
       {open && (
-        <div className="modal-overlay">
-          <div className="task-creation-modal">
-            <button className="modal-close" onClick={() => setOpen(false)}>
-              &times;
-            </button>
-            <h2>Создание задачи</h2>
-            <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label htmlFor="task-name">Название</label>
-                <input
-                  id="task-name"
-                  name="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  required
-                />
-              </div>
-              
-              {/* Поле описания с поддержкой Markdown */}
-              <div className="form-group">
-                <label htmlFor="task-description">Описание (поддержка Markdown)</label>
-                <div className="markdown-toolbar">
-                  <button 
-                    type="button" 
-                    onClick={() => setPreviewMarkdown(!previewMarkdown)}
-                    className="markdown-toggle-btn"
-                  >
-                    {previewMarkdown ? "Редактировать Markdown" : "Предпросмотр Markdown"}
-                  </button>
-                </div>
-                <div className="markdown-buttons">
-                  <button type="button" onClick={() => insertMarkdown("*italic*")}>Italic</button>
-                  <button type="button" onClick={() => insertMarkdown("**bold**")}>Bold</button>
-                  <button type="button" onClick={() => insertMarkdown("~~strikethrough~~")}>Strikethrough</button>
-                  <button type="button" onClick={() => insertMarkdown("***bold italic***")}>Bold Italic</button>
-                  <button type="button" onClick={() => insertMarkdown("> ")}>Quote</button>
-                  <button type="button" onClick={() => insertMarkdown(">> ")}>Nested Quote</button>
-                  <button type="button" onClick={() => insertMarkdown("    ")}>Code Block</button>
-                  <button type="button" onClick={() => insertMarkdown("- ")}>Unordered List</button>
-                  <button type="button" onClick={() => insertMarkdown("1. ")}>Ordered List</button>
-                  <button type="button" onClick={() => insertMarkdown("[text](url)")}>Link</button>
-                  <button type="button" onClick={() => insertMarkdown("![alt text](url)")}>Image</button>
-                </div>
-                {previewMarkdown ? (
-                  <div 
-                    className="markdown-preview"
-                    dangerouslySetInnerHTML={{ __html: marked(formData.description || '') }}
-                  />
-                ) : (
-                  <textarea
-                    id="task-description"
-                    name="description"
-                    placeholder="Введите описание задачи (не обязательно)"
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    style={{ minHeight: '200px' }}
-                  />
-                )}
-              </div>
-              
-              <div className="form-group">
-                <label htmlFor="task-type">
-                  Тип {taskTypes && taskTypes.length > 0 && <span className="required">*</span>}
-                </label>
-                <select 
-                  id="task-type"
-                  name="type" 
-                  value={formData.type} 
-                  onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                  disabled={!(taskTypes && taskTypes.length > 0)}
-                  required={taskTypes && taskTypes.length > 0}
-                >
-                  <option value="">
-                    {taskTypes && taskTypes.length > 0 ? "Выберите тип" : "Типы отсутствуют"}
-                  </option>
-                  {taskTypes && taskTypes.length > 0 && taskTypes.map((t) => (
-                    <option key={t.uuid} value={t.uuid}>{t.name}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="form-group">
-                <label htmlFor="task-priority">Приоритет</label>
-                <select 
-                  id="task-priority"
-                  name="priority" 
-                  value={formData.priority} 
-                  onChange={(e) => setFormData({ ...formData, priority: Number(e.target.value) })}
-                >
-                  <option value={-2}>Минимальный</option>
-                  <option value={-1}>Низкий</option>
-                  <option value={0}>Средний</option>
-                  <option value={1}>Высокий</option>
-                  <option value={2}>Критичный</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label htmlFor="task-status">
-                  Статус {taskStatuses && taskStatuses.length > 0 && <span className="required">*</span>}
-                </label>
-                <select 
-                  id="task-status"
-                  name="status" 
-                  value={formData.status} 
-                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                  disabled={!(taskStatuses && taskStatuses.length > 0)}
-                  required={taskStatuses && taskStatuses.length > 0}
-                >
-                  <option value="">
-                    {taskStatuses && taskStatuses.length > 0 ? "Выберите статус" : "Статусы отсутствуют"}
-                  </option>
-                  {taskStatuses && taskStatuses.length > 0 && taskStatuses.map((s) => (
-                    <option key={s.uuid} value={s.uuid}>{s.name}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="form-group">
-                <label htmlFor="task-date">Дата</label>
-                <input 
-                  id="task-date"
-                  type="date" 
-                  name="date" 
-                  value={formData.date} 
-                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                  required 
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="task-executors">
-                  Исполнители
-                </label>
-                <AsyncSelect
-                  isMulti
-                  cacheOptions
-                  defaultOptions
-                  loadOptions={promiseOptions}
-                  onChange={handleExecutorsSelectChange}
-                  value={selectedExecutors}
-                  placeholder="Поиск исполнителей..."
-                  styles={customStyles}
-                  noOptionsMessage={() => 'Ничего не найдено'}
-                  loadingMessage={() => 'загрузка...'}
-                />
-              </div>
-              {error && <div className="error">{error}</div>}
-              <button 
-                type="submit" 
-                disabled={loading || !formIsValid}
-                style={{
-                  backgroundColor: loading || !formIsValid ? "#ccc" : "#8b5cf6",
-                  color: loading || !formIsValid ? "#666" : "#fff",
-                  padding: "8px 16px",
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: loading || !formIsValid ? "not-allowed" : "pointer"
-                }}
-              >
-                {loading ? 'Создание...' : 'Создать'}
+        <div className="task-creation-wrapper">
+          <div className="modal-overlay">
+            <div className="task-creation-modal">
+              <button className="modal-close" onClick={() => setOpen(false)}>
+                &times;
               </button>
-            </form>
+              <h2>Создание задачи</h2>
+              <form onSubmit={handleSubmit}>
+                <div className="form-group">
+                  <label htmlFor="task-name">Название</label>
+                  <input
+                    id="task-name"
+                    name="name"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    required
+                  />
+                </div>
+                
+                {/* Поле описания с поддержкой Markdown */}
+                <div className="form-group">
+                  <label htmlFor="task-description">Описание (поддержка Markdown)</label>
+                  <div className="markdown-toolbar">
+                    <button 
+                      type="button" 
+                      onClick={() => setPreviewMarkdown(!previewMarkdown)}
+                      className="markdown-toggle-btn"
+                    >
+                      {previewMarkdown ? "Редактировать Markdown" : "Предпросмотр Markdown"}
+                    </button>
+                  </div>
+                  <div className="markdown-buttons">
+                    <button type="button" onClick={() => insertMarkdown("*italic*")}>Italic</button>
+                    <button type="button" onClick={() => insertMarkdown("**bold**")}>Bold</button>
+                    <button type="button" onClick={() => insertMarkdown("~~strikethrough~~")}>Strikethrough</button>
+                    <button type="button" onClick={() => insertMarkdown("***bold italic***")}>Bold Italic</button>
+                    <button type="button" onClick={() => insertMarkdown("> ")}>Quote</button>
+                    <button type="button" onClick={() => insertMarkdown(">> ")}>Nested Quote</button>
+                    <button type="button" onClick={() => insertMarkdown("    ")}>Code Block</button>
+                    <button type="button" onClick={() => insertMarkdown("- ")}>Unordered List</button>
+                    <button type="button" onClick={() => insertMarkdown("1. ")}>Ordered List</button>
+                    <button type="button" onClick={() => insertMarkdown("[text](url)")}>Link</button>
+                    <button type="button" onClick={() => insertMarkdown("![alt text](url)")}>Image</button>
+                  </div>
+                  {previewMarkdown ? (
+                    <div 
+                      className="markdown-preview"
+                      dangerouslySetInnerHTML={{ __html: marked(formData.description || '') }}
+                    />
+                  ) : (
+                    <textarea
+                      id="task-description"
+                      name="description"
+                      placeholder="Введите описание задачи (не обязательно)"
+                      value={formData.description}
+                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      style={{ minHeight: '200px' }}
+                    />
+                  )}
+                </div>
+                
+                <div className="form-group">
+                  <label htmlFor="task-type">
+                    Тип {taskTypes && taskTypes.length > 0 && <span className="required">*</span>}
+                  </label>
+                  <select 
+                    id="task-type"
+                    name="type" 
+                    value={formData.type} 
+                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                    disabled={!(taskTypes && taskTypes.length > 0)}
+                    required={taskTypes && taskTypes.length > 0}
+                  >
+                    <option value="">
+                      {taskTypes && taskTypes.length > 0 ? "Выберите тип" : "Типы отсутствуют"}
+                    </option>
+                    {taskTypes && taskTypes.length > 0 && taskTypes.map((t) => (
+                      <option key={t.uuid} value={t.uuid}>{t.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="task-priority">Приоритет</label>
+                  <select 
+                    id="task-priority"
+                    name="priority" 
+                    value={formData.priority} 
+                    onChange={(e) => setFormData({ ...formData, priority: Number(e.target.value) })}
+                  >
+                    <option value={-2}>Минимальный</option>
+                    <option value={-1}>Низкий</option>
+                    <option value={0}>Средний</option>
+                    <option value={1}>Высокий</option>
+                    <option value={2}>Критичный</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="task-status">
+                    Статус {taskStatuses && taskStatuses.length > 0 && <span className="required">*</span>}
+                  </label>
+                  <select 
+                    id="task-status"
+                    name="status" 
+                    value={formData.status} 
+                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                    disabled={!(taskStatuses && taskStatuses.length > 0)}
+                    required={taskStatuses && taskStatuses.length > 0}
+                  >
+                    <option value="">
+                      {taskStatuses && taskStatuses.length > 0 ? "Выберите статус" : "Статусы отсутствуют"}
+                    </option>
+                    {taskStatuses && taskStatuses.length > 0 && taskStatuses.map((s) => (
+                      <option key={s.uuid} value={s.uuid}>{s.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="task-date">Дата</label>
+                  <input 
+                    id="task-date"
+                    type="date" 
+                    name="date" 
+                    value={formData.date} 
+                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                    required 
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="task-executors">
+                    Исполнители
+                  </label>
+                  <AsyncSelect
+                    isMulti
+                    cacheOptions
+                    defaultOptions
+                    loadOptions={promiseOptions}
+                    onChange={handleExecutorsSelectChange}
+                    value={selectedExecutors}
+                    placeholder="Поиск исполнителей..."
+                    styles={customStyles}
+                    noOptionsMessage={() => 'Ничего не найдено'}
+                    loadingMessage={() => 'загрузка...'}
+                  />
+                </div>
+                {error && <div className="error">{error}</div>}
+                <button 
+                  type="submit" 
+                  disabled={loading || !formIsValid}
+                  style={{
+                    backgroundColor: loading || !formIsValid ? "#ccc" : "#8b5cf6",
+                    color: loading || !formIsValid ? "#666" : "#fff",
+                    padding: "8px 16px",
+                    border: "none",
+                    borderRadius: "4px",
+                    cursor: loading || !formIsValid ? "not-allowed" : "pointer"
+                  }}
+                >
+                  {loading ? 'Создание...' : 'Создать'}
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       )}

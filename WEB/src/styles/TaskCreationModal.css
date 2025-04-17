@@ -1,32 +1,35 @@
-.modal-overlay {
+.task-creation-wrapper .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1100;
 }
 
-.task-creation-modal {
-  background: #fff;
+.task-creation-wrapper .task-creation-modal {
+  background: #1e1e1e;
   padding: 20px;
   border-radius: 8px;
   width: 750px;
   max-height: 80vh;
   overflow-y: auto;
   position: relative;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  color: #e0e0e0;
 }
 
-.task-creation-modal-content h2 {
+.task-creation-modal h2 {
+  color: #fff;
   margin-top: 0;
+  margin-bottom: 20px;
 }
 
-.task-creation-modal-content .modal-close {
+.modal-close {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -34,6 +37,7 @@
   border: none;
   font-size: 24px;
   cursor: pointer;
+  color: #e0e0e0;
 }
 
 .form-group {
@@ -44,6 +48,7 @@
   display: block;
   font-weight: 600;
   margin-bottom: 5px;
+  color: #8B5CF6;
 }
 
 .form-group input,
@@ -51,19 +56,21 @@
 .form-group select {
   width: 100%;
   padding: 8px;
-  border: 1px solid #ccc;
+  border: 1px solid #333;
   border-radius: 4px;
   font-size: 14px;
   box-sizing: border-box;
+  background-color: #252525;
+  color: #e0e0e0;
 }
 
 .error {
-  color: #f44336;
+  color: #ff6b6b;
   margin-bottom: 10px;
 }
 
 .create-task-button {
-  background-color: #4CAF50;
+  background-color: #8B5CF6;
   color: white;
   padding: 10px 16px;
   border: none;
@@ -75,31 +82,34 @@
 }
 
 .create-task-button:hover {
-  background-color: #45a049;
+  background-color: #7C3AED;
 }
 
-.task-creation-modal-content textarea {
+.task-creation-modal textarea {
   resize: none;
-  height: 100px;
+  min-height: 100px;
+  background-color: #252525;
+  color: #e0e0e0;
 }
 
 .task-creation-modal input,
 .task-creation-modal textarea,
 .task-creation-modal select {
-  color: #333;
-  background-color: #fff;
+  color: #e0e0e0;
+  background-color: #252525;
+  border: 1px solid #333;
 }
 
 .task-creation-modal label {
-  color: #333;
+  color: #8B5CF6;
   margin-bottom: 5px;
   display: block;
 }
 
 .create-task-container {
-  background-color: #fff;
+  background-color: #1e1e1e;
   padding: 20px;
-  border: 1px solid #ddd;
+  border: 1px solid #333;
 }
 
 .task-input {
@@ -107,16 +117,71 @@
   height: 100px;
   padding: 8px;
   font-size: 16px;
-  border: 1px solid #ccc;
+  border: 1px solid #333;
   border-radius: 4px;
+  background-color: #252525;
+  color: #e0e0e0;
 }
 
 .markdown-preview {
   margin-top: 20px;
   padding: 10px;
-  background-color: #f9f9f9; /* светлый фон для предосмотра */
-  color: #333; /* тёмный цвет текста */
-  border: 1px solid #ddd;
+  background-color: #252525;
+  color: #e0e0e0;
+  border: 1px solid #333;
   border-radius: 4px;
   word-break: break-all;
+}
+
+.markdown-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.markdown-buttons button {
+  background-color: #333;
+  color: #e0e0e0;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 5px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.markdown-buttons button:hover {
+  background-color: #444;
+}
+
+.markdown-toggle-btn {
+  background-color: #8B5CF6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.markdown-toggle-btn:hover {
+  background-color: #7C3AED;
+}
+
+.markdown-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 5px;
+}
+
+/* Стили для AsyncSelect из CreateTaskButton */
+.form-group [class*="react-select"] {
+  color: black;
+}
+
+.required {
+  color: #ff6b6b;
+  margin-left: 5px;
 }

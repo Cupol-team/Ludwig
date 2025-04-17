@@ -1,50 +1,149 @@
 .taskitem-card {
-  border: 1px solid #ddd;
+  border: 1px solid #333;
   padding: 1rem;
   border-radius: 8px;
   margin-bottom: 1rem;
-  background: #fff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: #1e1e1e;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .task-title {
   margin: 0 0 0.5rem 0;
+  color: #ffffff;
 }
 
 .task-info {
   margin-bottom: 0.25rem;
   font-size: 14px;
-  color: #555;
+  color: #aaa;
 }
 
 .task-label {
   font-weight: bold;
+  color: #8B5CF6;
 }
 
-.task-row {
+.tasks-container .task-row {
   display: flex;
   align-items: center;
   padding: 12px 16px;
-  border-bottom: 1px solid #e0e0e0;
-  transition: background 0.3s;
+  border-bottom: 1px solid #333;
+  transition: all 0.3s;
+  cursor: pointer;
 }
 
-.task-row:hover {
-  background-color: #f9f9f9;
+.tasks-container .task-row:hover {
+  background-color: #252525;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.task-cell {
+.tasks-container .task-cell {
   flex: 1;
   font-size: 14px;
-  color: #424242;
+  color: #e0e0e0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   padding-right: 16px;
 }
 
-.task-cell:first-child {
+.tasks-container .task-cell:first-child {
   flex: 2;
+  font-weight: 500;
+}
+
+/* Стилизация статуса */
+.task-status {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  min-width: 80px;
+  background-color: #2c2c2c;
+  color: #e0e0e0;
+  border: 1px solid #444;
+}
+
+/* Сохраняем эти классы для обратной совместимости, 
+   но можно будет удалить в будущем, когда компонент будет стабилен */
+.status-new {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.status-in-progress {
+  background-color: #8B5CF6;
+  color: white;
+}
+
+.status-testing {
+  background-color: #f59e0b;
+  color: white;
+}
+
+.status-done {
+  background-color: #10b981;
+  color: white;
+}
+
+.status-blocked {
+  background-color: #ef4444;
+  color: white;
+}
+
+/* Стилизация приоритета */
+.priority-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.priority-badge.critical {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border-left: 3px solid #ef4444;
+}
+
+.priority-badge.high {
+  background-color: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+  border-left: 3px solid #f59e0b;
+}
+
+.priority-badge.medium {
+  background-color: rgba(139, 92, 246, 0.2);
+  color: #8B5CF6;
+  border-left: 3px solid #8B5CF6;
+}
+
+.priority-badge.low {
+  background-color: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  border-left: 3px solid #10b981;
+}
+
+.priority-badge.minimal {
+  background-color: rgba(107, 114, 128, 0.2);
+  color: #9ca3af;
+  border-left: 3px solid #9ca3af;
+}
+
+/* Стилизация типа */
+.task-type {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  background-color: #2c2c2c;
+  color: #e0e0e0;
+  border: 1px solid #444;
 }
 
 .executor-avatar {
@@ -55,6 +154,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 1px solid #8B5CF6;
 }
 
 .executor-avatar img {
@@ -66,16 +166,42 @@
 .avatar-placeholder {
   width: 100%;
   height: 100%;
-  background-color: #ccc;
+  background-color: #2c2c2c;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  color: #fff;
+  color: #8B5CF6;
   font-size: 12px;
 }
 
 .executors-list {
   display: flex;
   gap: 4px;
+}
+
+/* Стилизация даты */
+.task-date {
+  font-size: 12px;
+  color: #9ca3af;
+  padding: 4px 8px;
+  background-color: #2c2c2c;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.task-name {
+  font-weight: 500;
+  color: #ffffff;
+  transition: color 0.2s;
+}
+
+.tasks-container .task-row:hover .task-name {
+  color: #8B5CF6;
+}
+
+.no-executors {
+  color: #666;
+  font-style: italic;
+  font-size: 12px;
 } 

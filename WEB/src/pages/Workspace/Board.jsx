@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { 
     DndContext, 
@@ -26,6 +26,7 @@ const Board = () => {
     const [loading, setLoading] = useState(true);
     const [activeId, setActiveId] = useState(null);
     const [avatars, setAvatars] = useState({});
+    const boardContainerRef = useRef(null);
 
     const loadAvatars = (tasks) => {
         const avatarPromises = [];
@@ -85,8 +86,10 @@ const Board = () => {
 
     const handleDragStart = (event) => {
         setActiveId(event.active.id);
-        // Добавляем класс к телу страницы при перетаскивании
-        document.body.classList.add('board-is-dragging');
+        // Добавляем класс к контейнеру при перетаскивании
+        if (boardContainerRef.current) {
+            boardContainerRef.current.classList.add('board-is-dragging');
+        }
     };
 
     const handleDragEnd = async (event) => {
@@ -151,15 +154,19 @@ const Board = () => {
             // Можно также показать пользователю уведомление об ошибке
         } finally {
             setActiveId(null);
-            // Удаляем класс с тела страницы после перетаскивания
-            document.body.classList.remove('board-is-dragging');
+            // Удаляем класс с контейнера после перетаскивания
+            if (boardContainerRef.current) {
+                boardContainerRef.current.classList.remove('board-is-dragging');
+            }
         }
     };
 
-    // Очистка класса с тела при отмене перетаскивания
+    // Очистка класса с контейнера при отмене перетаскивания
     const handleDragCancel = () => {
         setActiveId(null);
-        document.body.classList.remove('board-is-dragging');
+        if (boardContainerRef.current) {
+            boardContainerRef.current.classList.remove('board-is-dragging');
+        }
     };
 
     // Найдём данные для активной задачи, используя id
@@ -179,7 +186,7 @@ const Board = () => {
     }
 
     return (
-        <div className="workspace-container">
+        <div className="board-container" ref={boardContainerRef}>
             <div className="mobile-scroll-hint">
                 ← Прокрутите влево-вправо для просмотра всех колонок →
             </div>
