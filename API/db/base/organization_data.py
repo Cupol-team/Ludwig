@@ -12,3 +12,4 @@ class OrganizationData(SqlAlchemyBase, SerializerMixin):
     uuid = sqlalchemy.Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True)
     name = sqlalchemy.Column(sqlalchemy.String, primary_key=True)
     description = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    invite = sqlalchemy.Column(sqlalchemy.String, nullable=True, unique=True)

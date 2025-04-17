@@ -8,6 +8,7 @@ class OrganizationResponse(BaseModel):
     uuid: UUID
     name: str
     description: str | None = None  # description может быть None
+    invite: str | None = None  # Добавляем поле для приглашения
 
     class Config:
         orm_mode = True  # Это важно, чтобы Pydantic могла работать с SQLAlchemy моделями
@@ -16,6 +17,11 @@ class OrganizationResponse(BaseModel):
 class OrganizationUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
+
+
+class OrganizationInviteUpdate(BaseModel):
+    """Схема для обновления ссылки приглашения"""
+    invite: Optional[str] = None
 
 
 class OrganizationCreate(BaseModel):
@@ -34,4 +40,4 @@ class OrganizationCreate(BaseModel):
 
 class NewOrganizationMember(BaseModel):
     member_uuid: UUID
-    role_uuid: UUID
+    role_uuid: UUID | None = None

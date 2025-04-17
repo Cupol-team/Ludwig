@@ -10,6 +10,7 @@ import ProfilePage from './pages/ProfilePage';
 import Header from './components/Header';
 import Settings from "./pages/Workspace/Settings";
 import GeneralSettings from "./pages/Workspace/Settings/General";
+import InvitePage from "./pages/InvitePage";
 
 // Новый контейнер для центрирования окна входа
 const CenteredContainer = styled.div`
@@ -43,7 +44,7 @@ const App = () => {
     return (
         <>
             <GlobalStyle />
-            {location.pathname !== '/register' && location.pathname !== '/login' && <Header />} {/* Условие для отображения Header */}
+            {location.pathname !== '/register' && location.pathname !== '/login' && !location.pathname.startsWith('/invite/') && <Header />} {/* Условие для отображения Header */}
             <Suspense fallback={<Loader />}>
                 <Routes>
                     <Route 
@@ -83,6 +84,14 @@ const App = () => {
                         element={
                             <ProtectedRoute>
                                 <OrganizationDetailsPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/invite/:inviteId"
+                        element={
+                            <ProtectedRoute>
+                                <InvitePage />
                             </ProtectedRoute>
                         }
                     />

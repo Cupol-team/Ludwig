@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef, useCallback, useContext } from 'rea
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { getProjects } from '../api/projects';
 import { getUserAvatar } from '../api/profile';
+import { getOrganizationInviteLink, updateOrganizationInviteLink } from '../api/organizations';
 import Loader from '../components/Loader';
 import Notification from '../components/Notification';
 import axios from 'axios';
@@ -17,6 +18,8 @@ const OrganizationDetailsPage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [avatars, setAvatars] = useState({});
+    const [inviteLoading, setInviteLoading] = useState(false);
+    const [inviteError, setInviteError] = useState(null);
     const controllerRef = useRef(null);
     const { setProjectName, setProjectDescription } = useContext(ProjectContext);
     const navigate = useNavigate();
@@ -95,6 +98,30 @@ const OrganizationDetailsPage = () => {
         }
     }, [projects, loadProjectAvatars]);
 
+    // Функция для загрузки текущей ссылки приглашения
+    const fetchInviteLink = useCallback(async () => {
+        try {
+            const controller = new AbortController();
+            const data = await getOrganizationInviteLink(orgId, controller.signal);
+            if (data && data.invite) {
+                // Формируем полную ссылку для отображения пользователю
+                const baseUrl = window.location.origin;
+                const fullInviteLink = `${baseUrl}/invite/${data.invite}`;
+                setInviteLink(fullInviteLink);
+            }
+            return () => controller.abort();
+        } catch (error) {
+            console.error('Error fetching invite link:', error);
+        }
+    }, [orgId]);
+
+    // Загружаем ссылку приглашения при открытии модального окна
+    useEffect(() => {
+        if (isInviteModalOpen) {
+            fetchInviteLink();
+        }
+    }, [isInviteModalOpen, fetchInviteLink]);
+
     const navigateToProject = (project) => {
         setProjectName(project.name);
         setProjectDescription(project.description || '');
@@ -113,7 +140,37 @@ const OrganizationDetailsPage = () => {
     };
 
     const handleGenerateLink = async () => {
-        setInviteLink('https://example.com/invite/12345');
+        setInviteLoading(true);
+        setInviteError(null);
+        
+        try {
+            // Генерируем уникальный идентификатор для ссылки приглашения
+            const uniqueId = Math.random().toString(36).substring(2, 15) + 
+                             Math.random().toString(36).substring(2, 15);
+            
+            // Формируем полную ссылку приглашения
+            const baseUrl = window.location.origin;
+            
+            // Отправляем только ID на сервер для сохранения (без базового URL)
+            const controller = new AbortController();
+            const data = await updateOrganizationInviteLink(orgId, uniqueId, controller.signal);
+            
+            // Обновляем ссылку в состоянии компонента, показывая полный URL пользователю
+            if (data && data.invite) {
+                // Формируем полную ссылку для отображения
+                const fullInviteLink = `${baseUrl}/invite/${data.invite}`;
+                setInviteLink(fullInviteLink);
+            } else {
+                // Если что-то пошло не так, используем сгенерированный ID
+                const fullInviteLink = `${baseUrl}/invite/${uniqueId}`;
+                setInviteLink(fullInviteLink);
+            }
+        } catch (err) {
+            console.error('Error generating invite link:', err);
+            setInviteError('Не удалось сгенерировать ссылку. Пожалуйста, попробуйте снова.');
+        } finally {
+            setInviteLoading(false);
+        }
     };
 
     if (isLoading) return <Loader />;
@@ -219,6 +276,7 @@ const OrganizationDetailsPage = () => {
                                 <button
                                     className="generate-link-button"
                                     onClick={handleGenerateLink}
+                                    disabled={inviteLoading}
                                 >
                                     <svg 
                                         viewBox="0 0 24 24" 
@@ -229,7 +287,7 @@ const OrganizationDetailsPage = () => {
                                     >
                                         <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/>
                                     </svg>
-                                    Сгенерировать ссылку
+                                    {inviteLoading ? 'Генерация...' : 'Сгенерировать ссылку'}
                                 </button>
                                 <button
                                     className="close-modal-button"
@@ -238,6 +296,11 @@ const OrganizationDetailsPage = () => {
                                     Закрыть
                                 </button>
                             </div>
+                            {inviteError && (
+                                <div className="invite-error-message">
+                                    {inviteError}
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}

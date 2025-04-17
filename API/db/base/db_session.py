@@ -1,5 +1,4 @@
 import logging
-
 import sqlalchemy as sa
 import sqlalchemy.orm as orm
 from sqlalchemy.orm import Session
@@ -33,7 +32,7 @@ def global_init(db_file):
     session_factory = orm.sessionmaker(bind=engine)
     # Использование scoped_session позволяет возвращать один и тот же объект сессии
     __factory = orm.scoped_session(session_factory)
-
+    
     # Создаем все таблицы, если их еще нет
     SqlAlchemyBase.metadata.create_all(engine)
 
