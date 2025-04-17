@@ -6,27 +6,27 @@ html, body {
 }
 
 /* Глобальные стили для состояния перетаскивания */
-body.is-dragging {
+body.board-is-dragging {
   cursor: grabbing !important;
 }
 
-body.is-dragging * {
+body.board-is-dragging * {
   cursor: grabbing !important;
 }
 
 /* Изменение вида курсора при наведении на колонку во время перетаскивания */
-body.is-dragging .kanban-column {
+body.board-is-dragging .kanban-column {
   cursor: grabbing !important;
 }
 
 /* Когда мы перетаскиваем задачу, выделяем все колонки для улучшения UX */
-body.is-dragging .kanban-column-content {
+body.board-is-dragging .kanban-column-content {
   border: 2px dashed rgba(139, 92, 246, 0.3);
   background-color: rgba(240, 240, 240, 0.2);
 }
 
 /* А когда наводим на конкретную колонку, делаем её более заметной */
-body.is-dragging .kanban-column-content:hover {
+body.board-is-dragging .kanban-column-content:hover {
   border-color: #8b5cf6;
   background-color: rgba(139, 92, 246, 0.1);
 }
@@ -186,12 +186,12 @@ body.is-dragging .kanban-column-content:hover {
 }
 
 /* Стиль для активного перетаскивания - делает колонки более заметными */
-.is-dragging .kanban-column {
+.board-is-dragging .kanban-column {
   border: 2px dashed transparent;
   transition: border-color 0.3s ease;
 }
 
-.is-dragging .kanban-column:hover {
+.board-is-dragging .kanban-column:hover {
   border-color: #8b5cf6;
 }
 

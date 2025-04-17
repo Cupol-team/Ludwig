@@ -29,7 +29,7 @@ const SortableTask = ({ task, containerId, avatars }) => {
   const style = {
     '--transform': CSS.Transform.toString(transform),
     '--transition': transition,
-    '--opacity': isDragging ? 0.8 : 1,
+    '--opacity': 1,
     '--zIndex': isDragging ? 1000 : 'auto',
   };
 
@@ -39,50 +39,50 @@ const SortableTask = ({ task, containerId, avatars }) => {
       style={style} 
       {...attributes} 
       {...listeners} 
-      className={`task-card ${isDragging ? 'is-dragging' : ''}`}
+      className={`board-task-card ${isDragging ? 'board-is-dragging' : ''}`}
       data-drop-parent={containerId}
       id={task.id.toString()}
     >
-      <div className="task-card-content">
-        <div className="task-card-header">
-          <h4 className="task-card-title">{task.name}</h4>
-          <div className="task-card-actions">
-            <div className="task-card-menu">
-              <button className="menu-toggle" onClick={handleMenuToggle} onMouseDown={(e) => e.stopPropagation()}>⋮</button>
+      <div className="board-task-card-content">
+        <div className="board-task-card-header">
+          <h4 className="board-task-card-title">{task.name}</h4>
+          <div className="board-task-card-actions">
+            <div className="board-task-card-menu">
+              <button className="board-menu-toggle" onClick={handleMenuToggle} onMouseDown={(e) => e.stopPropagation()}>⋮</button>
               {menuOpen && (
-                <div className="menu-dropdown">
-                  <button className="menu-action" onClick={(e) => { e.stopPropagation(); alert("Действие 1") }}>Действие 1</button>
-                  <button className="menu-action" onClick={(e) => { e.stopPropagation(); alert("Действие 2") }}>Действие 2</button>
+                <div className="board-menu-dropdown">
+                  <button className="board-menu-action" onClick={(e) => { e.stopPropagation(); }}>Действие 1</button>
+                  <button className="board-menu-action" onClick={(e) => { e.stopPropagation(); }}>Действие 2</button>
                 </div>
               )}
             </div>
-            <div className="task-card-badge">#{String(task.id).slice(0, 4)}</div>
+            <div className="board-task-card-badge">#{String(task.id).slice(0, 4)}</div>
           </div>
         </div>
       </div>
       
-      <div className="task-card-footer">
-        <div className="footer-left">
-          <span className="task-type-text" title={taskTypeName}>{taskTypeName}</span>
-          <span className="task-priority">
+      <div className="board-task-card-footer">
+        <div className="board-footer-left">
+          <span className="board-task-type-text" title={taskTypeName}>{taskTypeName}</span>
+          <span className="board-task-priority">
             <PriorityIcon priority={task.priority} />
           </span>
         </div>
         { task.executors && task.executors.length > 0 && (
-          <div className="task-card-avatars">
+          <div className="board-task-card-avatars">
             {task.executors.slice(0, 2).map((executorId, index) => (
-              <div key={index} className="executor-avatar">
+              <div key={index} className="board-executor-avatar">
                 {avatars[executorId] ? (
                   <img src={avatars[executorId]} alt="Executor Avatar" />
                 ) : (
-                  <div className="avatar-placeholder">
+                  <div className="board-avatar-placeholder">
                     {executorId ? executorId.charAt(0) : '?'}
                   </div>
                 )}
               </div>
             ))}
             {task.executors.length > 2 && (
-              <div className="more-executors">+{task.executors.length - 2}</div>
+              <div className="board-more-executors">+{task.executors.length - 2}</div>
             )}
           </div>
         )}

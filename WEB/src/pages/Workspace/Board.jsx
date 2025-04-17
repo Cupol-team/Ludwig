@@ -86,7 +86,7 @@ const Board = () => {
     const handleDragStart = (event) => {
         setActiveId(event.active.id);
         // Добавляем класс к телу страницы при перетаскивании
-        document.body.classList.add('is-dragging');
+        document.body.classList.add('board-is-dragging');
     };
 
     const handleDragEnd = async (event) => {
@@ -152,21 +152,21 @@ const Board = () => {
         } finally {
             setActiveId(null);
             // Удаляем класс с тела страницы после перетаскивания
-            document.body.classList.remove('is-dragging');
+            document.body.classList.remove('board-is-dragging');
         }
     };
 
     // Очистка класса с тела при отмене перетаскивания
     const handleDragCancel = () => {
         setActiveId(null);
-        document.body.classList.remove('is-dragging');
+        document.body.classList.remove('board-is-dragging');
     };
 
     // Найдём данные для активной задачи, используя id
     const activeTask = tasks.find(task => task.id.toString() === activeId);
     
     // Определяем класс для доски при активном перетаскивании
-    const boardClassName = `kanban-board ${activeId ? 'is-dragging' : ''}`;
+    const boardClassName = `kanban-board ${activeId ? 'board-is-dragging' : ''}`;
 
     if (loading) return <Loader />;
     if (taskStatusesError)
