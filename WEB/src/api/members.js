@@ -82,4 +82,31 @@ export async function updateMemberRole(organizationUuid, projectUuid, memberUuid
   } catch (error) {
     throw error;
   }
+}
+
+/**
+ * Добавление участника в организацию.
+ * @param {string} orgId - Идентификатор организации.
+ * @param {string} memberUuid - Идентификатор участника.
+ * @param {string} roleUuid - Идентификатор роли участника.
+ * @param {AbortSignal} signal - сигнал для отмены запроса.
+ * @returns {Promise<Object>} - результат операции.
+ */
+export async function addMemberToOrganization(orgId, memberUuid, roleUuid, signal) {
+  try {
+    const { data } = await api.put(
+      `/organizations/${orgId}/members/add_member`,
+      { user_uuid: memberUuid, role_uuid: roleUuid },
+      {
+        signal,
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
+    return data;
+  } catch (error) {
+    if (axios.isCancel(error)) {
+      return null;
+    }
+    throw error;
+  }
 } 

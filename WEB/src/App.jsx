@@ -38,7 +38,7 @@ const CallsRoom = lazy(() => import('./pages/Workspace/Calls/CallsRoom'));
 const Register = lazy(() => import("./pages/Register"));
 
 const App = () => {
-    const location = useLocation(); // Получаем текущий путь
+    const location = useLocation(); // Получаем текущий путь 
 
     return (
         <>
@@ -91,6 +91,14 @@ const App = () => {
                         element={
                             <ProtectedRoute>
                                 <CreateProject />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/join/:linkUUID"
+                        element={
+                            <ProtectedRoute>
+                                <ProfilePage />
                             </ProtectedRoute>
                         }
                     />
