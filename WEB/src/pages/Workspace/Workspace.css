@@ -1,5 +1,13 @@
 .workspace-container {
   padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.workspace-content {
+  flex: 1;
+  position: relative;
 }
 
 .workspace-tabs {

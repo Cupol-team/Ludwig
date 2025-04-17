@@ -1,32 +1,39 @@
-/* Глобальные стили для предотвращения прокрутки всей страницы */
-html, body {
-  overflow: hidden; /* Запрещаем прокрутку страницы */
-  height: 100%;
-  margin: 0;
+/* Стили для страницы с канбан-доской */
+.workspace-container {
+  /* Удаляем height: 100vh, так как это вызывает конфликт */
+  /* Удаляем margin: 0 и padding: 0, чтобы не переопределять отступы из Workspace.css */
+  overflow: hidden; /* Сохраняем запрет прокрутки */
+}
+
+/* Новый класс специфичный для доски, чтобы не было конфликтов */
+.board-container {
+  height: calc(100vh - 120px); /* Учитываем высоту заголовка и табов */
+  overflow: hidden;
+  margin-top: 20px; /* Добавляем отступ сверху от табов */
 }
 
 /* Глобальные стили для состояния перетаскивания */
-body.is-dragging {
+body.board-is-dragging {
   cursor: grabbing !important;
 }
 
-body.is-dragging * {
+body.board-is-dragging * {
   cursor: grabbing !important;
 }
 
 /* Изменение вида курсора при наведении на колонку во время перетаскивания */
-body.is-dragging .kanban-column {
+body.board-is-dragging .kanban-column {
   cursor: grabbing !important;
 }
 
 /* Когда мы перетаскиваем задачу, выделяем все колонки для улучшения UX */
-body.is-dragging .kanban-column-content {
+body.board-is-dragging .kanban-column-content {
   border: 2px dashed rgba(139, 92, 246, 0.3);
   background-color: rgba(240, 240, 240, 0.2);
 }
 
 /* А когда наводим на конкретную колонку, делаем её более заметной */
-body.is-dragging .kanban-column-content:hover {
+body.board-is-dragging .kanban-column-content:hover {
   border-color: #8b5cf6;
   background-color: rgba(139, 92, 246, 0.1);
 }
@@ -38,8 +45,8 @@ body.is-dragging .kanban-column-content:hover {
   padding: 20px;
   overflow-x: auto; /* Разрешаем горизонтальную прокрутку */
   overflow-y: hidden; /* Предотвращаем вертикальную прокрутку самой доски */
-  /* Высота доски рассчитывается так, чтобы оставлять небольшой промежуток снизу */
-  height: calc(100vh - 150px);
+  /* Пересчитываем высоту доски для нового контейнера */
+  height: calc(100% - 40px); /* Учитываем padding и подсказку */
   margin-bottom: 20px;
   /* Улучшаем прокрутку */
   scrollbar-width: thin;
@@ -116,7 +123,7 @@ body.is-dragging .kanban-column-content:hover {
   /* Позволяем содержимому корректно масштабироваться внутри flex-контейнера */
   min-height: 300px;
   padding: 10px;
-  /* Делаем высоту подходящей для перетаскивания */
+  /* Пересчитываем максимальную высоту, чтобы она соответствовала новому контейнеру */
   max-height: calc(100vh - 250px);
   /* Явное указание того, что элемент может быть целью перетаскивания */
   touch-action: none;
@@ -186,12 +193,12 @@ body.is-dragging .kanban-column-content:hover {
 }
 
 /* Стиль для активного перетаскивания - делает колонки более заметными */
-.is-dragging .kanban-column {
+.board-is-dragging .kanban-column {
   border: 2px dashed transparent;
   transition: border-color 0.3s ease;
 }
 
-.is-dragging .kanban-column:hover {
+.board-is-dragging .kanban-column:hover {
   border-color: #8b5cf6;
 }
 
@@ -221,7 +228,7 @@ body.is-dragging .kanban-column-content:hover {
     white-space: nowrap;
     gap: 15px;
     padding: 15px;
-    height: calc(100vh - 120px); /* Немного уменьшаем высоту для мобильных */
+    height: calc(100% - 40px); /* Используем 100% от board-container, учитывая отступы */
   }
   
   .kanban-column {

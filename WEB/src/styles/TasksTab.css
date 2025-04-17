@@ -7,7 +7,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 10px;
-  background-color: #f5f5f5;
+  background-color: #252525;
   border-radius: 4px;
   margin-bottom: 20px;
 }
@@ -15,7 +15,7 @@
 .toolbar-left h2 {
   margin: 0;
   font-size: 24px;
-  color: #333;
+  color: #ffffff;
 }
 
 .tasks-list {
@@ -25,14 +25,14 @@
 }
 
 .task-item {
-  background-color: #fff;
-  border: 1px solid #ddd;
+  background-color: #1e1e1e;
+  border: 1px solid #333;
   border-radius: 4px;
   padding: 12px;
   margin-bottom: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .error {
-  color: #f44336;
+  color: #ff6b6b;
 } 

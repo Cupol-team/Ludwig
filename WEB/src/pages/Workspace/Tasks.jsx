@@ -15,9 +15,11 @@ const Tasks = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { taskTypes, taskStatuses } = useContext(ProjectContext);
+  const { taskTypes, taskStatuses, project } = useContext(ProjectContext);
   const [selectedTaskUuid, setSelectedTaskUuid] = useState(null);
   const [avatars, setAvatars] = useState({});
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterStatus, setFilterStatus] = useState('');
 
   useEffect(() => {
     const controller = new AbortController();
@@ -88,48 +90,95 @@ const Tasks = () => {
     }
   };
 
+  // Фильтрация задач
+  const filteredTasks = tasks.filter(task => {
+    const nameMatch = task.name?.toLowerCase().includes(searchQuery.toLowerCase()) || false;
+    const statusMatch = !filterStatus || task.status === filterStatus;
+    return nameMatch && statusMatch;
+  });
+
+  // Сортировка задач (по умолчанию новые сверху)
+  const sortedTasks = [...filteredTasks].sort((a, b) => {
+    const dateA = new Date(a.date || 0);
+    const dateB = new Date(b.date || 0);
+    return dateB - dateA;
+  });
+
   if (loading) return <Loader />;
-  if (error) return <div>Ошибка: {error}</div>;
+  if (error) return <div className="error-message">Ошибка: {error}</div>;
 
   return (
-    <div className="tasks-container" style={{ padding: "20px" }}>
-      <CreateTaskButton onTaskCreated={handleTaskCreated} />
-      <div className="tasks-header">
-        <div className="task-cell">Название</div>
-        <div className="task-cell">Статус</div>
-        <div className="task-cell">Приоритет</div>
-        <div className="task-cell">Тип</div>
-        <div className="task-cell">Дата</div>
-        <div className="task-cell">Исполнители</div>
-      </div>
-      <div className="tasks-list">
-        {tasks && tasks.length > 0 ? (
-          tasks.map((task, index) => {
-            const completeTask = { ...task };
-            const foundType = taskTypes.find((t) => t.uuid === task.type);
-            const foundStatus = taskStatuses.find((s) => s.uuid === task.status);
-            if (foundType) completeTask.type = foundType.name;
-            if (foundStatus) completeTask.status = foundStatus.name;
-            return (
-              <TaskItem
-                key={task.uuid || index}
-                task={completeTask}
-                avatars={avatars}
-                onClick={(uuid) => setSelectedTaskUuid(uuid)}
-              />
-            );
-          })
-        ) : (
-          <div className="empty-tasks-message" style={{ 
-            padding: "20px", 
-            textAlign: "center", 
-            gridColumn: "1 / -1",
-            color: "#666"
-          }}>
-            Нет доступных задач
+    <div className="tasks-container">
+      <div className="tasks-header-section">
+        <div className="tasks-title-row">
+          <div className="tasks-title">
+            {project?.name ? `Задачи проекта: ${project.name}` : 'Список задач'}
           </div>
-        )}
+          <CreateTaskButton onTaskCreated={handleTaskCreated} />
+        </div>
+        
+        <div className="tasks-toolbar">
+          <div className="search-filter">
+            <input
+              type="text"
+              placeholder="Поиск задач..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="search-input"
+            />
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="filter-select"
+            >
+              <option value="">Все статусы</option>
+              {taskStatuses && taskStatuses.map((status) => (
+                <option key={status.uuid} value={status.uuid}>
+                  {status.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
       </div>
+      
+      <div className="tasks-table">
+        <div className="tasks-header">
+          <div className="task-cell">Название</div>
+          <div className="task-cell">Статус</div>
+          <div className="task-cell">Приоритет</div>
+          <div className="task-cell">Тип</div>
+          <div className="task-cell">Дата</div>
+          <div className="task-cell">Исполнители</div>
+        </div>
+        
+        <div className="tasks-list">
+          {sortedTasks && sortedTasks.length > 0 ? (
+            sortedTasks.map((task, index) => {
+              const completeTask = { ...task };
+              const foundType = taskTypes.find((t) => t.uuid === task.type);
+              const foundStatus = taskStatuses.find((s) => s.uuid === task.status);
+              if (foundType) completeTask.type = foundType.name;
+              if (foundStatus) completeTask.status = foundStatus.name;
+              return (
+                <TaskItem
+                  key={task.uuid || index}
+                  task={completeTask}
+                  avatars={avatars}
+                  onClick={(uuid) => setSelectedTaskUuid(uuid)}
+                />
+              );
+            })
+          ) : (
+            <div className="empty-tasks-message">
+              {searchQuery || filterStatus 
+                ? 'Нет задач, соответствующих заданным критериям' 
+                : 'Нет доступных задач. Создайте новую задачу, нажав на кнопку "Создать задачу"'}
+            </div>
+          )}
+        </div>
+      </div>
+      
       {selectedTaskUuid && (
         <TaskDetailsModal
           taskUuid={selectedTaskUuid}

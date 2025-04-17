@@ -5,12 +5,12 @@ import '../styles/TaskCard.css';
 const TaskCard = ({ task, onDragStart }) => {
   return (
     <div
-      className="task-card"
+      className="board-task-card"
       draggable="true"
       onDragStart={(e) => onDragStart(e, task)}
     >
-      <h4 className="task-card-title">{task.title}</h4>
-      <p className="task-card-description">{task.description}</p>
+      <h4 className="board-task-card-title">{task.title}</h4>
+      <p className="board-task-card-description">{task.description}</p>
     </div>
   );
 };
