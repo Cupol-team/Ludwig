@@ -1,91 +1,11 @@
 import { useParams, useSearchParams } from 'react-router-dom';
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import styled from 'styled-components';
 import useWebRTC, { LOCAL_VIDEO } from '../../../hooks/useWebRTC';
 import VideoGrid from '../../../components/VideoGrid';
 import ControlPanel from '../../../components/ControlPanel';
 import ContextMenu from '../../../components/ContextMenu';
 import LoadingOverlay from '../../../components/LoadingOverlay';
-
-// Видео — растягивается на весь контейнер; если источник является экраном – используем "contain"
-const Video = styled.video`
-    width: 100%;
-    height: 100%;
-    object-fit: ${({ $sourceType }) =>
-        $sourceType === 'screen' ? 'contain' : 'cover'};
-    cursor: pointer;
-    border: ${({ $sourceType }) =>
-        $sourceType === 'screen' ? '3px solid #4CAF50' : 'none'};
-    background: ${({ $sourceType }) =>
-        $sourceType === 'screen' ? '#000' : 'transparent'};
-    border-radius: 4px;
-`;
-
-// Контейнер страницы (занимает весь экран)
-const PageContainer = styled.div`
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-    background-color: #000;
-`;
-
-// Обертка для видео – используется для создания эффекта увеличения и позиционирования в сетке
-const VideoWrapper = styled.div`
-    position: relative;
-    width: calc(100% - 10px);
-    height: calc(100% - 10px);
-    margin: 5px;
-    border-radius: 6px;
-    overflow: hidden;
-    background: #222;
-    transition: transform 0.2s;
-    grid-column: ${({ $isFullscreen }) => $isFullscreen ? '1 / -1' : 'auto'};
-    grid-row: ${({ $isFullscreen }) => $isFullscreen ? '1 / -1' : 'auto'};
-    z-index: ${({ $isFullscreen }) => $isFullscreen ? 100 : 1};
-
-    &:hover {
-        transform: ${({ $isFullscreen }) => $isFullscreen ? 'none' : 'scale(1.02)'};
-    }
-`;
-
-// Кнопка (не используется для подключения, но оставлена для других действий)
-const Button = styled.button`
-    padding: 10px 20px;
-    background-color: ${({ danger }) => (danger === 'true' ? '#f00' : '#0f0')};
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-`;
-
-// Таймер для отображения времени звонка
-const Timer = styled.div`
-    color: #fff;
-    font-size: 18px;
-    white-space: nowrap;
-    text-align: center;
-    margin-left: auto;
-    margin-right: 20px;
-    padding: 5px 10px;
-    background-color: rgba(0, 0, 0, 0.5);
-    border-radius: 4px;
-`;
-
-// Элемент контекстного меню
-const MenuItem = styled.div`
-    padding: 8px 12px;
-    color: #fff;
-    cursor: pointer;
-    &:hover {
-        background: #444;
-    }
-`;
-
-// Слайдер громкости
-const VolumeSlider = styled.input.attrs({ type: 'range' })`
-    width: 100%;
-    margin: 8px 0;
-`;
+import '../../../styles/CallsRoom.css';
 
 // Форматирование таймера (секунды → MM:SS)
 const formatTime = (seconds) => {
@@ -93,14 +13,6 @@ const formatTime = (seconds) => {
     const secs = (seconds % 60).toString().padStart(2, '0');
     return `${mins}:${secs}`;
 };
-
-// Обертка локальной камеры (например, отображается в углу)
-const LocalCameraWrapper = styled(VideoWrapper)`
-    width: 120px;
-    height: 70px;
-    position: relative;
-    margin: 0;
-`;
 
 export default function CallsRoom() {
     const { id: roomID } = useParams();
@@ -131,8 +43,6 @@ export default function CallsRoom() {
     const [seconds, setSeconds] = useState(0);
     const [audioStatus, setAudioStatus] = useState(true);
     const [videoStatus, setVideoStatus] = useState(true);
-    // Удаляем счётчик переподключений – больше не нужен
-    // const [reconnectCounter, setReconnectCounter] = useState(0);
     const [showContextMenu, setShowContextMenu] = useState(false);
     const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
     const [selectedClient, setSelectedClient] = useState(null);
@@ -249,7 +159,22 @@ export default function CallsRoom() {
     }, [selectedClient]);
 
     return (
-        <PageContainer>
+        <div className="calls-page-container">
+            <div className="calls-header">
+                <h2 className="calls-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M15.05 5A5 5 0 0 1 19 8.95M15.05 1A9 9 0 0 1 23 8.94m-1 7.98v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    </svg>
+                    {roomName}
+                </h2>
+                <div className="calls-status">
+                    <div className="calls-status-indicator"></div>
+                    <span className="calls-status-text">Активен</span>
+                    <span className="calls-status-text">•</span>
+                    <span className="calls-status-text">{formatTime(seconds)}</span>
+                </div>
+            </div>
+            
             <VideoGrid
                 clients={clientsToRender}
                 fullScreenClient={fullScreenClient}
@@ -294,6 +219,6 @@ export default function CallsRoom() {
                 audioStatus={audioStatus}
                 seconds={seconds}
             />
-        </PageContainer>
+        </div>
     );
 }

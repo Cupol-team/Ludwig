@@ -3,9 +3,7 @@ import socket from './CallsSocket/index';
 import ACTIONS from './CallsSocket/actions';
 import { useNavigate, useParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-import { createRoomButtonStyle, joinRoomButtonStyle } from '../../../styles/HoverButtonStyles';
-import HoverButton from '../../../components/HoverButton';
-import { roomListItemStyle } from '../../../styles/RoomListStylie';
+import '../../../styles/CallsMain.css';
 
 export default function CallsMain() {
     // Получаем projectUuid из URL
@@ -41,43 +39,65 @@ export default function CallsMain() {
     }, [projectUuid]);
 
     // Функция для присоединения к комнате
-    const handleJoinRoom = (roomId) => {
-        navigate(`/room/${roomId}?projectUuid=${projectUuid}`);
+    const handleJoinRoom = (roomId, roomName) => {
+        navigate(`/room/${roomId}?roomName=${encodeURIComponent(roomName)}&projectUuid=${projectUuid}`);
     };
 
     // Функция для создания новой комнаты
     const handleCreateRoom = () => {
         const newRoomId = uuidv4();
         // Запрос имени комнаты у пользователя, если не ввёл, задаётся значение по умолчанию
-        let roomName = prompt("Введите название комнаты", "New Room") || "New Room";
+        let roomName = prompt("Введите название комнаты", "Новая комната") || "Новая комната";
         // Отправляем событие создания комнаты на сервер, чтобы он обновил список
         socket.emit(ACTIONS.CREATE_ROOM, { roomId: newRoomId, roomName, projectUuid });
         // После эмита переходим в созданную комнату
         navigate(`/room/${newRoomId}?roomName=${encodeURIComponent(roomName)}&projectUuid=${projectUuid}`);
     };
 
+    // Рендер компонента
     return (
-        <div ref={rootNode}>
-            <h1>Available Rooms</h1>
-        <ul>
-            {rooms.map((room) => (
-            <li 
-                key={room.id || room.roomId}
-                style={roomListItemStyle}
-            >
-                <strong>{room.name}</strong>
-                <HoverButton 
-                baseStyle={joinRoomButtonStyle} 
-                onClick={() => handleJoinRoom(room.id || room.roomId)}
-                >
-                Присоединиться
-                </HoverButton>
-            </li>
-            ))}
-        </ul>
-            <HoverButton baseStyle={createRoomButtonStyle} onClick={handleCreateRoom}>
-                Создать комнату
-            </HoverButton>
+        <div className="calls-container" ref={rootNode}>
+            <div className="calls-header">
+                <h1 className="calls-title">Видеозвонки</h1>
+            </div>
+            
+            {rooms.length === 0 ? (
+                <div className="calls-empty-state">
+                    <h3 className="calls-empty-state-title">Нет активных комнат</h3>
+                    <p className="calls-empty-state-description">
+                        Создайте новую комнату для видеозвонка, чтобы начать общение с участниками проекта
+                    </p>
+                    <button className="calls-create-button" onClick={handleCreateRoom}>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M12 5v14M5 12h14"/>
+                        </svg>
+                        Создать комнату
+                    </button>
+                </div>
+            ) : (
+                <div className="calls-rooms-list">
+                    {rooms.map((room) => (
+                        <div className="calls-room-card" key={room.id || room.roomId}>
+                            <div className="calls-room-header">
+                                <h3 className="calls-room-name">{room.name}</h3>
+                            </div>
+                            <div className="calls-room-body">
+                                <div className="calls-room-info">
+                                    <div className="calls-room-status">Активен</div>
+                                </div>
+                                <div className="calls-button-container">
+                                    <button 
+                                        className="calls-join-button"
+                                        onClick={() => handleJoinRoom(room.id || room.roomId, room.name)}
+                                    >
+                                        Присоединиться
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 } 

@@ -7,10 +7,10 @@ const options = {
     transports: ["websocket"],
     withCredentials: true, // Добавляем поддержку credentials
     extraHeaders: {
-        "Access-Control-Allow-Origin": "https://cupol.xyz"
+        "Access-Control-Allow-Origin": "http://localhost:3000"
     }
 }
 
-const socket = io('wss://api.cupol.xyz', options); // Передаем options в конструктор
+const socket = io('http://localhost:3000', options); // Передаем options в конструктор
 
 export default socket;

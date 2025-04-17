@@ -10,23 +10,48 @@ const TasksTab = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Загрузка задач при монтировании компонента
   useEffect(() => {
-    const controller = new AbortController();
-    setLoading(true);
-    getTasks(orgId, projectUuid, controller.signal)
-      .then((data) => {
-        // Предполагаем, что API возвращает объект { tasks: [...] }
-        setTasks(data.tasks || []);
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-
-    return () => controller.abort();
+    const fetchTasks = async () => {
+      const controller = new AbortController();
+      setLoading(true);
+      
+      try {
+        const data = await getTasks(orgId, projectUuid, controller.signal);
+        // Предполагаем, что API возвращает объект { tasks: [...] } или { response: { items: [...] } }
+        let tasksList = [];
+        
+        if (data.tasks) {
+          tasksList = data.tasks;
+        } else if (data.response && data.response.items) {
+          tasksList = data.response.items;
+        } else if (Array.isArray(data)) {
+          tasksList = data;
+        }
+        
+        setTasks(tasksList);
+      } catch (err) {
+        if (!err.name === 'AbortError') {
+          console.error('Ошибка загрузки задач:', err);
+          setError(err.message);
+        }
+      } finally {
+        setLoading(false);
+      }
+      
+      return () => controller.abort();
+    };
+    
+    fetchTasks();
   }, [orgId, projectUuid]);
 
   // Callback для обновления списка после создания задачи
   const handleTaskCreated = (newTask) => {
-    setTasks((prevTasks) => [newTask, ...prevTasks]);
+    // Проверяем, что задача имеет необходимые поля
+    if (!newTask) return;
+    
+    // Добавляем задачу в начало списка
+    setTasks((prevTasks) => [newTask, ...(prevTasks || [])]);
   };
 
   return (
@@ -42,12 +67,12 @@ const TasksTab = () => {
       <div className="tasks-content">
         {loading && <p>Загрузка задач...</p>}
         {error && <p className="error">Ошибка: {error}</p>}
-        {!loading && tasks.length === 0 && <p>Нет задач</p>}
+        {!loading && (!tasks || tasks.length === 0) && <p>Нет задач</p>}
         <ul className="tasks-list">
-          {tasks.map((task) => (
-            <li key={task.uuid} className="task-item">
-              <h4>{task.name}</h4>
-              <p>{task.description}</p>
+          {tasks && tasks.length > 0 && tasks.map((task) => (
+            <li key={task.uuid || `task-${Math.random()}`} className="task-item">
+              <h4>{task.name || 'Без названия'}</h4>
+              <p>{task.description || 'Нет описания'}</p>
             </li>
           ))}
         </ul>

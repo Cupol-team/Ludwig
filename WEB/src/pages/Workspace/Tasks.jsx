@@ -72,8 +72,20 @@ const Tasks = () => {
   };
 
   const handleTaskCreated = (newTask) => {
-    setTasks((prevTasks) => [...prevTasks, newTask]);
-    loadAvatars([newTask]);
+    // Преобразуем задачу для отображения в списке
+    const formattedTask = {
+      ...newTask,
+      // Если API не вернул UUID, используем временный
+      uuid: newTask.uuid || newTask.id || `temp-${Date.now()}`,
+    };
+    
+    // Добавляем задачу в начало списка
+    setTasks((prevTasks) => [formattedTask, ...prevTasks]);
+    
+    // Загружаем аватары исполнителей, если они есть
+    if (newTask.executors && newTask.executors.length > 0) {
+      loadAvatars([newTask]);
+    }
   };
 
   if (loading) return <Loader />;

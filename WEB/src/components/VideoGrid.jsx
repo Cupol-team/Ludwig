@@ -1,51 +1,6 @@
 import React from 'react';
-import styled from 'styled-components';
 import { LOCAL_VIDEO } from '../hooks/useWebRTC';
-
-const VideoGridContainer = styled.div`
-  display: grid;
-  grid-template-columns: ${({ $fullScreen }) =>
-    $fullScreen ? '1fr' : 'repeat(auto-fit, minmax(300px, 1fr))'};
-  grid-auto-rows: ${({ $fullScreen }) => ($fullScreen ? '1fr' : 'minmax(200px, 1fr)')};
-  grid-gap: 15px;
-  width: 100%;
-  height: calc(100vh - 100px);
-  padding: 10px;
-  background-color: #111;
-  box-sizing: border-box;
-  overflow: hidden;
-  transition: all 0.3s ease;
-`;
-
-const VideoWrapperStyled = styled.div`
-  position: relative;
-  width: calc(100% - 10px);
-  height: calc(100% - 10px);
-  margin: 5px;
-  border-radius: 6px;
-  overflow: hidden;
-  background: #222;
-  transition: transform 0.2s;
-  grid-column: ${({ $isFullscreen }) => ($isFullscreen ? '1 / -1' : 'auto')};
-  grid-row: ${({ $isFullscreen }) => ($isFullscreen ? '1 / -1' : 'auto')};
-  z-index: ${({ $isFullscreen }) => ($isFullscreen ? 100 : 1)};
-
-  &:hover {
-    transform: ${({ $isFullscreen }) => ($isFullscreen ? 'none' : 'scale(1.02)')};
-  }
-`;
-
-const VideoStyled = styled.video`
-  width: 100%;
-  height: 100%;
-  object-fit: ${({ $sourceType }) => ($sourceType === 'screen' ? 'contain' : 'cover')};
-  cursor: pointer;
-  border: ${({ $sourceType }) =>
-    $sourceType === 'screen' ? '3px solid #4CAF50' : 'none'};
-  background: ${({ $sourceType }) =>
-    $sourceType === 'screen' ? '#000' : 'transparent'};
-  border-radius: 4px;
-`;
+import '../styles/VideoGrid.css';
 
 const VideoGrid = ({
   clients,
@@ -55,22 +10,53 @@ const VideoGrid = ({
   activeVideoSource,
 }) => {
   return (
-    <VideoGridContainer $fullScreen={!!fullScreenClient}>
+    <div className={`video-grid-container ${fullScreenClient ? 'video-grid-container-fullscreen' : 'video-grid-container-normal'}`}>
       {clients
         .filter((clientID) => !fullScreenClient || clientID === fullScreenClient)
-        .map((clientID) => (
-          <VideoWrapperStyled key={clientID} $isFullscreen={clientID === fullScreenClient}>
-            <VideoStyled
-              ref={(instance) => handleProvideMediaRef(clientID, instance)}
-              autoPlay
-              playsInline
-              muted={clientID === LOCAL_VIDEO}
-              onContextMenu={handleContextMenu(clientID)}
-              $sourceType={activeVideoSource.get(clientID) || 'camera'}
-            />
-          </VideoWrapperStyled>
-        ))}
-    </VideoGridContainer>
+        .map((clientID) => {
+          const sourceType = activeVideoSource.get(clientID) || 'camera';
+          return (
+            <div 
+              key={clientID} 
+              className={`video-wrapper ${clientID === fullScreenClient ? 'video-wrapper-fullscreen' : ''}`}
+            >
+              <video
+                className={`video ${sourceType === 'screen' ? 'video-screen' : 'video-camera'}`}
+                ref={(instance) => handleProvideMediaRef(clientID, instance)}
+                autoPlay
+                playsInline
+                muted={clientID === LOCAL_VIDEO}
+                onContextMenu={handleContextMenu(clientID)}
+              />
+              
+              <div className={`participant-tag participant-tag-${sourceType}`}>
+                {sourceType === 'screen' ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M23 7l-7 5 7 5V7z"></path>
+                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                  </svg>
+                )}
+                {clientID === LOCAL_VIDEO ? 'Вы' : `Участник ${clientID.slice(0, 5)}`}
+              </div>
+              
+              <div className="fullscreen-icon" onClick={handleContextMenu(clientID)}>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <polyline points="9 21 3 21 3 15"></polyline>
+                  <line x1="21" y1="3" x2="14" y2="10"></line>
+                  <line x1="3" y1="21" x2="10" y2="14"></line>
+                </svg>
+              </div>
+            </div>
+          );
+        })}
+    </div>
   );
 };
 
