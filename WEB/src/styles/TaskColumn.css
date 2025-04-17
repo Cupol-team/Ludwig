@@ -7,11 +7,16 @@
   margin: 0 8px;
   flex: 1 1 250px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease;
+  transition: all 0.3s ease;
+  /* Ограничиваем максимальную ширину колонки */
+  max-width: 350px;
+  /* Предотвращаем выход содержимого за пределы */
+  overflow: hidden;
 }
 
+/* Удаляем эффект transform, чтобы колонка не "дрыгалась" при наведении */
 .kanban-column:hover {
-  transform: translateY(-2px);
+  background-color: #f9f9f9;
 }
 
 .kanban-column-header {
@@ -21,11 +26,61 @@
   color: #333;
   border-bottom: 2px solid #f0f0f0;
   padding-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Стиль для имени колонки */
+.column-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: calc(100% - 60px);
+  flex: 1;
+  font-size: 1.2rem;
+  font-weight: 600;
   text-transform: uppercase;
+}
+
+/* Улучшенный стиль для счетчика задач */
+.task-count {
+  flex-shrink: 0;
+  font-size: 0.8rem;
+  color: #666;
+  background: #f0f0f0;
+  padding: 2px 8px;
+  border-radius: 12px;
+  margin-left: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px; /* Минимальная ширина для круглого вида */
 }
 
 .kanban-column-content {
   min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding-bottom: 30px; /* Позволяет бросить задачу в конец списка */
+  border: 2px solid transparent; /* Добавляем прозрачную границу для предотвращения "прыжка" при наведении */
+  transition: all 0.3s ease;
+  border-radius: 8px;
+}
+
+/* Явная визуальная обратная связь при наведении на колонку */
+.kanban-column-content:hover {
+  border-color: rgba(139, 92, 246, 0.2);
+  background-color: rgba(240, 240, 240, 0.3);
+}
+
+/* Явная визуальная обратная связь при наведении задачи на колонку */
+.kanban-column-content.drop-target {
+  background-color: rgba(139, 92, 246, 0.1);
+  border-color: #8b5cf6;
 }
 
 .kanban-task-card {
@@ -60,4 +115,30 @@
   font-size: 0.9rem;
   color: #aaa;
   padding: 12px;
-} 
+  min-height: 150px; /* Увеличиваем минимальную высоту */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Стиль для подсказки о перетаскивании */
+.drag-hint {
+  margin-top: 10px;
+  font-size: 0.8rem;
+  color: #8b5cf6;
+  font-style: normal;
+}
+
+/* Дополнительная область для перетаскивания в конец списка */
+.drop-zone-spacer {
+  min-height: 100px;
+  width: 100%;
+  margin-top: auto; /* Прижимает к низу гибкого контейнера */
+}
+
+/* Для отладки можно раскомментировать, чтобы видеть область */
+/* .drop-zone-spacer {
+  background-color: rgba(0,0,255,0.05);
+  border: 1px dashed rgba(0,0,255,0.2);
+} */ 

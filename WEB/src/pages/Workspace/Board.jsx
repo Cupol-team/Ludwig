@@ -1,6 +1,12 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams } from 'react-router-dom';
-import { DndContext, closestCenter, DragOverlay } from '@dnd-kit/core';
+import { 
+    DndContext, 
+    rectIntersection,
+    DragOverlay,
+    pointerWithin,
+    getFirstCollision
+} from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
 import { getTasks, editTask } from '../../api/tasks';
 import { getTaskStatuses } from '../../api/taskStatuses';
@@ -79,6 +85,8 @@ const Board = () => {
 
     const handleDragStart = (event) => {
         setActiveId(event.active.id);
+        // Добавляем класс к телу страницы при перетаскивании
+        document.body.classList.add('is-dragging');
     };
 
     const handleDragEnd = async (event) => {
@@ -90,17 +98,34 @@ const Board = () => {
             return;
         }
 
-        const oldStatus = active.data.current.sortable?.containerId;
-        const newStatus = over.id;
-
-        // Если статус не изменился
-        if (!oldStatus || oldStatus === newStatus) {
+        const activeTaskId = active.id;
+        
+        // Извлекаем ID для целевого контейнера
+        // Если мы наводим на другую задачу, мы берем атрибут data-drop-parent,
+        // иначе используем id, что означает, что мы навели на колонку
+        let overColumnId;
+        
+        const overElement = document.getElementById(over.id.toString());
+        if (overElement && overElement.hasAttribute('data-drop-parent')) {
+            // Когда навели на задачу, берем значение атрибута data-drop-parent
+            overColumnId = overElement.getAttribute('data-drop-parent');
+        } else {
+            // Когда навели на колонку, используем id
+            overColumnId = over.id;
+        }
+        
+        // Найдем задачу, которую перемещаем
+        const movedTask = tasks.find(task => task.id.toString() === activeTaskId);
+        if (!movedTask) {
             setActiveId(null);
             return;
         }
 
-        const movedTask = tasks.find(task => task.id.toString() === active.id);
-        if (!movedTask) {
+        const oldStatus = movedTask.status;
+        const newStatus = overColumnId;
+
+        // Если статус не изменился, выходим
+        if (oldStatus === newStatus) {
             setActiveId(null);
             return;
         }
@@ -108,29 +133,40 @@ const Board = () => {
         // Сохраняем копию предшествующего состояния задач для возможности отката
         const previousTasks = [...tasks];
 
+        // Оптимистично обновляем состояние UI
         const updatedTask = { ...movedTask, status: newStatus };
         const updatedTasks = tasks.map(task =>
-            task.id.toString() === active.id ? updatedTask : task
+            task.id.toString() === activeTaskId ? updatedTask : task
         );
         setTasks(updatedTasks);
 
-        const payload = {
-            status: newStatus
-        };
-
         try {
-            await editTask(orgId, projectUuid, active.id, payload);
+            // Отправляем запрос на сервер для обновления статуса задачи
+            await editTask(orgId, projectUuid, activeTaskId, { status: newStatus });
+            console.log("Задача успешно перемещена");
         } catch (error) {
             console.error("Ошибка обновления задачи:", error);
-            // Если ошибка – откатываем состояние
+            // Если произошла ошибка, откатываем изменения в UI
             setTasks(previousTasks);
+            // Можно также показать пользователю уведомление об ошибке
         } finally {
             setActiveId(null);
+            // Удаляем класс с тела страницы после перетаскивания
+            document.body.classList.remove('is-dragging');
         }
+    };
+
+    // Очистка класса с тела при отмене перетаскивания
+    const handleDragCancel = () => {
+        setActiveId(null);
+        document.body.classList.remove('is-dragging');
     };
 
     // Найдём данные для активной задачи, используя id
     const activeTask = tasks.find(task => task.id.toString() === activeId);
+    
+    // Определяем класс для доски при активном перетаскивании
+    const boardClassName = `kanban-board ${activeId ? 'is-dragging' : ''}`;
 
     if (loading) return <Loader />;
     if (taskStatusesError)
@@ -144,15 +180,45 @@ const Board = () => {
 
     return (
         <div className="workspace-container">
+            <div className="mobile-scroll-hint">
+                ← Прокрутите влево-вправо для просмотра всех колонок →
+            </div>
             <DndContext
-                collisionDetection={closestCenter}
+                collisionDetection={(args) => {
+                    // Используем комбинацию алгоритмов для лучшего определения коллизий
+                    const pointerCollisions = pointerWithin(args);
+                    const rectCollisions = rectIntersection(args);
+                    
+                    // Если есть коллизии от указателя, используем их первыми
+                    if (pointerCollisions.length > 0) {
+                        // Проверяем все коллизии и ищем первую, которая указывает на колонку
+                        // Это позволит перетащить задачу на колонку, даже если указатель находится над другой задачей
+                        for (const collision of pointerCollisions) {
+                            const element = document.getElementById(collision.id);
+                            // Если это элемент с атрибутом data-droppable-id, это колонка
+                            if (element && element.hasAttribute('data-droppable-id')) {
+                                return [collision];
+                            }
+                        }
+                        
+                        // Если колонка не найдена, возвращаем коллизию с задачей
+                        return [pointerCollisions[0]];
+                    }
+                    
+                    // Если нет коллизий от указателя, используем прямоугольное пересечение
+                    if (rectCollisions.length > 0) {
+                        return [rectCollisions[0]];
+                    }
+                    
+                    return [];
+                }}
                 onDragStart={handleDragStart}
                 onDragEnd={(event) => {
                     handleDragEnd(event);
                 }}
-                onDragCancel={() => setActiveId(null)}
+                onDragCancel={handleDragCancel}
             >
-                <div className="kanban-board">
+                <div className={boardClassName}>
                     {statuses.map(status => (
                         <TaskColumn
                             key={status.uuid}

@@ -12,21 +12,50 @@
   transition: var(--transition);
   opacity: var(--opacity);
   z-index: var(--zIndex);
+  /* Добавляем прозрачную рамку, чтобы предотвратить "прыжки" при наведении */
+  border: 2px solid transparent;
+  transition: all 0.2s ease-in-out;
+  /* Добавляем overflow: hidden для предотвращения выхода контента за пределы */
+  overflow: hidden;
+  /* Устанавливаем макет как flex-контейнер для более контролируемого расположения */
+  display: flex;
+  flex-direction: column;
 }
+
+/* При активном перетаскивании улучшаем видимость карточки */
 .task-card:active {
   cursor: grabbing;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  transform: scale(1.02);
 }
+
+/* При наведении делаем карточку чуть заметнее */
+.task-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
 .task-card-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start; /* Выравнивание по верхнему краю */
+  width: 100%;
+  overflow: hidden; /* Предотвращаем выход содержимого */
 }
+
 .task-card-title {
   margin: 0;
   font-size: 16px;
   font-weight: 600;
   color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Ограничиваем текст двумя строками */
+  -webkit-box-orient: vertical;
+  max-width: 80%; /* Ограничиваем ширину заголовка */
 }
+
 .task-card-description {
   font-size: 0.875rem;
   color: #666;
@@ -39,12 +68,16 @@
   font-weight: bold;
   padding: 2px 6px;
   border-radius: 4px;
+  flex-shrink: 0; /* Предотвращаем сжатие */
+  white-space: nowrap; /* Предотвращаем перенос текста */
 }
 
 .task-card-actions {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0; /* Предотвращаем сжатие */
+  margin-left: 8px; /* Добавляем отступ слева */
 }
 
 /* Dropdown menu styles for the task card */
@@ -94,6 +127,14 @@
   background-color: #f0f0f0;
 }
 
+/* Стили для контента внутри карточки */
+.task-card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Предотвращаем выход контента */
+}
+
 /* Стили для футера карточки Kanban */
 .task-card-footer {
   display: flex;
@@ -102,15 +143,28 @@
   padding: 8px 12px;
   background-color: #f8f8f8;
   border-top: 1px solid #ddd;
-  border-bottom-left-radius: 6px;
-  border-bottom-right-radius: 6px;
-  margin-top: 8px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  margin-top: auto; /* Прижимаем футер к низу карточки */
+  /* Предотвращаем выход из карточки */
+  width: calc(100% + 30px); /* 30px это сумма отступов padding от родителя (15px * 2) */
+  margin-left: -15px;
+  margin-bottom: -15px;
+  box-sizing: border-box;
+  /* Обеспечиваем корректное поведение при переполнении */
+  min-width: 0;
+  overflow: hidden;
+  flex-shrink: 0; /* Предотвращаем сжатие футера */
 }
 
 .footer-left {
   display: flex;
   align-items: center;
   gap: 8px;
+  /* Предотвращаем перенос при малой ширине */
+  flex-shrink: 1;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .footer-right {
@@ -123,6 +177,11 @@
   font-size: 12px;
   font-weight: 500;
   color: #333;
+  /* Добавляем эллипсис при переполнении */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100px;
 }
 
 /* Стили для иконки приоритета */
@@ -137,6 +196,9 @@
   display: flex;
   align-items: center;
   gap: 4px;
+  flex-shrink: 0; /* Предотвращаем сжатие аватарок */
+  max-width: 80px; /* Ограничиваем максимальную ширину блока аватарок */
+  overflow: hidden;
 }
 
 .more-executors {
@@ -149,8 +211,18 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0; /* Предотвращаем сжатие аватарок */
+  border: 1px solid #fff; /* Добавляем рамку для улучшения видимости */
+}
+
+.executor-avatar img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  border: 1px solid #ddd;
 }
 
 .more-executors {
@@ -165,4 +237,5 @@
   font-weight: bold;
   color: #fff;
   border: 1px solid #ddd;
+  flex-shrink: 0; /* Предотвращаем сжатие */
 } 

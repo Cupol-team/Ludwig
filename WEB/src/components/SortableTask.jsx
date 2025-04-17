@@ -34,25 +34,36 @@ const SortableTask = ({ task, containerId, avatars }) => {
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="task-card">
-      <div className="task-card-header">
-        <h4 className="task-card-title">{task.name}</h4>
-        <div className="task-card-actions">
-          <div className="task-card-menu">
-            <button className="menu-toggle" onClick={handleMenuToggle} onMouseDown={(e) => e.stopPropagation()}>⋮</button>
-            {menuOpen && (
-              <div className="menu-dropdown">
-                <button className="menu-action" onClick={(e) => { e.stopPropagation(); alert("Действие 1") }}>Действие 1</button>
-                <button className="menu-action" onClick={(e) => { e.stopPropagation(); alert("Действие 2") }}>Действие 2</button>
-              </div>
-            )}
+    <div 
+      ref={setNodeRef} 
+      style={style} 
+      {...attributes} 
+      {...listeners} 
+      className={`task-card ${isDragging ? 'is-dragging' : ''}`}
+      data-drop-parent={containerId}
+      id={task.id.toString()}
+    >
+      <div className="task-card-content">
+        <div className="task-card-header">
+          <h4 className="task-card-title">{task.name}</h4>
+          <div className="task-card-actions">
+            <div className="task-card-menu">
+              <button className="menu-toggle" onClick={handleMenuToggle} onMouseDown={(e) => e.stopPropagation()}>⋮</button>
+              {menuOpen && (
+                <div className="menu-dropdown">
+                  <button className="menu-action" onClick={(e) => { e.stopPropagation(); alert("Действие 1") }}>Действие 1</button>
+                  <button className="menu-action" onClick={(e) => { e.stopPropagation(); alert("Действие 2") }}>Действие 2</button>
+                </div>
+              )}
+            </div>
+            <div className="task-card-badge">#{String(task.id).slice(0, 4)}</div>
           </div>
-          <div className="task-card-badge">#{String(task.id).slice(0, 4)}</div>
         </div>
       </div>
+      
       <div className="task-card-footer">
         <div className="footer-left">
-          <span className="task-type-text">{taskTypeName}</span>
+          <span className="task-type-text" title={taskTypeName}>{taskTypeName}</span>
           <span className="task-priority">
             <PriorityIcon priority={task.priority} />
           </span>

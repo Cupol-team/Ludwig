@@ -97,8 +97,7 @@ const CreateTaskButton = ({ onTaskCreated }) => {
   const formIsValid =
     formData.name.trim() !== '' &&
     formData.type.trim() !== '' &&
-    formData.status.trim() !== '' &&
-    formData.executors.length > 0;
+    formData.status.trim() !== '';
   
   // Кастомные стили для AsyncSelect
   const customStyles = {
@@ -251,7 +250,7 @@ const CreateTaskButton = ({ onTaskCreated }) => {
               </div>
               <div className="form-group">
                 <label htmlFor="task-executors">
-                  Исполнители <span className="required">*</span>
+                  Исполнители
                 </label>
                 <AsyncSelect
                   isMulti
