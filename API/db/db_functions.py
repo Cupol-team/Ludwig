@@ -252,27 +252,42 @@ def new_organization_member(user_uuid, organization_uuid, role):
         organization_member.organization_uuid = organization_uuid
 
         session = db_session.create_session()
-        session.add(organization_member)
-        session.commit()
-        session.close()
+        try:
+            session.add(organization_member)
+            session.commit()
+            
+            # Вторая часть операции - добавление в базу данных организации
+            os.chdir(os.path.join(os.getcwd(), 'db'))
+            sys.path.append(os.path.join(os.getcwd()))
 
-        os.chdir(os.path.join(os.getcwd(), 'db'))
-        sys.path.append(os.path.join(os.getcwd()))
+            user = User()
+            user.uuid = user_uuid
+            user.role = role
 
-        user = User()
-        user.uuid = user_uuid
-        user.role = role
+            _org_uuid = f"_{str(organization_uuid).replace('-', '_')}"
 
-        _org_uuid = f"_{str(organization_uuid).replace('-', '_')}"
-
-        exec(f"from organizations.db.{_org_uuid} import db_session "
-             f"as db_session{_org_uuid}")
-        os.chdir(os.path.join(os.getcwd(), "organizations", "db", _org_uuid))
-        eval(f"db_session{_org_uuid}.global_init('org_db.db')")
-        session = eval(f"db_session{_org_uuid}.create_session()")
-        session.add(user)
-        session.commit()
-        session.close()
+            exec(f"from organizations.db.{_org_uuid} import db_session "
+                f"as db_session{_org_uuid}")
+            os.chdir(os.path.join(os.getcwd(), "organizations", "db", _org_uuid))
+            eval(f"db_session{_org_uuid}.global_init('org_db.db')")
+            org_session = eval(f"db_session{_org_uuid}.create_session()")
+            org_session.add(user)
+            org_session.commit()
+            org_session.close()
+            
+        except sa.exc.IntegrityError as integrity_error:
+            # Обработка нарушения ограничения уникальности
+            session.rollback()
+            # Проверка, что ошибка действительно связана с нарушением уникального ограничения
+            if "UNIQUE constraint failed: organization_member.user_uuid, organization_member.organization_uuid" in str(integrity_error):
+                print("Пользователь уже является членом организации")
+                # Пользователь уже добавлен, считаем это успешным сценарием
+                return True, None
+            else:
+                # Другая ошибка целостности
+                raise integrity_error
+        finally:
+            session.close()
     except Exception as ex:
         print(ex)
 
