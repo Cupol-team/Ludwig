@@ -1,0 +1,145 @@
+.calls-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 24px;
+    font-family: 'Inter', 'Segoe UI', -apple-system, sans-serif;
+}
+
+.calls-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    border-bottom: 1px solid #eaeaea;
+    padding-bottom: 16px;
+}
+
+.calls-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.calls-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 0;
+    text-align: center;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    margin: 24px 0;
+}
+
+.calls-empty-state-title {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 12px;
+}
+
+.calls-empty-state-description {
+    color: #888;
+    margin-bottom: 24px;
+    max-width: 400px;
+    line-height: 1.5;
+}
+
+.calls-rooms-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.calls-room-card {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.calls-room-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.calls-room-header {
+    padding: 16px 20px;
+    background-color: #8B5CF6;
+    color: white;
+}
+
+.calls-room-name {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin: 0;
+}
+
+.calls-room-body {
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.calls-room-info {
+    flex: 1;
+}
+
+.calls-room-status {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.calls-button-container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.calls-create-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 48px;
+    background-color: #8B5CF6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0 24px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.calls-create-button:hover {
+    background-color: #7C3AED;
+}
+
+.calls-create-button svg {
+    width: 20px;
+    height: 20px;
+}
+
+.calls-join-button {
+    background-color: #fff;
+    color: #8B5CF6;
+    border: 1px solid #8B5CF6;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.calls-join-button:hover {
+    background-color: #8B5CF6;
+    color: white;
+} 
