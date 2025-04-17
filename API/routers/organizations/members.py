@@ -14,7 +14,6 @@ router = APIRouter(
     tags=["Organzation Member"],
 )
 
-# FIXME: короче я хуй знает что тут работает, а что нет, нужно починить =(
 @router.put("/add_member")
 def add_organization_member_endpoint(organization_uuid: UUID,
                                      current_user: Annotated[UserBase, Depends(get_current_user)],
@@ -25,15 +24,18 @@ def add_organization_member_endpoint(organization_uuid: UUID,
 
     :param  member_data: данные для добавления
     """
+    from fastapi import HTTPException
     method_exec = add_member_to_organization(
         organization_uuid=organization_uuid,
-        user_uuid=current_user.uuid,
+        user_uuid=member_data.member_uuid,
         role_uuid=member_data.role_uuid
     )
-
+    print(method_exec)
     if method_exec: return {
         "items": {"response": 1}
     }
+    else:
+        raise HTTPException(status_code=400, detail="User already in organization")
 
 
 @router.get("/get")

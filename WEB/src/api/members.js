@@ -96,7 +96,10 @@ export async function addMemberToOrganization(orgId, memberUuid, roleUuid, signa
   try {
     const { data } = await api.put(
       `/organizations/${orgId}/members/add_member`,
-      { user_uuid: memberUuid, role_uuid: roleUuid },
+      { 
+        member_uuid: memberUuid, 
+        role_uuid: roleUuid 
+      },
       {
         signal,
         headers: { 'Content-Type': 'application/json' }

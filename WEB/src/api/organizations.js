@@ -30,4 +30,57 @@ export async function createOrganization({ name, description }) {
         { name, description },
         { headers: { 'Content-Type': 'application/json' } }
     );
+}
+
+/**
+ * Получение ссылки приглашения для организации.
+ * @param {string} organizationUuid - UUID организации.
+ * @param {AbortSignal} signal - сигнал для отмены запроса.
+ * @returns {Promise<Object>} - объект с ссылкой приглашения.
+ */
+export async function getOrganizationInviteLink(organizationUuid, signal) {
+    try {
+        const { data } = await api.get(`/organizations/${organizationUuid}/setting/invite`, { signal });
+        return data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+/**
+ * Обновление ссылки приглашения для организации.
+ * @param {string} organizationUuid - UUID организации.
+ * @param {string} invite - новая ссылка приглашения.
+ * @param {AbortSignal} signal - сигнал для отмены запроса.
+ * @returns {Promise<Object>} - объект с обновленной ссылкой приглашения.
+ */
+export async function updateOrganizationInviteLink(organizationUuid, invite, signal) {
+    try {
+        const { data } = await api.put(
+            `/organizations/${organizationUuid}/setting/invite`, 
+            { invite },
+            { 
+                headers: { 'Content-Type': 'application/json' },
+                signal 
+            }
+        );
+        return data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+/**
+ * Получение информации об организации по коду приглашения.
+ * @param {string} inviteCode - Код приглашения.
+ * @param {AbortSignal} signal - сигнал для отмены запроса.
+ * @returns {Promise<Object>} - информация об организации.
+ */
+export async function getOrganizationByInvite(inviteCode, signal) {
+    try {
+        const { data } = await api.get(`/organizations/invite/${inviteCode}`, { signal });
+        return data;
+    } catch (error) {
+        throw error;
+    }
 } 

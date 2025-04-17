@@ -6,6 +6,7 @@ from fastapi import HTTPException, status
 from typing import List
 
 from uuid import UUID
+from sqlalchemy import func
 
 
 def get_user_organizations(db: Session, user_uuid: UUID) -> List[OrganizationResponse]:
@@ -33,7 +34,7 @@ def get_all_organizations(db: Session) -> List[dict]:
     return data
 
 
-def edit_organization(db: Session, name: str, organization_uuid: UUID, description: str | None = None):
+def edit_organization(db: Session, name: str, organization_uuid: UUID, description: str | None = None, invite: str | None = None):
     # Проверяем существование записи
     organization_data = db.query(OrganizationData).filter(OrganizationData.uuid == organization_uuid).first()
     if not organization_data:
@@ -49,7 +50,9 @@ def edit_organization(db: Session, name: str, organization_uuid: UUID, descripti
 
         if description is not None:
             organization_data.description = description
-
+            
+        if invite is not None:
+            organization_data.invite = invite
 
         db.commit()
         db.refresh(organization_data)
@@ -101,3 +104,64 @@ def add_member(organization_uuid: UUID, member: UUID, role: UUID):
             "role": role
         }
     }
+
+
+def get_organization_invite(db: Session, organization_uuid: UUID):
+    """Получение ссылки приглашения организации"""
+    organization_data = db.query(OrganizationData).filter(OrganizationData.uuid == organization_uuid).first()
+    if not organization_data:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No organization found for the uuid"
+        )
+    
+    return {"invite": organization_data.invite}
+
+
+def update_organization_invite(db: Session, organization_uuid: UUID, invite: str | None):
+    """Обновление ссылки приглашения организации"""
+    organization_data = db.query(OrganizationData).filter(OrganizationData.uuid == organization_uuid).first()
+    if not organization_data:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No organization found for the uuid"
+        )
+    
+    try:
+        # Если в invite передан полный URL, извлекаем из него только код приглашения
+        if invite and "invite/" in invite:
+            # Разбиваем URL по "invite/" и берем последнюю часть
+            invite = invite.split("invite/")[-1]
+        
+        organization_data.invite = invite
+        db.commit()
+        db.refresh(organization_data)
+        return {"invite": organization_data.invite}
+    except Exception as ex:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Error updating organization invite: {ex}"
+        )
+
+
+def get_organization_by_invite(db: Session, invite_code: str):
+    """Получение организации по коду приглашения"""
+    organization_data = db.query(OrganizationData).filter(
+        OrganizationData.invite.like(f"%{invite_code}%")
+    ).first()
+    
+    if not organization_data:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No organization found for this invite code"
+        )
+    
+    # Формируем ответ
+    response = {
+        "uuid": organization_data.uuid,
+        "name": organization_data.name,
+        "description": organization_data.description
+    }
+    
+    return response
