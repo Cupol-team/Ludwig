@@ -79,14 +79,44 @@ const CreateTaskButton = ({ onTaskCreated }) => {
     setLoading(true);
     setError(null);
     const controller = new AbortController();
+    
     try {
       const data = await createTask(orgId, projectUuid, formData, controller.signal);
-      setOpen(false);
+      
+      // Создаем полный объект задачи для добавления в список
+      // Это решает проблему пустых значений до обновления страницы
+      const newTask = {
+        ...data,
+        uuid: data.uuid || data.id || `temp-${Date.now()}`, // В зависимости от того, что возвращает API
+        name: formData.name,
+        description: formData.description,
+        type: formData.type,
+        priority: formData.priority,
+        status: formData.status,
+        date: formData.date,
+        executors: formData.executors
+      };
+      
+      // Очищаем форму
+      setFormData({
+        name: '',
+        description: '',
+        type: '',
+        priority: 0,
+        status: '',
+        date: new Date().toISOString().slice(0, 10),
+        executors: []
+      });
+      
       setSelectedExecutors([]);
-      if(onTaskCreated) onTaskCreated(data);
+      setOpen(false);
+      
+      // Передаем полный объект задачи обратно в родительский компонент
+      if(onTaskCreated) onTaskCreated(newTask);
     } catch (err) {
       if (!axios.isCancel(err)) {
-        setError(err.message);
+        console.error('Ошибка при создании задачи:', err);
+        setError(err.response?.data?.message || err.message || 'Произошла ошибка');
       }
     } finally {
       setLoading(false);
