@@ -27,4 +27,13 @@
 .workspace-tabs a.active-tab {
   color: #fff;
   background-color: #9933ff;
-} 
+}
+
+.workspace-tabs a svg {
+  margin-right: 8px;
+  vertical-align: middle;
+  position: relative;
+  top: -1px;
+  box-sizing: content-box;
+  flex-shrink: 0;
+}

@@ -7,9 +7,9 @@
 
 /* Новый класс специфичный для доски, чтобы не было конфликтов */
 .board-container {
-  height: calc(100vh - 120px); /* Учитываем высоту заголовка и табов */
+  height: calc(100vh - 100px); /* Увеличиваем видимую высоту доски */
   overflow: hidden;
-  margin-top: 20px; /* Добавляем отступ сверху от табов */
+  margin-top: 10px; /* Уменьшаем отступ сверху от табов */
   background-color: #121212; /* Основной темный фон */
   color: #ffffff; /* Белый текст */
 }
@@ -43,20 +43,20 @@ body.board-is-dragging .kanban-column-content:hover {
 /* Общие стили для доски */
 .kanban-board {
   display: flex;
-  gap: 20px;
-  padding: 20px;
+  gap: 16px; /* Уменьшаем расстояние между колоннами */
+  padding: 10px; /* Уменьшаем отступы по краям */
   overflow-x: auto; /* Разрешаем горизонтальную прокрутку */
   overflow-y: hidden; /* Предотвращаем вертикальную прокрутку самой доски */
   /* Пересчитываем высоту доски для нового контейнера */
-  height: calc(100% - 40px); /* Учитываем padding и подсказку */
-  margin-bottom: 20px;
+  height: calc(100% - 20px); /* Уменьшаем вычитаемую высоту */
+  margin-bottom: 10px; /* Уменьшаем нижний отступ */
   /* Улучшаем прокрутку */
   scrollbar-width: thin;
   scrollbar-color: #6f42c1 #2c2c2c; /* Фиолетовый скроллбар на темном фоне */
   /* Для лучшей поддержки мобильных устройств */
   -webkit-overflow-scrolling: touch; /* Плавная инерционная прокрутка на iOS */
   scroll-snap-type: x proximity; /* Элементы "притягиваются" при прокрутке */
-  scroll-padding: 20px; /* Отступы при прокрутке */
+  scroll-padding: 10px; /* Уменьшаем отступы при прокрутке */
 }
 
 /* Стилизация скроллбаров для WebKit браузеров */
@@ -79,14 +79,14 @@ body.board-is-dragging .kanban-column-content:hover {
 .kanban-column {
   background-color: #1e1e1e; /* Темно-серый фон колонки */
   border-radius: 8px;
-  padding: 15px;
-  flex: 0 0 350px; /* Фиксированная ширина для горизонтальной прокрутки */
+  padding: 12px; /* Немного уменьшаем внутренние отступы */
+  flex: 0 0 320px; /* Уменьшаем фиксированную ширину */
   min-height: 400px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Более заметная тень */
   transition: background-color 0.3s ease;
   overflow: hidden;
   /* Максимальная и минимальная ширина колонки */
-  max-width: 350px;
+  max-width: 320px; /* Уменьшаем максимальную ширину */
   min-width: 250px;
   /* Используем flex для упорядочивания содержимого */
   display: flex;
@@ -257,9 +257,9 @@ body.board-is-dragging .kanban-column-content:hover {
     overflow-x: auto;
     overflow-y: hidden;
     white-space: nowrap;
-    gap: 15px;
-    padding: 15px;
-    height: calc(100% - 40px); /* Используем 100% от board-container, учитывая отступы */
+    gap: 12px; /* Уменьшаем отступы между колоннами */
+    padding: 10px; /* Уменьшаем отступы по краям */
+    height: calc(100% - 30px); /* Используем 100% от board-container, учитывая отступы */
   }
   
   .kanban-column {
