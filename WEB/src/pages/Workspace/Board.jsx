@@ -182,7 +182,21 @@ const Board = () => {
     // Если группировка пуста, можно вывести сообщение для отладки
     const isEmpty = Object.keys(tasksByStatus).length === 0;
     if (isEmpty) {
-        return <div>Нет данных для отображения. Проверьте API и данные в консоли.</div>;
+        return (
+            <div className="empty-board-container">
+                <div className="empty-board-message">
+                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 6C4 4.89543 4.89543 4 6 4H18C19.1046 4 20 4.89543 20 6V18C20 19.1046 19.1046 20 18 20H6C4.89543 20 4 19.1046 4 18V6Z" stroke="#6f42c1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M9 9H15" stroke="#6f42c1" strokeWidth="2" strokeLinecap="round"/>
+                        <path d="M9 13H15" stroke="#6f42c1" strokeWidth="2" strokeLinecap="round"/>
+                        <path d="M9 17H13" stroke="#6f42c1" strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
+                    <h3>Нет данных для отображения</h3>
+                    <p>Не найдены задачи или статусы для этого проекта</p>
+                    <p className="hint-text">Проверьте API и настройки проекта</p>
+                </div>
+            </div>
+        );
     }
 
     return (

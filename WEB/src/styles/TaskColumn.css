@@ -1,30 +1,31 @@
 /* Стили для компонента TaskColumn (минималистичный, современный стиль) */
 
 .kanban-column {
-  background: #ffffff;
+  background: #1e1e1e; /* Темно-серый фон */
   border-radius: 8px;
   padding: 16px;
   margin: 0 8px;
   flex: 1 1 250px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Более глубокая тень */
   transition: all 0.3s ease;
   /* Ограничиваем максимальную ширину колонки */
   max-width: 350px;
   /* Предотвращаем выход содержимого за пределы */
   overflow: hidden;
+  border: 1px solid #333; /* Тонкая граница */
 }
 
 /* Удаляем эффект transform, чтобы колонка не "дрыгалась" при наведении */
 .kanban-column:hover {
-  background-color: #f9f9f9;
+  background-color: #2c2c2c; /* Чуть светлее при наведении */
 }
 
 .kanban-column-header {
   font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: 12px;
-  color: #333;
-  border-bottom: 2px solid #f0f0f0;
+  color: #ffffff; /* Белый текст */
+  border-bottom: 2px solid #6f42c1; /* Фиолетовая линия снизу */
   padding-bottom: 8px;
   display: flex;
   justify-content: space-between;
@@ -43,14 +44,15 @@
   font-size: 1.2rem;
   font-weight: 600;
   text-transform: uppercase;
+  color: #ffffff; /* Белый текст */
 }
 
 /* Улучшенный стиль для счетчика задач */
 .task-count {
   flex-shrink: 0;
   font-size: 0.8rem;
-  color: #666;
-  background: #f0f0f0;
+  color: #ffffff; /* Белый текст */
+  background: #6f42c1; /* Фиолетовый фон */
   padding: 2px 8px;
   border-radius: 12px;
   margin-left: 8px;
@@ -73,39 +75,45 @@
 
 /* Явная визуальная обратная связь при наведении на колонку */
 .kanban-column-content:hover {
-  border-color: rgba(139, 92, 246, 0.2);
-  background-color: rgba(240, 240, 240, 0.3);
+  border-color: rgba(111, 66, 193, 0.3); /* Полупрозрачная фиолетовая граница */
+  background-color: rgba(44, 44, 44, 0.5); /* Более контрастный фон */
 }
 
 /* Явная визуальная обратная связь при наведении задачи на колонку */
 .kanban-column-content.drop-target {
-  background-color: rgba(139, 92, 246, 0.1);
-  border-color: #8b5cf6;
+  background-color: rgba(111, 66, 193, 0.2); /* Более яркий фиолетовый фон */
+  border-color: #6f42c1; /* Фиолетовая граница */
+  box-shadow: inset 0 0 10px rgba(111, 66, 193, 0.2); /* Внутренняя тень для глубины */
 }
 
 .kanban-task-card {
-  background: #f9f9f9;
+  background: #2c2c2c; /* Темно-серый фон */
   border-radius: 6px;
   padding: 12px;
-  margin-bottom: 12px;
+  margin-bottom: 16px; /* Увеличиваем отступ между карточками */
   transition: background 0.2s ease;
   cursor: pointer;
+  border: 1px solid #333; /* Тонкая граница */
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4); /* Более выраженная тень */
 }
 
 .kanban-task-card:hover {
-  background: #e9e9e9;
+  background: #333333; /* Чуть светлее при наведении */
+  border-color: #6f42c1; /* Фиолетовая граница при наведении */
+  box-shadow: 0 5px 12px rgba(111, 66, 193, 0.4); /* Более заметная фиолетовая тень */
+  transform: translateY(-3px); /* Более заметный эффект подъема */
 }
 
 .kanban-task-title {
   font-size: 1rem;
   font-weight: 500;
   margin: 0 0 6px;
-  color: #222;
+  color: #ffffff; /* Белый текст */
 }
 
 .kanban-task-description {
   font-size: 0.875rem;
-  color: #666;
+  color: #aaa; /* Серый текст */
   margin: 0;
 }
 
@@ -113,20 +121,22 @@
   text-align: center;
   font-style: italic;
   font-size: 0.9rem;
-  color: #aaa;
+  color: #888; /* Серый текст */
   padding: 12px;
   min-height: 150px; /* Увеличиваем минимальную высоту */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  border: 2px dashed #333; /* Темно-серая пунктирная граница */
+  border-radius: 6px;
 }
 
 /* Стиль для подсказки о перетаскивании */
 .drag-hint {
   margin-top: 10px;
   font-size: 0.8rem;
-  color: #8b5cf6;
+  color: #6f42c1; /* Фиолетовый текст */
   font-style: normal;
 }
 
@@ -139,6 +149,6 @@
 
 /* Для отладки можно раскомментировать, чтобы видеть область */
 /* .drop-zone-spacer {
-  background-color: rgba(0,0,255,0.05);
-  border: 1px dashed rgba(0,0,255,0.2);
+  background-color: rgba(111, 66, 193, 0.05);
+  border: 1px dashed rgba(111, 66, 193, 0.2);
 } */ 

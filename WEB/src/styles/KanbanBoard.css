@@ -10,6 +10,8 @@
   height: calc(100vh - 120px); /* Учитываем высоту заголовка и табов */
   overflow: hidden;
   margin-top: 20px; /* Добавляем отступ сверху от табов */
+  background-color: #121212; /* Основной темный фон */
+  color: #ffffff; /* Белый текст */
 }
 
 /* Глобальные стили для состояния перетаскивания */
@@ -28,14 +30,14 @@ body.board-is-dragging .kanban-column {
 
 /* Когда мы перетаскиваем задачу, выделяем все колонки для улучшения UX */
 body.board-is-dragging .kanban-column-content {
-  border: 2px dashed rgba(139, 92, 246, 0.3);
-  background-color: rgba(240, 240, 240, 0.2);
+  border: 2px dashed rgba(111, 66, 193, 0.5); /* Фиолетовая пунктирная граница */
+  background-color: rgba(28, 28, 28, 0.6); /* Темно-серый фон */
 }
 
 /* А когда наводим на конкретную колонку, делаем её более заметной */
 body.board-is-dragging .kanban-column-content:hover {
-  border-color: #8b5cf6;
-  background-color: rgba(139, 92, 246, 0.1);
+  border-color: #6f42c1; /* Яркий фиолетовый */
+  background-color: rgba(111, 66, 193, 0.2); /* Светло-фиолетовый фон */
 }
 
 /* Общие стили для доски */
@@ -50,7 +52,7 @@ body.board-is-dragging .kanban-column-content:hover {
   margin-bottom: 20px;
   /* Улучшаем прокрутку */
   scrollbar-width: thin;
-  scrollbar-color: #ccc transparent;
+  scrollbar-color: #6f42c1 #2c2c2c; /* Фиолетовый скроллбар на темном фоне */
   /* Для лучшей поддержки мобильных устройств */
   -webkit-overflow-scrolling: touch; /* Плавная инерционная прокрутка на iOS */
   scroll-snap-type: x proximity; /* Элементы "притягиваются" при прокрутке */
@@ -64,23 +66,23 @@ body.board-is-dragging .kanban-column-content:hover {
 }
 
 .kanban-board::-webkit-scrollbar-track {
-  background: transparent;
+  background: #2c2c2c; /* Темный фон трека */
 }
 
 .kanban-board::-webkit-scrollbar-thumb {
-  background-color: #ccc;
+  background-color: #6f42c1; /* Фиолетовый ползунок */
   border-radius: 6px;
-  border: 3px solid #f9f9f9;
+  border: 3px solid #1c1c1c; /* Граница ползунка */
 }
 
 /* Стили для каждой колонки доски */
 .kanban-column {
-  background-color: #f9f9f9;
+  background-color: #1e1e1e; /* Темно-серый фон колонки */
   border-radius: 8px;
   padding: 15px;
   flex: 0 0 350px; /* Фиксированная ширина для горизонтальной прокрутки */
   min-height: 400px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Более заметная тень */
   transition: background-color 0.3s ease;
   overflow: hidden;
   /* Максимальная и минимальная ширина колонки */
@@ -91,24 +93,24 @@ body.board-is-dragging .kanban-column-content:hover {
   flex-direction: column;
   /* Привязка для плавной прокрутки */
   scroll-snap-align: start; /* Колонки будут "притягиваться" при прокрутке */
+  border: 1px solid #333; /* Тонкая граница */
 }
 
-/* Выделение колонки при наведении для обеспечения лучшего UX при перетаскивании
-   Убран эффект смещения transform, который вызывал "дрыгание" */
+/* Выделение колонки при наведении */
 .kanban-column:hover {
-  background-color: #f0f0f0;
+  background-color: #2c2c2c; /* Чуть светлее при наведении */
 }
 
 /* Стиль для заголовка колонки */
 .kanban-column-header {
   font-size: 1.2rem;
   font-weight: 600;
-  color: #333;
+  color: #ffffff; /* Белый текст */
   margin-bottom: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 2px solid #e0e0e0;
+  border-bottom: 2px solid #6f42c1; /* Фиолетовая линия снизу */
   padding-bottom: 8px;
   /* Обеспечиваем правильное обрезание текста */
   overflow: hidden;
@@ -131,45 +133,74 @@ body.board-is-dragging .kanban-column-content:hover {
   position: relative;
   border-radius: 6px;
   transition: background-color 0.3s ease;
+  /* Скроллбар для прокрутки содержимого */
+  scrollbar-width: thin;
+  scrollbar-color: #6f42c1 #2c2c2c;
+}
+
+/* Стилизация скроллбаров для WebKit браузеров внутри содержимого колонки */
+.kanban-column-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.kanban-column-content::-webkit-scrollbar-track {
+  background: #2c2c2c;
+}
+
+.kanban-column-content::-webkit-scrollbar-thumb {
+  background-color: #6f42c1;
+  border-radius: 4px;
 }
 
 /* При наведении на содержимое колонки делаем его более заметным для пользователя */
 .kanban-column-content:hover {
-  background-color: rgba(240, 240, 240, 0.5);
+  background-color: rgba(111, 66, 193, 0.08); /* Более заметный фиолетовый оттенок */
+  border: 2px solid rgba(111, 66, 193, 0.2); /* Более заметная граница */
 }
 
 /* Стиль для колонки, когда над ней что-то перетаскивается (active drop target) */
 .kanban-column-content.drop-target {
-  background-color: rgba(139, 92, 246, 0.1);
-  border: 2px dashed #8b5cf6;
+  background-color: rgba(111, 66, 193, 0.15); /* Фиолетовый фон */
+  border: 2px solid #6f42c1; /* Яркая фиолетовая граница */
+  box-shadow: inset 0 0 10px rgba(111, 66, 193, 0.1); /* Внутренняя тень для глубины */
   padding: 8px; /* Компенсируем border */
 }
 
 /* Пустая колонка должна иметь минимальную высоту для удобного перетаскивания */
 .kanban-column-content:empty {
   min-height: 300px;
-  border: 2px dashed #ddd;
+  border: 2px dashed #6f42c1; /* Фиолетовая пунктирная граница */
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .kanban-task-card {
-  background-color: #fff;
+  background-color: #2c2c2c; /* Темный фон карточки */
   border-radius: 4px;
-  padding: 8px;
-  margin-bottom: 12px; /* Немного увеличиваем зазор между карточками */
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  padding: 12px;
+  margin-bottom: 12px; /* Увеличиваем зазор между карточками */
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4); /* Более заметная тень */
+  border: 1px solid #333; /* Тонкая граница */
+  transition: all 0.2s ease;
+}
+
+.kanban-task-card:hover {
+  box-shadow: 0 4px 10px rgba(111, 66, 193, 0.4); /* Более яркая фиолетовая тень */
+  border-color: #6f42c1; /* Фиолетовая граница при наведении */
+  transform: translateY(-2px); /* Легкий эффект подъема */
+  background-color: #333333; /* Чуть светлее при наведении */
 }
 
 .kanban-task-title {
   font-size: 1em;
   margin: 0 0 4px;
+  color: #ffffff; /* Белый текст */
 }
 
 .kanban-task-description {
   font-size: 0.9em;
-  color: #555;
+  color: #aaa; /* Серый текст для описания */
   margin: 0;
 }
 
@@ -185,9 +216,9 @@ body.board-is-dragging .kanban-column-content:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #999;
+  color: #888; /* Серый текст */
   font-style: italic;
-  border: 2px dashed #ddd;
+  border: 2px dashed #333; /* Темно-серая пунктирная граница */
   border-radius: 6px;
   margin: 10px 0;
 }
@@ -199,7 +230,7 @@ body.board-is-dragging .kanban-column-content:hover {
 }
 
 .board-is-dragging .kanban-column:hover {
-  border-color: #8b5cf6;
+  border-color: #6f42c1; /* Фиолетовая граница */
 }
 
 /* Явная инструкция для мобильных устройств */
@@ -207,11 +238,11 @@ body.board-is-dragging .kanban-column-content:hover {
   display: none; /* По умолчанию скрыт */
   text-align: center;
   padding: 8px;
-  background-color: rgba(139, 92, 246, 0.1);
+  background-color: rgba(111, 66, 193, 0.1); /* Легкий фиолетовый фон */
   border-radius: 4px;
   margin-bottom: 10px;
   font-size: 14px;
-  color: #666;
+  color: #aaa; /* Серый текст */
 }
 
 /* Показываем подсказку только на мобильных устройствах */
@@ -237,4 +268,61 @@ body.board-is-dragging .kanban-column-content:hover {
     max-width: 85%;
     min-width: 85%;
   }
+}
+
+/* Стили для пустой доски */
+.empty-board-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 120px);
+  background-color: #121212;
+  color: #ffffff;
+}
+
+.empty-board-message {
+  text-align: center;
+  padding: 40px;
+  background-color: #1e1e1e;
+  border-radius: 8px;
+  border: 1px solid #333;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  max-width: 500px;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.empty-board-message svg {
+  margin-bottom: 20px;
+  filter: drop-shadow(0 0 8px rgba(111, 66, 193, 0.4));
+}
+
+.empty-board-message h3 {
+  color: #6f42c1;
+  font-size: 24px;
+  margin: 0 0 12px 0;
+  font-weight: 500;
+}
+
+.empty-board-message p {
+  color: #aaa;
+  margin: 0 0 8px 0;
+  font-size: 16px;
+}
+
+.empty-board-message .hint-text {
+  color: #777;
+  font-size: 14px;
+  font-style: italic;
+  margin-top: 20px;
 } 
