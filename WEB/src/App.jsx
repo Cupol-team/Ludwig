@@ -44,7 +44,10 @@ const App = () => {
     return (
         <>
             <GlobalStyle />
-            {location.pathname !== '/register' && location.pathname !== '/login' && !location.pathname.startsWith('/invite/') && <Header />} {/* Условие для отображения Header */}
+            {location.pathname !== '/register' && 
+             location.pathname !== '/login' && 
+             !location.pathname.startsWith('/invite/') && 
+             !location.pathname.startsWith('/room/') && <Header />} {/* Условие для отображения Header */}
             <Suspense fallback={<Loader />}>
                 <Routes>
                     <Route 
