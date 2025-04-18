@@ -7,7 +7,7 @@ const options = {
     transports: ["websocket"],
     withCredentials: true, // Добавляем поддержку credentials
     extraHeaders: {
-        "Access-Control-Allow-Origin": "http://localhost:3000"
+        "Access-Control-Allow-Origin": "*"
     }
 }
 

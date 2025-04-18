@@ -54,7 +54,20 @@ export default function useWebRTC(roomID, { roomName, projectUuid } = {}) {
                 }
 
                 const peerConnection = new RTCPeerConnection({
-                    iceServers: freeice(),
+                    iceServers: [
+                        { urls: 'stun:stun.l.google.com:19302' },
+                        { urls: 'stun:stun1.l.google.com:19302' },
+                        { urls: 'stun:stun2.l.google.com:19302' },
+                        { urls: 'stun:stun3.l.google.com:19302' },
+                        { urls: 'stun:stun4.l.google.com:19302' }
+                        // Здесь можно добавить конфигурацию TURN сервера при необходимости
+                        // Например:
+                        // {
+                        //     urls: 'turn:your-turn-server.com:3478',
+                        //     username: 'username',
+                        //     credential: 'password'
+                        // }
+                    ],
                 });
 
                 peerConnections.current[peerID] = peerConnection;
@@ -83,7 +96,7 @@ export default function useWebRTC(roomID, { roomName, projectUuid } = {}) {
 
                         applyStream();
                         const retryInterval = setInterval(applyStream, 1000);
-                        
+
                         remoteStream.onremovetrack = () => {
                             clearInterval(retryInterval);
                             handleNewPeer({ peerID, createOffer: true });
@@ -249,7 +262,7 @@ export default function useWebRTC(roomID, { roomName, projectUuid } = {}) {
                 video: true,
                 audio: true
             });
-            
+
             const screenTrack = screenStream.getVideoTracks()[0];
             screenTrackRef.current = screenTrack;
 
@@ -262,7 +275,7 @@ export default function useWebRTC(roomID, { roomName, projectUuid } = {}) {
             // Обновляем локальный поток
             localMediaStream.current.getVideoTracks().forEach(track => track.stop());
             localMediaStream.current.addTrack(screenTrack);
-            
+
             setIsScreenSharing(true);
             screenTrack.onended = () => {
                 stopScreenSharing();
@@ -276,12 +289,12 @@ export default function useWebRTC(roomID, { roomName, projectUuid } = {}) {
     // Функция остановки демонстрации
     const stopScreenSharing = useCallback(() => {
         if (!screenTrackRef.current) return;
-        
+
         // Сохраняем оригинальные настройки камеры
         const originalConstraints = {
-            video: { 
-                width: 1280, 
-                height: 720, 
+            video: {
+                width: 1280,
+                height: 720,
                 frameRate: 30
             },
             audio: true
@@ -295,13 +308,13 @@ export default function useWebRTC(roomID, { roomName, projectUuid } = {}) {
         navigator.mediaDevices.getUserMedia(originalConstraints)
             .then(cameraStream => {
                 const cameraTrack = cameraStream.getVideoTracks()[0];
-                
+
                 // Аккуратная замена треков
                 localMediaStream.current.getVideoTracks().forEach(track => {
                     track.stop();
                     localMediaStream.current.removeTrack(track);
                 });
-                
+
                 localMediaStream.current.addTrack(cameraTrack);
 
                 // Обновляем все peer-соединения
