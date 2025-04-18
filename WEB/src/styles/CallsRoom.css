@@ -133,6 +133,58 @@
 .calls-volume-slider {
     width: 100%;
     margin: 8px 0;
+    height: 6px;
+    -webkit-appearance: none;
+    background: rgba(139, 92, 246, 0.3);
+    border-radius: 3px;
+    outline: none;
+}
+
+.calls-volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #8B5CF6;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.calls-volume-slider::-moz-range-thumb {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #8B5CF6;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.calls-volume-slider::-ms-thumb {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #8B5CF6;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.calls-volume-slider::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 3px;
+}
+
+.calls-volume-slider::-moz-range-track {
+    height: 6px;
+    border-radius: 3px;
+}
+
+.calls-volume-slider::-ms-track {
+    height: 6px;
+    border-radius: 3px;
+    background: transparent;
+    border-color: transparent;
+    color: transparent;
 }
 
 .calls-local-camera {

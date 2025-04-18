@@ -99,12 +99,19 @@ export default function CallsRoom() {
     // Инициализация громкости для каждого клиента
     useEffect(() => {
         const newVolumes = { ...clientVolumes };
+        const newPrevVolumes = { ...prevVolumes };
+        
         clientsToRender.forEach(clientID => {
             if (!(clientID in newVolumes)) {
                 newVolumes[clientID] = 1;
             }
+            if (!(clientID in newPrevVolumes)) {
+                newPrevVolumes[clientID] = 1;
+            }
         });
+        
         setClientVolumes(newVolumes);
+        setPrevVolumes(newPrevVolumes);
     }, [clientsToRender]);
 
     // Привязка ссылки на видеоэлемент и установка начальной громкости
@@ -112,34 +119,64 @@ export default function CallsRoom() {
         provideMediaRef(clientID, instance);
         if (instance) {
             videoElements.current[clientID] = instance;
-            instance.volume = clientVolumes[clientID] ?? 1;
+            
+            // Безопасно устанавливаем громкость
+            const volume = clientVolumes[clientID];
+            if (typeof volume === 'number') {
+                instance.volume = volume;
+            } else {
+                instance.volume = 1;
+                // Обновляем состояние, если значение не определено
+                setClientVolumes(prev => ({...prev, [clientID]: 1}));
+            }
         }
     }, [clientVolumes, provideMediaRef]);
 
     // Обработчик изменения громкости
     const handleVolumeChange = useCallback((clientID, newVolume) => {
+        // Проверяем, что громкость не равна 0, чтобы избежать проблемы с установкой максимальной громкости
+        if (newVolume === 0) {
+            // Если устанавливается 0, считаем это мутом и сохраняем предыдущее значение
+            const prevVolume = prevVolumes[clientID] || 1;
+            setPrevVolumes(prev => ({ ...prev, [clientID]: prevVolume }));
+        } else if (clientVolumes[clientID] === 0 && newVolume > 0) {
+            // Если звук был выключен, но теперь включается, считаем это размутом
+            setPrevVolumes(prev => ({ ...prev, [clientID]: 0 }));
+        }
+        
+        // Обновляем громкость
         setClientVolumes(prev => ({
             ...prev,
             [clientID]: newVolume
         }));
+        
+        // Применяем значение к элементу
         if (videoElements.current[clientID]) {
             videoElements.current[clientID].volume = newVolume;
         }
-    }, []);
+    }, [clientVolumes, prevVolumes]);
 
     // Обработчик переключения состояния "Mute"
     const handleMuteToggle = useCallback((clientID) => {
         const currentVolume = clientVolumes[clientID] ?? 1;
+        
         if (currentVolume === 0) {
+            // Размутить - восстанавливаем сохраненное значение громкости
             const prevVolume = prevVolumes[clientID] ?? 1;
+            
+            // Обновляем состояние громкости
             setClientVolumes(prev => ({ ...prev, [clientID]: prevVolume }));
-            setPrevVolumes(prev => ({ ...prev, [clientID]: 0 }));
+            
+            // Применяем к элементу
             if (videoElements.current[clientID]) {
                 videoElements.current[clientID].volume = prevVolume;
             }
         } else {
+            // Замутить - сохраняем текущую громкость и устанавливаем 0
             setPrevVolumes(prev => ({ ...prev, [clientID]: currentVolume }));
             setClientVolumes(prev => ({ ...prev, [clientID]: 0 }));
+            
+            // Применяем к элементу
             if (videoElements.current[clientID]) {
                 videoElements.current[clientID].volume = 0;
             }
