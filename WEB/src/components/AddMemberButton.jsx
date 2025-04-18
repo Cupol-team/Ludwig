@@ -110,24 +110,26 @@ const AddMemberButton = ({ onMemberAdded }) => {
                   </option>
                   {organizationMembers.map((member) => (
                     <option key={member.uuid} value={member.uuid}>
-                      {member.name} {member.second_name}
+                      {member.name} {member.second_name || ''}
                     </option>
                   ))}
                 </select>
               </div>
-
+              
               <div className="form-group">
                 <label htmlFor="role-select">Выберите роль</label>
                 <select
                   id="role-select"
                   value={selectedRole}
                   onChange={(e) => setSelectedRole(e.target.value)}
-                  disabled={loading || !roles || roles.length === 0}
+                  disabled={loading || roles.length === 0}
                 >
                   <option value="">
-                    {roles && roles.length > 0 ? 'Выберите роль' : 'Роли отсутствуют'}
+                    {loading ? 'Загрузка...' : 
+                     roles.length === 0 ? 'Нет доступных ролей' : 
+                     'Выберите роль'}
                   </option>
-                  {roles && roles.map((role) => (
+                  {roles.map((role) => (
                     <option key={role.uuid} value={role.uuid}>
                       {role.name}
                     </option>
@@ -140,7 +142,7 @@ const AddMemberButton = ({ onMemberAdded }) => {
                 className="submit-button"
                 disabled={loading || !selectedMember || !selectedRole}
               >
-                {loading ? 'Добавление...' : 'Добавить'}
+                {loading ? 'Добавление...' : 'Добавить участника'}
               </button>
             </form>
           </div>
