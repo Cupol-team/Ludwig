@@ -62,7 +62,7 @@ async def get_user_projects_endpoint(current_user: Annotated[UserBase, Depends(g
 
 @router.put("/update")
 async def update_user_endpoint(current_user: Annotated[UserBase, Depends(get_current_user)], user_data: UserBaseData):
-    service_method = update_user_service(current_user.uuid, user_data.name, user_data.surname, user_data.gender, user_data.date_of_birthday, user_data.email)
+    service_method = update_user_service(current_user.uuid, user_data.name, user_data.surname, user_data.gender, user_data.date_of_birthday, user_data.email, user_data.password)
 
     if service_method:
         return {    

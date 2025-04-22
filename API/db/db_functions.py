@@ -1718,7 +1718,7 @@ def update_user(user_uuid: uuid.UUID,
     :param email: Новый email (если указан).
     :param password: Новый пароль (если указан, будет обработан методом set_password).
     :param gender: Новый пол (если указан).
-    :param date_of_birthday: Новая дата рождения (если указана).
+    :param date_of_birthday: Новая дата рождения (если указана, в формате YYYY-MM-DD).
     :return: Словарь с сообщением об успешном обновлении.
     """
     session = db_session.create_session()
@@ -1738,7 +1738,12 @@ def update_user(user_uuid: uuid.UUID,
     if gender is not None:
         user_data.gender = gender
     if date_of_birthday is not None:
-        user_data.date_of_birthday = date_of_birthday
+        try:
+            parsed_date = datetime.date.fromisoformat(date_of_birthday)
+            user_data.date_of_birthday = parsed_date
+        except ValueError:
+            session.close()
+            raise ValueError("Неверный формат даты. Используйте формат YYYY-MM-DD для даты рождения")
     if email is not None:
         user_login_data.email = email
     if password is not None:

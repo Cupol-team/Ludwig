@@ -18,5 +18,5 @@ def get_user_projects_service(user_id: UUID):
     """
     return get_all_user_projects(user_id)
 
-def update_user_service(user_id: UUID, name: str | None = None, surname: str | None = None, email: str | None = None, password: str | None = None, gender: str | None = None, date_of_birthday: str | None = None):
-    return update_user(user_id, name, surname, email, password, gender, date_of_birthday)
+def update_user_service(user_id: UUID, name: str | None = None, surname: str | None = None, gender: str | None = None, date_of_birthday: str | None = None, email: str | None = None, password: str | None = None):
+    return update_user(user_id, name, surname, gender, password, email, date_of_birthday)
