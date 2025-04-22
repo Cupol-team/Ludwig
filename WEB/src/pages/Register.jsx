@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import CustomDatePicker from "../components/CustomDatePicker";
+import BirthdayPicker from "../components/BirthdayPicker";
 import Notification from "../components/Notification";
 import "../styles/Register.css";
 import { registerApi } from "../api/auth";
@@ -97,9 +97,11 @@ const Register = () => {
     
     // Обработчик изменения даты рождения
     const handleDateChange = (date) => {
+        // Преобразуем строку в объект Date для проверки возраста
+        const dateObj = new Date(date);
         setFormData(prev => ({
             ...prev,
-            date_of_birthday: date
+            date_of_birthday: dateObj
         }));
     };
     
@@ -329,10 +331,9 @@ const Register = () => {
                     
                     <div className="date-picker-container">
                         <label>Дата рождения:</label>
-                        <CustomDatePicker
-                            selected={formData.date_of_birthday}
+                        <BirthdayPicker
+                            value={formData.date_of_birthday.toISOString().split('T')[0]}
                             onChange={handleDateChange}
-                            showTimeSelect={false}
                         />
                         {!validation.age && (
                             <div className="validation-error">Возраст должен быть не менее 7 лет</div>

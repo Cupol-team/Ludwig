@@ -12,7 +12,7 @@ import {
   HiddenInput,
   AvatarInitials
 } from '../styles/ProfileCardStyles';
-import CustomDatePicker from './CustomDatePicker';
+import BirthdayPicker from './BirthdayPicker';
 import { getUserAvatar } from '../api/profile';
 
 const ProfileCard = ({ profile, isCurrentUser, onProfileUpdate, onAvatarUpload }) => {
@@ -22,7 +22,12 @@ const ProfileCard = ({ profile, isCurrentUser, onProfileUpdate, onAvatarUpload }
   const [loading, setLoading] = useState(true);
   
   useEffect(() => {
-    setEditedProfile({ ...profile });
+    // Когда профиль обновляется, мы получаем новые данные от сервера
+    // Убедимся, что формат даты рождения корректный для всех компонентов
+    if (profile) {
+      const updatedProfile = { ...profile };
+      setEditedProfile(updatedProfile);
+    }
     
     // Загружаем аватар при монтировании компонента и при изменении UUID профиля
     if (profile && profile.uuid) {
@@ -75,10 +80,12 @@ const ProfileCard = ({ profile, isCurrentUser, onProfileUpdate, onAvatarUpload }
   };
   
   const handleDateChange = (date) => {
+    // Получаем строку в формате YYYY-MM-DD и сохраняем её
     setEditedProfile(prev => ({
       ...prev,
       date_of_birthday: date
     }));
+    console.log("Дата изменена на:", date);
   };
   
   const handleEditToggle = () => {
@@ -156,6 +163,7 @@ const ProfileCard = ({ profile, isCurrentUser, onProfileUpdate, onAvatarUpload }
           value={editedProfile.name || ''}
           onChange={handleInputChange}
           readOnly={!isEditing}
+          placeholder="Введите имя"
         />
       </ProfileField>
 
@@ -166,6 +174,7 @@ const ProfileCard = ({ profile, isCurrentUser, onProfileUpdate, onAvatarUpload }
           value={editedProfile.surname || ''}
           onChange={handleInputChange}
           readOnly={!isEditing}
+          placeholder="Введите фамилию"
         />
       </ProfileField>
 
@@ -176,22 +185,49 @@ const ProfileCard = ({ profile, isCurrentUser, onProfileUpdate, onAvatarUpload }
           value={editedProfile.email || ''}
           onChange={handleInputChange}
           readOnly={!isEditing}
+          placeholder="Введите email"
         />
       </ProfileField>
 
       <ProfileField>
         <Label>Пол</Label>
-        <Input 
-          name="gender"
-          value={genderText} // Отображаем текст гендера
-          readOnly
-        />
+        {isEditing ? (
+          <select 
+            name="gender"
+            value={editedProfile.gender || '0'}
+            onChange={handleInputChange}
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              borderRadius: '8px',
+              border: '1px solid #6f42c1',
+              background: '#2b2b2b',
+              color: 'white',
+              fontSize: '16px',
+              cursor: 'pointer',
+              appearance: 'none',
+              backgroundImage: 'linear-gradient(45deg, transparent 50%, #6f42c1 50%), linear-gradient(135deg, #6f42c1 50%, transparent 50%)',
+              backgroundPosition: 'calc(100% - 20px) calc(1em + 2px), calc(100% - 15px) calc(1em + 2px)',
+              backgroundSize: '5px 5px, 5px 5px',
+              backgroundRepeat: 'no-repeat'
+            }}
+          >
+            <option value="0">Женский</option>
+            <option value="1">Мужской</option>
+          </select>
+        ) : (
+          <Input 
+            name="gender"
+            value={genderText} 
+            readOnly
+          />
+        )}
       </ProfileField>
 
       <ProfileField>
         <Label>Дата рождения</Label>
-        <CustomDatePicker
-          selectedDate={editedProfile.date_of_birthday}
+        <BirthdayPicker
+          value={editedProfile.date_of_birthday}
           onChange={handleDateChange}
           disabled={!isEditing}
         />
