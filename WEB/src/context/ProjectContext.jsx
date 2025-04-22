@@ -4,6 +4,7 @@ import { getRoles } from '../api/roles';
 import { getTaskTypes } from '../api/taskTypes';
 import { getTaskStatuses } from '../api/taskStatuses';
 import { getMembers } from '../api/members';
+import { getProjectInfo } from '../api/projects';
 
 export const ProjectContext = createContext({
   members: [],
@@ -12,14 +13,18 @@ export const ProjectContext = createContext({
   roles: [],
   projectName: '',
   projectDescription: '',
+  projectPhoto: null,
   setProjectName: () => {},
   setProjectDescription: () => {},
+  setProjectPhoto: () => {},
   loadingRoles: true,
   rolesError: null,
   loadingTaskTypes: true,
   taskTypesError: null,
   loadingTaskStatuses: true,
   taskStatusesError: null,
+  loadingProjectInfo: true,
+  projectInfoError: null,
 });
 
 export function ProjectProvider({ children }) {
@@ -41,6 +46,9 @@ export function ProjectProvider({ children }) {
   const [members, setMembers] = useState([]);
   const [projectName, setProjectName] = useState('');
   const [projectDescription, setProjectDescription] = useState('');
+  const [projectPhoto, setProjectPhoto] = useState(null);
+  const [loadingProjectInfo, setLoadingProjectInfo] = useState(true);
+  const [projectInfoError, setProjectInfoError] = useState(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -107,6 +115,32 @@ export function ProjectProvider({ children }) {
     }
   }, [orgId, projectUuid]);
 
+  // Загрузка информации о проекте
+  useEffect(() => {
+    if (orgId && projectUuid) {
+      const controller = new AbortController();
+      setLoadingProjectInfo(true);
+      
+      getProjectInfo(orgId, projectUuid, controller.signal)
+        .then((data) => {
+          if (data) {
+            setProjectName(data.name || '');
+            setProjectDescription(data.description || '');
+            setProjectPhoto(data.photo_url || null);
+          }
+        })
+        .catch((error) => {
+          console.error('Ошибка при загрузке информации о проекте:', error);
+          setProjectInfoError(error);
+        })
+        .finally(() => {
+          setLoadingProjectInfo(false);
+        });
+        
+      return () => controller.abort();
+    }
+  }, [orgId, projectUuid]);
+
   return (
     <ProjectContext.Provider
       value={{
@@ -128,6 +162,10 @@ export function ProjectProvider({ children }) {
         setProjectName,
         projectDescription,
         setProjectDescription,
+        projectPhoto,
+        setProjectPhoto,
+        loadingProjectInfo,
+        projectInfoError,
       }}
     >
       {children}

@@ -1069,8 +1069,8 @@ def new_project_task(organization_uuid, project_uuid, creator, executors, date, 
     task_executors = []
     for i in executors:
         task_executor = TaskExecutor()
-        task_executor.user_uuid = i
-        task_executor.task_uuid = task_uuid
+        task_executor.user = i
+        task_executor.task = task_uuid
         task_executors.append(task_executor)
 
     exec(f"from db.organizations.db.{_org_uuid}.projects.{_project_uuid} import db_session "
@@ -2038,7 +2038,7 @@ def delete_project(organization_uuid, project_uuid):
         exec(
             f"from db.organizations.db.{_org_uuid}.projects.{_project_uuid} import db_session as db_session{_org_uuid}")
         eval(
-            f"db_session{_org_uuid}.global_init('db/organizations/db/{_org_uuid}/organization_db.db')")
+            f"db_session{_org_uuid}.global_init('db/organizations/db/{_org_uuid}/projects/{_project_uuid}/project_db.db')")
         org_session = eval(f"db_session{_org_uuid}.create_session()")
         
         # Удаляем запись о проекте из базы данных организации
@@ -2060,3 +2060,54 @@ def delete_project(organization_uuid, project_uuid):
         if 'org_session' in locals():
             org_session.close()
             print("Organization database session closed")
+
+def get_project_info(organization_uuid: uuid.UUID, project_uuid: uuid.UUID) -> dict:
+    """
+    Возвращает информацию о проекте, включая UUID аватарки проекта.
+    
+    :param organization_uuid: UUID организации
+    :param project_uuid: UUID проекта
+    :return: Словарь с информацией о проекте, включая UUID аватарки
+    """
+    try:
+        _org_uuid = f"_{str(organization_uuid).replace('-', '_')}"
+        _project_uuid = f"_{str(project_uuid).replace('-', '_')}"
+        
+        print(f"Getting project info: org={organization_uuid}, project={project_uuid}")
+        
+        # Настраиваем сессию для БД организации
+        exec(f"from db.organizations.db.{_org_uuid} import db_session as db_session{_org_uuid}")
+        eval(f"db_session{_org_uuid}.global_init('db/organizations/db/{_org_uuid}/org_db.db')")
+        session = eval(f"db_session{_org_uuid}.create_session()")
+        
+        # Динамический импорт класса ProjectData
+        ProjectData = eval(f"importlib.import_module('.project_data', package='db.organizations.db.{_org_uuid}')").ProjectData
+        
+        # Получаем данные проекта из базы организации
+        project_data = session.query(ProjectData).filter(ProjectData.uuid == project_uuid).first()
+        
+        if not project_data:
+            session.close()
+            print(f"Сессия базы данных организации закрыта")
+            raise Exception(f"Проект с UUID {project_uuid} не найден")
+        
+        # Формируем информацию о проекте
+        # Вместо того чтобы пытаться вернуть сам аватар, просто возвращаем UUID проекта
+        # для последующего получения аватара через API
+        project_info = {
+            "uuid": str(project_uuid),
+            "name": project_data.name,
+            "description": project_data.description if project_data.description else "",
+            "avatar_uuid": str(project_uuid)  # Используем UUID проекта для получения аватара
+        }
+        
+        session.close()
+        print(f"Сессия базы данных организации закрыта")
+        return project_info
+    except Exception as e:
+        logger.error(f"Ошибка при получении информации о проекте {project_uuid}: {str(e)}")
+        if 'session' in locals():
+            session.close()
+            print(f"Сессия базы данных организации закрыта при ошибке")
+        raise Exception(f"Не удалось получить информацию о проекте: {str(e)}")
+

@@ -41,4 +41,28 @@ export async function createProject(organizationId, { name, description }) {
     } catch (error) {
         throw error;
     }
+}
+
+/**
+ * Получение информации о проекте
+ * @param {string} organizationId - UUID организации
+ * @param {string} projectUuid - UUID проекта
+ * @param {AbortSignal} [signal] - Сигнал для отмены запроса
+ * @returns {Promise<Object>} - Объект с информацией о проекте
+ */
+export async function getProjectInfo(organizationId, projectUuid, signal) {
+  try {
+    const { data } = await api.get(
+      `/organizations/${organizationId}/project/${projectUuid}/info/`,
+      { signal }
+    );
+    // Предполагаем, что ответ приходит напрямую, без обертки response/items
+    return data;
+  } catch (error) {
+    if (axios.isCancel(error)) {
+      console.log('Запрос был отменен', error.message);
+      return null;
+    }
+    throw error;
+  }
 } 
