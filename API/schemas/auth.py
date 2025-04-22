@@ -26,8 +26,7 @@ class TokenData(BaseModel):
     """
     Схема для данных токена, декодированных из JWT.
     """
-    user_id: Optional[int] = None
-    email: Optional[EmailStr] = None
+    uuid: Optional[str] = None
 
 class RegisterRequest(BaseModel):
     """Схема запроса на регистрацию пользователя"""

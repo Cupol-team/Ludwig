@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status, Body
+from fastapi import APIRouter, Depends, HTTPException, status, Body, Query
 from fastapi.security import OAuth2PasswordRequestForm
 from schemas import UserBase
 from schemas.auth import RegisterRequest, Token
@@ -38,16 +38,18 @@ def login_for_access_token(
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.email}, expires_delta=access_token_expires
+        data={"sub": str(user.uuid)}, expires_delta=access_token_expires
     )
-    refresh_token = create_refresh_token(data={"sub": user.email})
+    refresh_token = create_refresh_token(data={"sub": str(user.uuid)})
     
     return Token(access_token=access_token, refresh_token=refresh_token, token_type="bearer")
 
 @router.post("/refresh")
-def refresh_access_token(refresh_token: str) -> Token:
+def refresh_access_token(refresh_token: str = Query(...)) -> Token:
     """
     Обновление access token с помощью refresh token
+    
+    Принимает refresh_token в query параметрах
     """
     token_data = verify_refresh_token(refresh_token)
     if not token_data:
@@ -57,23 +59,30 @@ def refresh_access_token(refresh_token: str) -> Token:
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    
-    user = get_user(token_data.email)
-    if not user:
+    try:
+        user = get_user(token_data.uuid)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="User not found",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        
+        # Создаем новые токены
+        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        access_token = create_access_token(
+            data={"sub": token_data.uuid}, expires_delta=access_token_expires
+        )
+        new_refresh_token = create_refresh_token(data={"sub": token_data.uuid})
+        
+        return Token(access_token=access_token, refresh_token=new_refresh_token, token_type="bearer")
+    except ValueError as e:
+        # Если произошла ошибка при преобразовании UUID
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found",
+            detail="Invalid user ID format",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
-    # Создаем новые токены
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": user.email}, expires_delta=access_token_expires
-    )
-    new_refresh_token = create_refresh_token(data={"sub": user.email})
-    
-    return Token(access_token=access_token, refresh_token=new_refresh_token, token_type="bearer")
 
 @router.get("/profile")
 def read_profile(current_user: Annotated[UserBase, Depends(get_current_user)]):

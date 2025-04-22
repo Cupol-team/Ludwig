@@ -3,6 +3,7 @@ from fastapi import HTTPException, status, Depends
 from fastapi.security import OAuth2PasswordBearer
 from typing import Dict, Annotated
 from contextlib import contextmanager
+import uuid
 
 from db import create_session, new_user
 
@@ -37,15 +38,21 @@ def get_db():
     finally:
         db.close()
 
-def get_user(email: str):
-    with get_db() as db:
-        return db.query(UserLoginData).filter(UserLoginData.email == email).first()
+def get_user(uuid_str: str):
+    try:
+        uuid_obj = uuid.UUID(uuid_str)
+        with get_db() as db:
+            return db.query(UserLoginData).filter(UserLoginData.uuid == uuid_obj).first()
+    except ValueError:
+        # Если строка не может быть преобразована в UUID
+        return None
 
 def authenticate_user(email: str, password: str):
-    user = get_user(email)
-    if not user or not user.check_password(password):
-        return None
-    return user
+    with get_db() as db:
+        user = db.query(UserLoginData).filter(UserLoginData.email == email).first()
+        if not user or not user.check_password(password):
+            return None
+        return user
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()
@@ -69,13 +76,13 @@ def verify_refresh_token(token: str):
     """Проверяет refresh token и возвращает данные пользователя"""
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email: str = payload.get("sub")
+        uuid_str: str = payload.get("sub")
         token_type: str = payload.get("token_type")
         
-        if email is None or token_type != "refresh":
+        if uuid_str is None or token_type != "refresh":
             return None
             
-        return TokenData(email=email)
+        return TokenData(uuid=uuid_str)
     except InvalidTokenError:
         return None
 
@@ -91,19 +98,23 @@ def get_current_user(
 
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email: str = payload.get("sub")
+        uuid_str: str = payload.get("sub")
 
-        if email is None:
+        if uuid_str is None:
             raise credentials_exception
 
-        token_data = TokenData(email=email)
+        token_data = TokenData(uuid=uuid_str)
     except InvalidTokenError:
         raise credentials_exception
 
-    user = get_user(token_data.email)
-    if user is None:
+    try:
+        user = get_user(token_data.uuid)
+        if user is None:
+            raise credentials_exception
+        return user
+    except ValueError:
+        # Если произошла ошибка при преобразовании UUID
         raise credentials_exception
-    return user
 
 def register_new_user(register_data: RegisterRequest) -> tuple:
     """
@@ -159,8 +170,8 @@ def register_new_user(register_data: RegisterRequest) -> tuple:
     # Создаем токены доступа и обновления
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": register_data.email}, expires_delta=access_token_expires
+        data={"sub": str(user_uuid)}, expires_delta=access_token_expires
     )
-    refresh_token = create_refresh_token(data={"sub": register_data.email})
+    refresh_token = create_refresh_token(data={"sub": str(user_uuid)})
     
     return access_token, refresh_token, user_uuid

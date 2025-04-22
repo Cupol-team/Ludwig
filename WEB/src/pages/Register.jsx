@@ -97,11 +97,9 @@ const Register = () => {
     
     // Обработчик изменения даты рождения
     const handleDateChange = (date) => {
-        // Преобразуем строку в объект Date для проверки возраста
-        const dateObj = new Date(date);
         setFormData(prev => ({
             ...prev,
-            date_of_birthday: dateObj
+            date_of_birthday: date
         }));
     };
     
