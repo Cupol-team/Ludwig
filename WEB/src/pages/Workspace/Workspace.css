@@ -5,6 +5,37 @@
   flex-direction: column;
 }
 
+.workspace-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #444;
+}
+
+.back-to-org-button {
+  display: flex;
+  align-items: center;
+  background-color: transparent;
+  border: none;
+  color: #999;
+  padding: 10px 15px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: auto;
+}
+
+.back-to-org-button:hover {
+  color: #fff;
+  background-color: #9933ff;
+}
+
+.back-to-org-button svg {
+  margin-right: 8px;
+}
+
 .workspace-content {
   flex: 1;
   position: relative;
@@ -13,8 +44,6 @@
 .workspace-tabs {
   display: flex;
   gap: 10px;
-  margin-bottom: 20px;
-  border-bottom: 2px solid #444;
 }
 
 .workspace-tabs a {

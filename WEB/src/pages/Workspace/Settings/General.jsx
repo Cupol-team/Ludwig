@@ -5,6 +5,9 @@ import { useParams } from 'react-router-dom';
 import Loader from '../../../components/Loader';
 import { uploadUserAvatar, getUserAvatar } from '../../../api/profile';
 
+// Создаем уникальный идентификатор для компонента
+const uniqueComponentId = `general-settings-${Date.now()}`;
+
 function GeneralSettings() {
   const { 
     projectName, 
@@ -91,7 +94,7 @@ function GeneralSettings() {
 
   if (loadingProjectInfo) {
     return (
-      <div className="general-container">
+      <div className={`general-container ${uniqueComponentId}`}>
         <h2 className="general-header">Основные настройки</h2>
         <div className="loader-container">
           <Loader />
@@ -102,7 +105,7 @@ function GeneralSettings() {
 
   if (projectInfoError) {
     return (
-      <div className="general-container">
+      <div className={`general-container ${uniqueComponentId}`}>
         <h2 className="general-header">Основные настройки</h2>
         <div className="error-message">
           Произошла ошибка при загрузке информации о проекте. Пожалуйста, попробуйте позже.
@@ -112,7 +115,7 @@ function GeneralSettings() {
   }
 
   return (
-    <div className="general-container">
+    <div className={`general-container ${uniqueComponentId}`}>
       <h2 className="general-header">Основные настройки</h2>
 
       <div className="general-main">
@@ -140,15 +143,15 @@ function GeneralSettings() {
 
         <div className="project-photo">
           <h3>Фотография проекта</h3>
-          <div className="photo-preview">
+          <div className="photo-preview" style={{ borderRadius: '8px' }}>
             {loading ? (
               <div className="avatar-loader">
                 <Loader size="small" />
               </div>
             ) : avatarUrl ? (
-              <img src={avatarUrl} alt="Фото проекта" />
+              <img src={avatarUrl} alt="Фото проекта" style={{ borderRadius: '0' }} />
             ) : (
-              <div className="avatar-initials">{getInitials()}</div>
+              <div className="avatar-initials" style={{ borderRadius: '0' }}>{getInitials()}</div>
             )}
           </div>
           {error && <div className="error-message">{error}</div>}

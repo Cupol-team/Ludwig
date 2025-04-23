@@ -102,23 +102,53 @@
   font-weight: 500;
 }
 
-.photo-preview {
-  width: 150px;
-  height: 150px;
-  border: 1px solid #333;
-  border-radius: 8px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 15px;
-  background-color: #2c2c2c;
-  color: #aaa;
-  transition: all 0.2s ease;
-  overflow: hidden;
+/* Строго определенный стиль для предпросмотра фото проекта */
+.general-container .photo-preview {
+  width: 150px !important;
+  height: 150px !important;
+  border: 1px solid #333 !important;
+  border-radius: 8px !important; /* Квадратные края, не круглые */
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  margin-bottom: 15px !important;
+  background-color: #2c2c2c !important;
+  color: #aaa !important;
+  transition: all 0.2s ease !important;
+  overflow: hidden !important;
+  position: relative !important;
 }
 
-.photo-preview:hover {
-  border-color: #6f42c1;
+.general-container .photo-preview:hover {
+  border-color: #6f42c1 !important;
+}
+
+.general-container .photo-preview img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+.general-container .avatar-initials {
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 64px !important;
+  font-weight: bold !important;
+  color: #6f42c1 !important;
+  background-color: #1c1c1c !important;
+  border-radius: 0 !important; /* Убеждаемся, что нет скругленных углов */
+}
+
+.general-container .avatar-loader {
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background-color: #2c2c2c !important;
 }
 
 .upload-avatar-button {

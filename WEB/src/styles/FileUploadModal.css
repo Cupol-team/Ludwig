@@ -1,17 +1,21 @@
 /* Фон модального окна */
 .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.75);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  backdrop-filter: blur(4px);
-  animation: fade-in 0.2s ease;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: rgba(0, 0, 0, 0.75) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 9999 !important; /* Увеличиваем z-index еще больше */
+  backdrop-filter: blur(4px) !important;
+  animation: fade-in 0.2s ease !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+  font-family: Arial, sans-serif !important; /* Обеспечиваем стандартный шрифт */
 }
 
 @keyframes fade-in {
@@ -21,16 +25,20 @@
 
 /* Контейнер модального окна */
 .modal-container {
-  background-color: #1c1c1c;
-  padding: 28px;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 500px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  color: #fff;
-  position: relative;
-  border: 2px solid #6f42c1; /* Фиолетовый акцент */
-  animation: slide-up 0.3s ease;
+  background-color: #1c1c1c !important;
+  padding: 28px !important;
+  border-radius: 12px !important;
+  width: 90% !important;
+  max-width: 500px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+  color: #fff !important;
+  position: relative !important;
+  border: 2px solid #6f42c1 !important; /* Фиолетовый акцент */
+  animation: slide-up 0.3s ease !important;
+  transform: none !important;
+  overflow: visible !important;
+  box-sizing: border-box !important;
+  margin: 0 auto !important;
 }
 
 @keyframes slide-up {
@@ -40,172 +48,201 @@
 
 /* Кнопка закрытия */
 .modal-close {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  background: rgba(111, 66, 193, 0.2);
-  border: none;
-  font-size: 24px;
-  color: #fff;
-  cursor: pointer;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
+  position: absolute !important;
+  top: 15px !important;
+  right: 15px !important;
+  background: rgba(111, 66, 193, 0.2) !important;
+  border: none !important;
+  font-size: 24px !important;
+  color: #fff !important;
+  cursor: pointer !important;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s ease !important;
+  z-index: 10000 !important; /* Еще более высокий z-index */
+  padding: 0 !important;
+  line-height: 1 !important;
 }
 
 .modal-close:hover {
-  background-color: rgba(111, 66, 193, 0.4);
-  transform: rotate(90deg);
+  background-color: rgba(111, 66, 193, 0.4) !important;
+  transform: rotate(90deg) !important;
 }
 
 /* Заголовок модального окна */
 .modal-title {
-  text-align: center;
-  margin-bottom: 24px;
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: #fff;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #333;
+  text-align: center !important;
+  margin: 0 0 24px 0 !important;
+  font-size: 1.8rem !important;
+  font-weight: 600 !important;
+  color: #fff !important;
+  padding: 0 0 16px 0 !important;
+  border-bottom: 1px solid #333 !important;
+  font-family: Arial, sans-serif !important;
+  line-height: 1.2 !important;
 }
 
 /* Стили формы */
 .modal-form {
-  display: flex;
-  flex-direction: column;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 15px !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 /* Группа для каждого поля формы */
 .form-group {
-  margin-bottom: 20px;
-  background-color: #222;
-  padding: 16px;
-  border-radius: 8px;
+  margin: 0 0 20px 0 !important;
+  background-color: #222 !important;
+  padding: 16px !important;
+  border-radius: 8px !important;
+  box-sizing: border-box !important;
 }
 
 /* Метки полей */
 .form-group label {
-  font-size: 15px;
-  margin-bottom: 8px;
-  display: block;
-  color: #ddd;
-  font-weight: 500;
+  font-size: 15px !important;
+  margin: 0 0 8px 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  color: #ddd !important;
+  font-weight: 500 !important;
+  font-family: Arial, sans-serif !important;
+}
+
+.form-group label span {
+  display: inline-block !important;
+  vertical-align: middle !important;
 }
 
 /* Обозначение обязательного поля */
 .required {
-  color: #ff6b6b;
-  margin-left: 4px;
+  color: #ff6b6b !important;
+  margin-left: 4px !important;
 }
 
 /* Стиль метки для выбора файла */
 .file-input-label {
-  display: block;
-  padding: 12px;
-  background-color: #2b2b2b;
-  border: 1px dashed #6f42c1;
-  border-radius: 6px;
-  cursor: pointer;
-  text-align: center;
-  margin-top: 8px;
-  transition: all 0.2s ease;
+  display: block !important;
+  padding: 12px !important;
+  background-color: #2b2b2b !important;
+  border: 1px dashed #6f42c1 !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  text-align: center !important;
+  margin-top: 8px !important;
+  transition: all 0.2s ease !important;
+  font-family: Arial, sans-serif !important;
+  font-size: 14px !important;
 }
 
 .file-input-label:hover {
-  background-color: #333;
-  border-color: #8a63dd;
-  transform: translateY(-2px);
+  background-color: #333 !important;
+  border-color: #8a63dd !important;
+  transform: translateY(-2px) !important;
 }
 
 /* Скрытый инпут для файла */
 .file-input {
-  display: none;
+  display: none !important;
 }
 
 /* Стили остальных инпутов */
 .modal-input {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #6f42c1;
-  border-radius: 6px;
-  background-color: #2b2b2b;
-  color: #fff;
-  font-size: 15px;
-  transition: all 0.2s ease;
+  width: 100% !important;
+  padding: 12px !important;
+  border: 1px solid #6f42c1 !important;
+  border-radius: 6px !important;
+  background-color: #2b2b2b !important;
+  color: #fff !important;
+  font-size: 15px !important;
+  transition: all 0.2s ease !important;
+  font-family: Arial, sans-serif !important;
+  margin-top: 8px !important;
+  box-sizing: border-box !important;
 }
 
 .modal-input:focus {
-  border-color: #8a63dd;
-  box-shadow: 0 0 0 2px rgba(111, 66, 193, 0.2);
-  outline: none;
+  border-color: #8a63dd !important;
+  box-shadow: 0 0 0 2px rgba(111, 66, 193, 0.2) !important;
+  outline: none !important;
 }
 
 /* Кнопка отправки формы */
 .modal-submit {
-  padding: 12px;
-  background-color: #6f42c1;
-  border: none;
-  border-radius: 6px;
-  color: #fff;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  margin-top: 8px;
+  padding: 12px !important;
+  background-color: #6f42c1 !important;
+  border: none !important;
+  border-radius: 6px !important;
+  color: #fff !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  margin-top: 8px !important;
+  font-family: Arial, sans-serif !important;
+  width: 100% !important;
 }
 
 .modal-submit:hover {
-  background-color: #5932a6;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(111, 66, 193, 0.3);
+  background-color: #5932a6 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 8px rgba(111, 66, 193, 0.3) !important;
 }
 
 /* Кастомный дизайн для чекбоксов */
 .custom-checkbox {
-  appearance: none;
-  -webkit-appearance: none;
-  background-color: #2b2b2b;
-  border: 2px solid #6f42c1;
-  width: 20px;
-  height: 20px;
-  border-radius: 4px;
-  position: relative;
-  cursor: pointer;
-  margin-right: 8px;
-  vertical-align: middle;
-  transition: all 0.2s ease;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  background-color: #2b2b2b !important;
+  border: 2px solid #6f42c1 !important;
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  min-height: 20px !important;
+  border-radius: 4px !important;
+  position: relative !important;
+  cursor: pointer !important;
+  margin-right: 8px !important;
+  vertical-align: middle !important;
+  transition: all 0.2s ease !important;
+  display: inline-flex !important;
+  flex-shrink: 0 !important;
+  padding: 0 !important;
 }
 
 .custom-checkbox:checked {
-  background-color: #6f42c1;
-  border-color: #6f42c1;
+  background-color: #6f42c1 !important;
+  border-color: #6f42c1 !important;
 }
 
 .custom-checkbox:disabled {
-  background-color: #555;
-  border-color: #555;
-  cursor: not-allowed;
+  background-color: #555 !important;
+  border-color: #555 !important;
+  cursor: not-allowed !important;
 }
 
 .custom-checkbox:checked::after {
-  content: '';
-  position: absolute;
-  left: 5px;
-  top: 1px;
-  width: 6px;
-  height: 12px;
-  border: solid white;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
+  content: '' !important;
+  position: absolute !important;
+  left: 6px !important;
+  top: 2px !important;
+  width: 5px !important;
+  height: 10px !important;
+  border: solid white !important;
+  border-width: 0 2px 2px 0 !important;
+  transform: rotate(45deg) !important;
 }
 
 /* Отключённые текстовые поля становятся более серыми */
 .modal-input:disabled {
-  background-color: #333;
-  color: #aaa;
-  border-color: #444;
+  background-color: #333 !important;
+  color: #aaa !important;
+  border-color: #444 !important;
 } 

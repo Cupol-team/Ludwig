@@ -8,7 +8,6 @@ import { ProjectContext } from '../../context/ProjectContext';
 import AddMemberButton from '../../components/AddMemberButton';
 import '../../styles/members.css';
 import '../../styles/memberAvatars.css';
-import '../../styles/Members.css';
 import EditMemberRoleModal from '../../components/EditMemberRoleModal';
 
 const Members = () => {
@@ -45,7 +44,13 @@ const Members = () => {
         avatarControllers[member.uuid] = new AbortController();
         
         return getUserAvatar(member.uuid, avatarControllers[member.uuid].signal)
-          .then(avatarUrl => ({ uuid: member.uuid, avatarUrl }))
+          .then(avatarUrl => {
+            // Если получен дефолтный аватар, считаем его как null
+            if (avatarUrl === '/default-avatar.png') {
+              return { uuid: member.uuid, avatarUrl: null };
+            }
+            return { uuid: member.uuid, avatarUrl };
+          })
           .catch(error => {
             console.error(`Failed to load avatar for member ${member.uuid}:`, error);
             return { uuid: member.uuid, avatarUrl: null };
@@ -82,6 +87,18 @@ const Members = () => {
       }
     };
   }, [fetchMembers]);
+
+  // Получаем инициалы из имени и фамилии
+  const getInitials = (member) => {
+    if (member.name && member.surname) {
+      return `${member.name.charAt(0)}${member.surname.charAt(0)}`.toUpperCase();
+    } else if (member.name) {
+      return member.name.charAt(0).toUpperCase();
+    } else if (member.surname) {
+      return member.surname.charAt(0).toUpperCase();
+    }
+    return '?';
+  };
 
   const getRoleName = (roleUuid) => {
     if (!roleUuid) return 'UUID роли отсутствует';
@@ -190,13 +207,17 @@ const Members = () => {
             
             return (
               <div key={member.uuid} className="member-item">
-                <div className="member-avatar">
-                  {memberAvatars[member.uuid] ? (
-                    <img src={memberAvatars[member.uuid]} alt="avatar" />
-                  ) : (
-                    <span>{member.name ? member.name.charAt(0) : '?'}</span>
-                  )}
-                </div>
+                {memberAvatars[member.uuid] ? (
+                  <img 
+                    src={memberAvatars[member.uuid]} 
+                    alt={`${member.name || ''} ${member.surname || ''}`} 
+                    className="member-avatar"
+                  />
+                ) : (
+                  <div className="member-avatar member-avatar-initials">
+                    <span>{getInitials(member)}</span>
+                  </div>
+                )}
                 <div className="member-info">
                   <span className="member-name">{member.name || ''} {member.surname || ''}</span>
                   <span className="member-role">{getRoleName(member.role)}</span>

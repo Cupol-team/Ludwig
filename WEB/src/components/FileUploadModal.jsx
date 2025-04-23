@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import '../styles/FileUploadModal.css'; // Импорт стилей из папки src/styles
 import CustomDatePicker from './CustomDatePicker';
 import Notification from './Notification';
+
+// Создаем уникальный id для модальных окон, чтобы избежать конфликтов стилей
+const uniqueModalId = `modal-${Date.now()}`;
 
 const FileUploadModal = ({ isOpen, onClose, onSubmit }) => {
   const [file, setFile] = useState(null);
@@ -10,6 +14,21 @@ const FileUploadModal = ({ isOpen, onClose, onSubmit }) => {
   const [availableUntil, setAvailableUntil] = useState(null);
   const [enableMaxDownloads, setEnableMaxDownloads] = useState(false);
   const [enableAvailableUntil, setEnableAvailableUntil] = useState(false);
+
+  // При монтировании компонента добавляем класс к body для блокировки прокрутки
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      
+      return () => {
+        document.body.style.overflow = 'auto';
+      };
+    }
+    
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [isOpen]);
 
   if (!isOpen) return null; // Если окно закрыто, возвращаем null
 
@@ -48,8 +67,17 @@ const FileUploadModal = ({ isOpen, onClose, onSubmit }) => {
     onClose();
   };
 
-  return (
-    <div className="modal-overlay">
+  // Inline-стили для чекбоксов для преодоления проблем с CSS наследованием
+  const checkboxLabelStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    margin: '0 0 8px 0'
+  };
+
+  // Используем портал для рендеринга модального окна вне компонента
+  // Это помогает избежать проблем с вложенными стилями и z-index
+  const modalContent = (
+    <div className={`modal-overlay ${uniqueModalId}`}>
       <div className="modal-container">
         <button className="modal-close" onClick={onClose}>
           &times;
@@ -72,14 +100,14 @@ const FileUploadModal = ({ isOpen, onClose, onSubmit }) => {
             />
           </div>
           <div className="form-group">
-            <label>
+            <label style={checkboxLabelStyle}>
               <input
                 type="checkbox"
                 className="custom-checkbox"
                 checked={enableMaxDownloads}
                 onChange={(e) => setEnableMaxDownloads(e.target.checked)}
-              />{' '}
-              Макс. количество скачиваний (необязательно)
+              />
+              <span>Макс. количество скачиваний (необязательно)</span>
             </label>
             <input
               type="number"
@@ -92,14 +120,14 @@ const FileUploadModal = ({ isOpen, onClose, onSubmit }) => {
             />
           </div>
           <div className="form-group">
-            <label>
+            <label style={checkboxLabelStyle}>
               <input
                 type="checkbox"
                 className="custom-checkbox"
                 checked={enableAvailableUntil}
                 onChange={(e) => setEnableAvailableUntil(e.target.checked)}
-              />{' '}
-              Доступен до (необязательно)
+              />
+              <span>Доступен до (необязательно)</span>
             </label>
             <CustomDatePicker
               selected={availableUntil}
@@ -113,6 +141,12 @@ const FileUploadModal = ({ isOpen, onClose, onSubmit }) => {
         </form>
       </div>
     </div>
+  );
+
+  // Используем ReactDOM.createPortal для рендеринга модального окна непосредственно в body
+  return ReactDOM.createPortal(
+    modalContent,
+    document.body
   );
 };
 
