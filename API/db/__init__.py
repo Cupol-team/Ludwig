@@ -18,4 +18,4 @@ from .db_functions import (new_user, new_organization, new_organization_member, 
                            get_project_statuses, get_organization_types_of_tasks, get_project_types_of_tasks, get_project_tasks,
                            is_executor_in_project, is_type_in_project, is_status_in_project, is_user_in_organization,
                            is_project_accessible_in_org, get_project_task, get_all_user_projects, get_user_organizations, get_user_profile, update_user,
-                           create_new_permission, delete_permission, get_permissions, get_organization_members, update_project_member, get_project_info)
+                           create_new_permission, delete_permission, get_permissions, get_organization_members, update_project_member, get_project_info, get_user_projects_with_roles)

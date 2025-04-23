@@ -7,9 +7,7 @@ export async function getProjects(organizationId, signal) {
         // Извлекаем список проектов из ответа:
         // Ожидаемый формат ответа:
         // {
-        //   "response": {
-        //     "items": [ { "uuid": "...", "name": "...", "description": "..." }, ... ]
-        //   }
+        //   "items": [ { "uuid": "...", "name": "...", "description": "...", "role": "..." }, ... ]
         // }
         return data.items || [];
     } catch (error) {

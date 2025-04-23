@@ -1199,6 +1199,69 @@ def get_user_projects(organization_uuid: uuid.UUID, user_uuid: uuid.UUID) -> Lis
     session.close()
     return projects
 
+def get_user_projects_with_roles(organization_uuid: uuid.UUID, user_uuid: uuid.UUID) -> List[tuple]:
+    """
+    Получает проекты пользователя вместе с его ролью в каждом проекте
+    
+    :param organization_uuid: UUID организации
+    :param user_uuid: UUID пользователя
+    :return: Список кортежей (project, role_name), где project - объект ProjectData, 
+             а role_name - строка с названием роли
+    """
+    _org_uuid = f"_{str(organization_uuid).replace('-', '_')}"
+
+    # Получаем проекты пользователя
+    projects = get_user_projects(organization_uuid, user_uuid)
+    
+    result = []
+    
+    for project in projects:
+        # Для каждого проекта получаем роль пользователя
+        _project_uuid = f"_{str(project.uuid).replace('-', '_')}"
+        
+        # Импортируем необходимые классы для проекта
+        try:
+            User = eval(
+                f"importlib.import_module('.user', package='db.organizations.db.{_org_uuid}.projects.{_project_uuid}')"
+            ).User
+            
+            # Настройка сессии для БД проекта
+            exec(
+                f"from db.organizations.db.{_org_uuid}.projects.{_project_uuid} import db_session as db_session{_project_uuid}"
+            )
+            eval(
+                f"db_session{_project_uuid}.global_init('db/organizations/db/{_org_uuid}/projects/{_project_uuid}/project_db.db')"
+            )
+            session = eval(f"db_session{_project_uuid}.create_session()")
+            
+            # Получаем UUID роли пользователя в проекте
+            user_record = session.query(User).filter(User.uuid == user_uuid).first()
+            
+            if user_record:
+                role_uuid = user_record.role
+                
+                # Получаем название роли
+                Role = eval(
+                    f"importlib.import_module('.role', package='db.organizations.db.{_org_uuid}.projects.{_project_uuid}')"
+                ).Role
+                RoleData = eval(
+                    f"importlib.import_module('.role_data', package='db.organizations.db.{_org_uuid}.projects.{_project_uuid}')"
+                ).RoleData
+                
+                role_data = session.query(RoleData).filter(RoleData.uuid == role_uuid).first()
+                role_name = role_data.name if role_data else None
+                
+                result.append((project, role_name))
+            else:
+                result.append((project, None))
+            
+            session.close()
+        except Exception as e:
+            # В случае ошибки, просто добавляем проект без роли
+            result.append((project, None))
+    
+    return result
+
 def get_project_members(organization_uuid, project_uuid):
     """
     Возвращает список участников проекта в виде списка словарей,
@@ -1772,8 +1835,8 @@ def get_all_user_projects(user_uuid: uuid.UUID) -> List[dict]:
     for org_member in org_members:
         organization_uuid = org_member.organization_uuid
         try:
-            # Получаем проекты пользователя в текущей организации
-            projects = get_user_projects(organization_uuid, user_uuid)
+            # Получаем проекты пользователя с их ролями в текущей организации
+            projects_with_roles = get_user_projects_with_roles(organization_uuid, user_uuid)
             
             # Получаем данные организации для добавления в результат
             org_session = db_session.create_session()
@@ -1782,13 +1845,14 @@ def get_all_user_projects(user_uuid: uuid.UUID) -> List[dict]:
             org_session.close()
             
             # Формируем информацию о проектах
-            for project in projects:
+            for project, role_name in projects_with_roles:
                 project_info = {
                     "project_uuid": project.uuid,
                     "project_name": project.name,
                     "project_description": project.description,
                     "organization_uuid": organization_uuid,
-                    "organization_name": org_name
+                    "organization_name": org_name,
+                    "role": role_name
                 }
                 all_projects.append(project_info)
         except Exception as e:

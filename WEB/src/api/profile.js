@@ -249,7 +249,9 @@ export async function getUserProjects(uuid, signal) {
         return data.response.items.map(project => ({
             project_uuid: project.project_uuid,
             project_name: project.project_name,
-            organizationId: project.organization_uuid
+            organizationId: project.organization_uuid,
+            organizationName: project.organization_name || 'Организация',
+            role: project.role || 'Участник'
         }));
     } catch (error) {
         throw error;

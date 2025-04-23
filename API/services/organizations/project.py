@@ -5,7 +5,7 @@ from services.organizations.projects.roles.role import create_new_permission_ser
 from schemas.organizations import ProjectCreate, ProjectResponse
 from typing import List
 from db.organizations.base.project_data import ProjectData
-from db import new_project, get_user_projects
+from db import new_project, get_user_projects, get_user_projects_with_roles
 
 
 from uuid import UUID
@@ -65,6 +65,11 @@ def service_get_user_projects(organization_uuid: UUID, user_uuid: UUID) -> List[
     """
     Получение всех проектов организации
     """
-    projects = get_user_projects(organization_uuid=organization_uuid, user_uuid=user_uuid)
+    projects_with_roles = get_user_projects_with_roles(organization_uuid=organization_uuid, user_uuid=user_uuid)
 
-    return [ProjectResponse(uuid=project.uuid, name=project.name, description=project.description) for project in projects]
+    return [ProjectResponse(
+        uuid=project.uuid, 
+        name=project.name, 
+        description=project.description,
+        role=role_name
+    ) for project, role_name in projects_with_roles]

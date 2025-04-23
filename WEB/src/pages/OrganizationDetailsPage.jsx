@@ -227,6 +227,7 @@ const OrganizationDetailsPage = () => {
                             description={project.description || "Тестовое описание проекта"}
                             avatarUrl={avatars[project.uuid] && avatars[project.uuid] !== '/default-avatar.png' ? avatars[project.uuid] : null}
                             initial={getProjectInitial(project.name)}
+                            role={project.role || "Участник"}
                             linkTo="#"
                             onClick={(e) => {
                                 e.preventDefault();

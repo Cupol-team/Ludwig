@@ -10,6 +10,7 @@ class ProjectResponse(BaseModel):
     uuid: UUID
     name: str
     description: str | None = ""
+    role: str | None = None
 
     class Config:
         orm_mode = True 
