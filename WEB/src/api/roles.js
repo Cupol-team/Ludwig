@@ -24,7 +24,7 @@ export async function getRoles(orgId, projectUuid, signal) {
  * Создание новой роли проекта.
  * @param {string} orgId - Идентификатор организации.
  * @param {string} projectUuid - Идентификатор проекта.
- * @param {Object} roleData - Данные роли: { name: string, description: string }
+ * @param {Object} roleData - Данные роли: { name: string, description: string, permissions?: string[] }
  * @param {AbortSignal} [signal] - Сигнал для отмены запроса.
  * @returns {Promise<Object>} - Объект с данными созданной роли.
  */

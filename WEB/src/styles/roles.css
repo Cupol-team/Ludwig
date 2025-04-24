@@ -69,10 +69,8 @@
   background: var(--component-bg);
   border-radius: 8px;
   border: 1px solid var(--border-color);
-  display: flex;
-  align-items: center;
-  gap: 24px;
   transition: all 0.2s ease;
+  width: 100%;
 }
 
 .role-item:hover {
@@ -95,7 +93,7 @@
 }
 
 .role-info {
-  flex: 1;
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -257,4 +255,218 @@
 .cancel-btn:hover {
   background-color: #444;
   transform: translateY(-2px);
+}
+
+/* Стили для блока пермишшенов */
+.permissions-group {
+  margin-top: 20px;
+}
+
+.permissions-list {
+  max-height: 250px;
+  overflow-y: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background-color: rgba(26, 26, 26, 0.8);
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-color) var(--component-bg);
+}
+
+.permissions-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.permissions-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.permissions-list::-webkit-scrollbar-thumb {
+  background-color: var(--border-color);
+  border-radius: 4px;
+}
+
+.permissions-list::-webkit-scrollbar-thumb:hover {
+  background-color: var(--primary-color);
+}
+
+.permission-group {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.permission-group:last-child {
+  border-bottom: none;
+}
+
+.permission-group-header {
+  font-weight: 600;
+  padding: 12px 15px;
+}
+
+.permission-group-items {
+  display: flex;
+  flex-direction: column;
+  padding: 0 15px 12px 30px;
+}
+
+.permission-item {
+  font-weight: normal;
+  padding: 6px 0;
+}
+
+.group-label {
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-left: 8px;
+}
+
+/* Стили чекбоксов */
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding-left: 30px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  width: auto;
+}
+
+.checkmark {
+  position: absolute;
+  left: 0;
+  height: 18px;
+  width: 18px;
+  background-color: transparent;
+  border: 2px solid var(--border-color);
+  border-radius: 3px;
+  transition: all 0.2s;
+}
+
+.checkbox-container:hover input ~ .checkmark {
+  border-color: var(--primary-color);
+}
+
+.checkbox-container input:checked ~ .checkmark {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.checkbox-container input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.checkbox-container .checkmark:after {
+  left: 5px;
+  top: 1px;
+  width: 4px;
+  height: 9px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* Стиль для отображения количества пермишшенов в карточке роли */
+.role-permissions {
+  background-color: rgba(111, 66, 193, 0.2);
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  color: var(--primary-color);
+  display: inline-flex;
+  align-items: center;
+  margin-top: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: fit-content;
+}
+
+.role-permissions:hover {
+  background-color: rgba(111, 66, 193, 0.3);
+}
+
+.permissions-count {
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.expand-icon {
+  font-size: 10px;
+  margin-left: 4px;
+}
+
+/* Стили для детального отображения пермишшенов */
+.role-permissions-wrapper {
+  margin-top: 10px;
+}
+
+.permissions-details {
+  background-color: rgba(26, 26, 26, 0.8);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  margin-top: 10px;
+  padding: 16px;
+  animation: fadeInExpand 0.3s ease;
+}
+
+@keyframes fadeInExpand {
+  from {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    max-height: 800px;
+    transform: translateY(0);
+  }
+}
+
+.permission-category {
+  margin-bottom: 16px;
+}
+
+.permission-category:last-child {
+  margin-bottom: 0;
+}
+
+.permission-category-name {
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 15px;
+}
+
+.permission-items {
+  list-style-type: none;
+  padding-left: 15px;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 4px 16px;
+}
+
+.permission-item-detail {
+  color: var(--text-secondary);
+  font-size: 14px;
+  padding: 4px 0;
+  transition: color 0.2s;
+}
+
+.permission-item-detail:hover {
+  color: var(--text-color);
 } 

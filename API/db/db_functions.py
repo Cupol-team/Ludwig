@@ -634,6 +634,8 @@ def new_project_role(organization_uuid, project_uuid, name, description=""):
     exec(
         f"from db.organizations.db.{_org_uuid}.projects.{_project_uuid} import db_session "
         f"as db_session{_project_uuid}")
+    eval(
+        f"db_session{_project_uuid}.global_init('db/organizations/db/{_org_uuid}/projects/{_project_uuid}/project_db.db')")
     session = eval(f"db_session{_project_uuid}.create_session()")
     session.add(role)
     session.add(role_data)
@@ -1321,6 +1323,7 @@ def get_project_roles(organization_uuid, project_uuid):
       - uuid: идентификатор роли
       - name: название роли (из RoleData)
       - description: описание роли (из RoleData)
+      - permissions: список пермишшенов роли
     
     :param organization_uuid: UUID организации
     :param project_uuid: UUID проекта
@@ -1337,6 +1340,10 @@ def get_project_roles(organization_uuid, project_uuid):
         RoleData = eval(
             f"importlib.import_module('.role_data', package='db.organizations.db.{_org_uuid}.projects.{_project_uuid}')"
         ).RoleData
+        
+        RolePermissions = eval(
+            f"importlib.import_module('.role_permissions', package='db.organizations.db.{_org_uuid}.projects.{_project_uuid}')"
+        ).RolePermissions
 
         exec(
             f"from db.organizations.db.{_org_uuid}.projects.{_project_uuid} import db_session as db_session{_project_uuid}"
@@ -1347,15 +1354,21 @@ def get_project_roles(organization_uuid, project_uuid):
         session = eval(f"db_session{_project_uuid}.create_session()")
         
         roles = session.query(Role, RoleData).join(RoleData, Role.uuid == RoleData.uuid).all()
-        session.close()
         
         roles_info = []
         for role, role_data in roles:
+            # Получаем пермишшены для текущей роли
+            permissions = session.query(RolePermissions).filter(RolePermissions.uuid == role.uuid).all()
+            permissions_list = [permission.permission for permission in permissions]
+            
             roles_info.append({
                 "uuid": str(role.uuid),
                 "name": role_data.name,
-                "description": role_data.description if role_data.description else ""
+                "description": role_data.description if role_data.description else "",
+                "permissions": permissions_list
             })
+        
+        session.close()
         return roles_info
     except Exception as e:
         raise e
