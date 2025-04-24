@@ -63,4 +63,35 @@ export async function getProjectInfo(organizationId, projectUuid, signal) {
     }
     throw error;
   }
+}
+
+/**
+ * Редактирование существующего проекта
+ * @param {string} organizationId - UUID организации
+ * @param {string} projectUuid - UUID проекта
+ * @param {Object} payload - Данные для обновления
+ * @param {string} [payload.name] - Новое название проекта (опционально)
+ * @param {string} [payload.description] - Новое описание проекта (опционально)
+ * @returns {Promise<boolean>} - true в случае успеха
+ */
+export async function editProject(organizationId, projectUuid, payload) {
+  try {
+    // Отправляем только непустые поля
+    const updateData = {};
+    if (payload.name) updateData.name = payload.name;
+    if (payload.description !== undefined) updateData.description = payload.description;
+    
+    // При успешном запросе сервер возвращает 204 No Content без тела ответа
+    await api.put(
+      `/organizations/${organizationId}/project/${projectUuid}/setting/edit`,
+      updateData,
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+    
+    // Если запрос прошел успешно, возвращаем true
+    return true;
+  } catch (error) {
+    console.error('Ошибка при обновлении проекта:', error);
+    throw error;
+  }
 } 

@@ -2025,7 +2025,7 @@ def update_project_member(organization_uuid: uuid.UUID, project_uuid: uuid.UUID,
             session.close()
             print("Database session closed")
 
-def update_project_data(organization_uuid, project_uuid, name=None, description=None):
+def update_project_data(organization_uuid: uuid.UUID, project_uuid: uuid.UUID, name: str = None, description: str = None) -> int:
     """
     Обновляет данные проекта (имя и/или описание).
     
@@ -2045,32 +2045,27 @@ def update_project_data(organization_uuid, project_uuid, name=None, description=
     
     try:
         _org_uuid = f"_{str(organization_uuid).replace('-', '_')}"
-        _project_uuid = f"_{str(project_uuid).replace('-', '_')}"
         
-        # Импортируем класс Project из проекта
-        Project = eval(
-            f"importlib.import_module('.project', package='db.organizations.db.{_org_uuid}.projects.{_project_uuid}')").Project
+        # Динамически импортируем классы из базы данных организации
+        ProjectData = eval(f"importlib.import_module('.project_data', package='db.organizations.db.{_org_uuid}')").ProjectData
         
-        # Настраиваем сессию для проекта
-        exec(
-            f"from db.organizations.db.{_org_uuid}.projects.{_project_uuid} import db_session "
-            f"as db_session{_project_uuid}")
-        eval(
-            f"db_session{_project_uuid}.global_init('db/organizations/db/{_org_uuid}/projects/{_project_uuid}/project_db.db')")
-        session = eval(f"db_session{_project_uuid}.create_session()")
+        # Настраиваем сессию для БД организации
+        exec(f"from db.organizations.db.{_org_uuid} import db_session as db_session{_org_uuid}")
+        eval(f"db_session{_org_uuid}.global_init('db/organizations/db/{_org_uuid}/org_db.db')")
+        session = eval(f"db_session{_org_uuid}.create_session()")
         
-        # Находим проект
-        project = session.query(Project).filter(Project.uuid == project_uuid).first()
-        if not project:
+        # Находим проект в базе данных организации
+        project_data = session.query(ProjectData).filter(ProjectData.uuid == project_uuid).first()
+        if not project_data:
             print(f"Project with UUID {project_uuid} not found")
             session.close()
             raise Exception(f"Project with UUID {project_uuid} not found")
         
         # Обновляем данные проекта
         if name is not None:
-            project.name = name
+            project_data.name = name
         if description is not None:
-            project.description = description
+            project_data.description = description
         
         session.commit()
         print(f"Successfully updated project {project_uuid} data")
@@ -2179,4 +2174,3 @@ def get_project_info(organization_uuid: uuid.UUID, project_uuid: uuid.UUID) -> d
             session.close()
             print(f"Сессия базы данных организации закрыта при ошибке")
         raise Exception(f"Не удалось получить информацию о проекте: {str(e)}")
-

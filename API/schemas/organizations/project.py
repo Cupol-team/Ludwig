@@ -14,3 +14,7 @@ class ProjectResponse(BaseModel):
 
     class Config:
         orm_mode = True 
+
+class ProjectUpdate(BaseModel):
+    name: str | None = None
+    description: str | None = None 

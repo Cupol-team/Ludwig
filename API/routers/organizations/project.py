@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from .projects import projects_role_router, projects_members_router, projects_task_router, projects_statuses_router, \
-    projects_task_types_router, projects_info_router
+    projects_task_types_router, projects_info_router, projects_setting_router
 from uuid import UUID
 from db import verify_is_organization_exists
 from schemas import UserBase
@@ -21,6 +21,7 @@ router.include_router(projects_members_router)
 router.include_router(projects_statuses_router)
 router.include_router(projects_task_types_router)
 router.include_router(projects_info_router)
+router.include_router(projects_setting_router)
 
 # NOTE: Уходят в projects/task.py - router
 # router.include_router(projects_tasks_router)
