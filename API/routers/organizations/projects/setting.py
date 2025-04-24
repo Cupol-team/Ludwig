@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 from schemas import UserBase
 from services import get_current_user
 from schemas.organizations.project import ProjectUpdate
-from services.organizations.projects.setting import edit_project
+from services.organizations.projects.setting import edit_project, delete_project
 
 from typing import Annotated
 from uuid import UUID
@@ -38,5 +38,22 @@ async def edit_project_endpoint(
         name=data.name, 
         description=data.description
     )
+
+@router.delete("/delete", status_code=204)
+async def delete_project_endpoint(
+    organization_uuid: UUID, 
+    project_uuid: UUID, 
+    current_user: Annotated[UserBase, Depends(get_current_user)],
+):
+    """
+    Удаление проекта
+    
+    :param organization_uuid: UUID организации
+    :param project_uuid: UUID проекта
+    :param current_user: текущий пользователь
+    :return: статус удаления
+    """
+    return delete_project(organization_uuid=organization_uuid, project_uuid=project_uuid)
+
 #def get_project_setting_endpoint(project_uuid: UUID, current_user: Annotated[UserBase, Depends(get_current_user)]):
 

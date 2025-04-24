@@ -2080,33 +2080,27 @@ def update_project_data(organization_uuid: uuid.UUID, project_uuid: uuid.UUID, n
             print("Database session closed")
 
 def delete_project(organization_uuid, project_uuid):
-    """
-    Удаляет проект полностью из системы.
-    
-    Args:
-        organization_uuid: UUID организации
-        project_uuid: UUID проекта
-        
-    Returns:
-        bool: True в случае успешного удаления
-        
-    Raises:
-        Exception: Если проект не найден или возникла ошибка при удалении
-    """
-    print(f"Deleting project: org={organization_uuid}, project={project_uuid}")
-    
     try:
         _org_uuid = f"_{str(organization_uuid).replace('-', '_')}"
         _project_uuid = f"_{str(project_uuid).replace('-', '_')}"
         
-        exec(
-            f"from db.organizations.db.{_org_uuid}.projects.{_project_uuid} import db_session as db_session{_org_uuid}")
-        eval(
-            f"db_session{_org_uuid}.global_init('db/organizations/db/{_org_uuid}/projects/{_project_uuid}/project_db.db')")
+        # Подключаемся к базе данных организации, а не проекта
+        exec(f"from db.organizations.db.{_org_uuid} import db_session as db_session{_org_uuid}")
+        eval(f"db_session{_org_uuid}.global_init('db/organizations/db/{_org_uuid}/org_db.db')")
         org_session = eval(f"db_session{_org_uuid}.create_session()")
         
+        # Импортируем модели для удаления
+        ProjectMember = eval(f"importlib.import_module('.project_member', package='db.organizations.db.{_org_uuid}')").ProjectMember
+        ProjectData = eval(f"importlib.import_module('.project_data', package='db.organizations.db.{_org_uuid}')").ProjectData
+        
+        # Удаляем записи о членстве в проекте
+        org_session.query(ProjectMember).filter(ProjectMember.project_uuid == project_uuid).delete()
+        
+        # Удаляем запись из project_data
+        org_session.query(ProjectData).filter(ProjectData.uuid == project_uuid).delete()
+        
         # Удаляем запись о проекте из базы данных организации
-        org_session.execute(text(f"DELETE FROM projects WHERE uuid = '{project_uuid}'"))
+        org_session.execute(text(f"DELETE FROM project WHERE uuid = '{project_uuid}'"))
         org_session.commit()
         
         # Удаляем директорию проекта

@@ -94,4 +94,25 @@ export async function editProject(organizationId, projectUuid, payload) {
     console.error('Ошибка при обновлении проекта:', error);
     throw error;
   }
+}
+
+/**
+ * Удаление проекта
+ * @param {string} organizationId - UUID организации
+ * @param {string} projectUuid - UUID проекта
+ * @returns {Promise<boolean>} - true в случае успеха
+ */
+export async function deleteProject(organizationId, projectUuid) {
+  try {
+    // При успешном запросе сервер возвращает 204 No Content без тела ответа
+    await api.delete(
+      `/organizations/${organizationId}/project/${projectUuid}/setting/delete`
+    );
+    
+    // Если запрос прошел успешно, возвращаем true
+    return true;
+  } catch (error) {
+    console.error('Ошибка при удалении проекта:', error);
+    throw error;
+  }
 } 

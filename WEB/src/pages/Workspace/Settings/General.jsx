@@ -1,10 +1,10 @@
 import React, { useContext, useState, useEffect } from 'react';
 import '../../../styles/General.css';
 import { ProjectContext } from '../../../context/ProjectContext';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Loader from '../../../components/Loader';
 import { uploadUserAvatar, getUserAvatar } from '../../../api/profile';
-import { editProject } from '../../../api/projects';
+import { editProject, deleteProject } from '../../../api/projects';
 
 // Создаем уникальный идентификатор для компонента
 const uniqueComponentId = `general-settings-${Date.now()}`;
@@ -28,6 +28,7 @@ function GeneralSettings() {
     projectInfoError 
   } = useContext(ProjectContext);
   const { projectUuid, orgId } = useParams();
+  const navigate = useNavigate();
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarUrl, setAvatarUrl] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -39,6 +40,8 @@ function GeneralSettings() {
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Обновляем локальное состояние при изменении данных проекта
   useEffect(() => {
@@ -167,6 +170,28 @@ function GeneralSettings() {
       description: projectDescription || ''
     });
     setIsEditing(false);
+  };
+
+  // Обработка удаления проекта
+  const handleDeleteProject = async () => {
+    try {
+      setIsDeleting(true);
+      setError(null);
+      
+      // Вызываем API для удаления проекта
+      await deleteProject(orgId, projectUuid);
+      
+      // Показываем успех в консоли
+      console.log('Проект успешно удален');
+    } catch (error) {
+      console.error('Ошибка при удалении проекта:', error);
+      setError('Не удалось удалить проект. Пожалуйста, попробуйте позже.');
+    } finally {
+      // В любом случае перенаправляем пользователя на страницу организации
+      navigate(`/organizations/${orgId}`);
+      setIsDeleting(false);
+      setShowDeleteModal(false);
+    }
   };
 
   if (loadingProjectInfo) {
@@ -312,11 +337,46 @@ function GeneralSettings() {
               Полностью удаляет проект со всеми данными. Это действие невозможно отменить!
             </p>
           </div>
-          <button className="delete-project-button">
+          <button 
+            className="delete-project-button"
+            onClick={() => setShowDeleteModal(true)}
+          >
             Удалить проект
           </button>
         </div>
       </div>
+
+      {/* Модальное окно подтверждения удаления */}
+      {showDeleteModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Подтверждение удаления</h3>
+            <p>
+              Вы действительно хотите удалить проект <strong>{projectName}</strong>?
+            </p>
+            <p className="warning-text">
+              Это действие невозможно отменить! Будут удалены все данные проекта, включая задачи, файлы и другую информацию.
+            </p>
+            {error && <div className="error-message">{error}</div>}
+            <div className="modal-actions">
+              <button 
+                className="cancel-button"
+                onClick={() => setShowDeleteModal(false)}
+                disabled={isDeleting}
+              >
+                Отмена
+              </button>
+              <button 
+                className="delete-button"
+                onClick={handleDeleteProject}
+                disabled={isDeleting}
+              >
+                {isDeleting ? 'Удаление...' : 'Удалить проект'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
