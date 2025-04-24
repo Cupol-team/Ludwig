@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from db import update_project_member
+from db import update_project_member, delete_project_member
 def edit_project_member_service(member_uuid: UUID,
                                 organization_uuid: UUID,
                                 project_uuid: UUID,
@@ -14,5 +14,5 @@ def edit_project_member_service(member_uuid: UUID,
 def delete_project_member_service(member_uuid: UUID,
                                   organization_uuid: UUID,
                                   project_uuid: UUID):
-    return 1
+    return delete_project_member(user_uuid=member_uuid, project_uuid=project_uuid, organization_uuid=organization_uuid)
 

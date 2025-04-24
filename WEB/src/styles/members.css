@@ -185,4 +185,136 @@
 
 .member-menu-option:hover {
     background-color: rgba(139, 92, 246, 0.1);
+}
+
+.delete-option {
+  color: #ff4d4f;
+}
+
+.delete-option:hover {
+  background-color: rgba(255, 77, 79, 0.1);
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.confirmation-modal {
+  background-color: #2c2c2c;
+  border-radius: 8px;
+  padding: 20px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: 1px solid #8B5CF6;
+  color: #fff;
+}
+
+.confirmation-modal h3 {
+  margin-top: 0;
+  color: #8B5CF6;
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+
+.confirmation-modal p {
+  margin-bottom: 20px;
+  line-height: 1.5;
+  color: #e0e0e0;
+}
+
+.confirmation-buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 25px;
+  gap: 12px;
+}
+
+.cancel-button {
+  padding: 10px 16px;
+  border-radius: 4px;
+  border: 1px solid #444;
+  background-color: #333;
+  color: #e0e0e0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.confirm-button {
+  padding: 10px 16px;
+  border-radius: 4px;
+  border: none;
+  background-color: #ff4d4f;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-button:hover {
+  background-color: #444;
+}
+
+.confirm-button:hover {
+  background-color: #ff7875;
+}
+
+.highlighted-text {
+  color: #8B5CF6;
+  font-weight: bold;
+}
+
+.success-notification {
+  background-color: rgba(16, 185, 129, 0.2);
+  border: 1px solid #10b981;
+  color: #e0e0e0;
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  animation: fadeInOut 5s ease-in-out;
+}
+
+.success-notification::before {
+  content: "✓";
+  color: #10b981;
+  font-weight: bold;
+  margin-right: 10px;
+  font-size: 16px;
+}
+
+.error-notification {
+  background-color: rgba(239, 68, 68, 0.2);
+  border: 1px solid #ef4444;
+  color: #e0e0e0;
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  animation: fadeInOut 5s ease-in-out;
+}
+
+.error-notification::before {
+  content: "✗";
+  color: #ef4444;
+  font-weight: bold;
+  margin-right: 10px;
+  font-size: 16px;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { opacity: 0; }
 } 

@@ -2168,3 +2168,97 @@ def get_project_info(organization_uuid: uuid.UUID, project_uuid: uuid.UUID) -> d
             session.close()
             print(f"Сессия базы данных организации закрыта при ошибке")
         raise Exception(f"Не удалось получить информацию о проекте: {str(e)}")
+
+def delete_project_member(user_uuid: uuid.UUID, project_uuid: uuid.UUID, organization_uuid: uuid.UUID = None) -> bool:
+    """
+    Удаляет пользователя из проекта
+    
+    Args:
+        user_uuid: UUID пользователя
+        project_uuid: UUID проекта
+        organization_uuid: UUID организации (опциональный, для повышения эффективности)
+        
+    Returns:
+        bool: True если пользователь успешно удален, иначе False
+    """
+    try:
+        _project_uuid = f"_{str(project_uuid).replace('-', '_')}"
+        
+        # Если organization_uuid предоставлен, используем его
+        if organization_uuid:
+            _org_uuid = f"_{str(organization_uuid).replace('-', '_')}"
+        else:
+            # Иначе пытаемся найти организацию проекта
+            _org_uuid = None
+            for root, dirs, files in os.walk("db/organizations/db"):
+                for dir in dirs:
+                    project_path = os.path.join(root, dir, "projects", _project_uuid[1:])
+                    if os.path.exists(project_path):
+                        _org_uuid = dir
+                        break
+                if _org_uuid:
+                    break
+                    
+        if not _org_uuid:
+            logger.error(f"Не удалось найти организацию для проекта {project_uuid}")
+            return False
+            
+        # Настраиваем сессию для БД проекта
+        try:
+            exec(f"from db.organizations.db.{_org_uuid}.projects.{_project_uuid} import db_session as db_session{_project_uuid}")
+            eval(f"db_session{_project_uuid}.global_init('db/organizations/db/{_org_uuid}/projects/{_project_uuid}/project_db.db')")
+            session = eval(f"db_session{_project_uuid}.create_session()")
+            
+            # Используем класс User как в get_project_members
+            User = eval(f"importlib.import_module('.user', package='db.organizations.db.{_org_uuid}.projects.{_project_uuid}')").User
+            
+            # Находим пользователя
+            user = session.query(User).filter(User.uuid == user_uuid).first()
+            
+            if not user:
+                session.close()
+                logger.info(f"Пользователь с UUID {user_uuid} не найден в проекте {project_uuid}")
+                return False
+            
+            # Удаляем пользователя из проекта
+            session.delete(user)
+            session.commit()
+            session.close()
+            
+            # Теперь нужно удалить запись из таблицы project_member в БД организации
+            exec(f"from db.organizations.db.{_org_uuid} import db_session as db_session{_org_uuid}")
+            eval(f"db_session{_org_uuid}.global_init('db/organizations/db/{_org_uuid}/org_db.db')")
+            org_session = eval(f"db_session{_org_uuid}.create_session()")
+            
+            # Импортируем ProjectMember модель
+            ProjectMember = eval(f"importlib.import_module('.project_member', package='db.organizations.db.{_org_uuid}')").ProjectMember
+            
+            # Находим и удаляем запись project_member
+            member = org_session.query(ProjectMember).filter(
+                ProjectMember.user_uuid == user_uuid,
+                ProjectMember.project_uuid == project_uuid
+            ).first()
+            
+            if member:
+                org_session.delete(member)
+                org_session.commit()
+                
+            org_session.close()
+            
+            logger.info(f"Пользователь с UUID {user_uuid} успешно удален из проекта {project_uuid}")
+            return True
+        except Exception as inner_e:
+            logger.error(f"Ошибка при работе с базой данных: {str(inner_e)}")
+            if 'session' in locals():
+                session.close()
+            if 'org_session' in locals():
+                org_session.close()
+            return False
+            
+    except Exception as e:
+        logger.error(f"Ошибка при удалении пользователя {user_uuid} из проекта {project_uuid}: {str(e)}")
+        if 'session' in locals():
+            session.close()
+        if 'org_session' in locals():
+            org_session.close()
+        return False

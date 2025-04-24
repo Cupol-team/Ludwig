@@ -112,4 +112,45 @@ export async function addMemberToOrganization(orgId, memberUuid, roleUuid, signa
     }
     throw error;
   }
+}
+
+/**
+ * Удаление участника из проекта.
+ * @param {string} orgId - Идентификатор организации.
+ * @param {string} projectUuid - Идентификатор проекта.
+ * @param {string} memberUuid - Идентификатор участника.
+ * @param {AbortSignal} signal - сигнал для отмены запроса.
+ * @returns {Promise<Object>} - результат операции.
+ */
+export async function deleteMemberFromProject(orgId, projectUuid, memberUuid, signal) {
+  try {
+    console.log(`Удаление участника: org=${orgId}, project=${projectUuid}, member=${memberUuid}`);
+    
+    // Формируем URL с query-параметрами для FastAPI
+    const url = `/organizations/${orgId}/project/${projectUuid}/members/${memberUuid}/delete?project_uuid=${projectUuid}&organization_uuid=${orgId}`;
+    
+    const response = await api.delete(url, {
+      signal,
+      headers: { 'Content-Type': 'application/json' }
+    });
+    
+    // Проверяем успешность ответа
+    if (response.status === 200) {
+      console.log('Участник успешно удален', response.data);
+      return response.data;
+    } else {
+      throw new Error(`Ошибка при удалении участника: статус ${response.status}`);
+    }
+  } catch (error) {
+    console.error('API error:', error);
+    
+    // Проверяем, есть ли в ответе детальная информация об ошибке
+    if (error.response && error.response.data && error.response.data.detail) {
+      throw new Error(`Ошибка: ${error.response.data.detail}`);
+    } else if (error.message) {
+      throw new Error(error.message);
+    } else {
+      throw new Error('Произошла неизвестная ошибка при удалении участника');
+    }
+  }
 } 

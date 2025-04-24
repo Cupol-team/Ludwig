@@ -19,35 +19,35 @@ def create_project(user_uuid: UUID, organization_uuid: UUID, project_data: Proje
                           description=project_data.description)
 
     # Создание роли "teamlead" для проекта
-    created_project_uuid = project[2]
-    created_role_uuid = new_project_role(organization_uuid, created_project_uuid, "teamlead", "")[2]
+    created_project_uuid = project[2]   
+    created_role_uuid = new_project_role(organization_uuid, created_project_uuid, "Руководитель проекта", "")[2]
 
     # Добавление прав роли "teamlead" 
     create_new_permission_service(organization_uuid=organization_uuid, project_uuid=created_project_uuid,
                                   role_uuid=created_role_uuid, 
                                   permissions=[
-                                      "create_task",
-                                      "edit_task",
-                                      "delete_task",
+                                      "task.create",
+                                      "task.edit",
+                                      "task.delete",
 
-                                      "edit_project",
-                                      "delete_project",
+                                      "project.edit",
+                                      "project.delete",
 
-                                      "add_project_member",
-                                      "edit_project_member",
-                                      "delete_project_member",
+                                      "project.member.add",
+                                      "project.member.edit",
+                                      "project.member.delete",
 
-                                      "create_project_role",
-                                      "edit_project_role",
-                                      "delete_project_role",
+                                      "project.role.create",
+                                      "project.role.edit",
+                                      "project.role.delete",
 
-                                      "create_task_status",
-                                      "edit_task_status",
-                                      "delete_task_status",
+                                      "task.status.create",
+                                      "task.status.edit",
+                                      "task.status.delete",
 
-                                      "create_task_type",
-                                      "edit_task_type",
-                                      "delete_task_type",
+                                      "task.type.create",
+                                      "task.type.edit",
+                                      "task.type.delete",
                                       ])
 
 

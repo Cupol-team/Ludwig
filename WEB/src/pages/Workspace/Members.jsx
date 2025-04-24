@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef, useContext } from 'react';
 import { useParams } from 'react-router-dom';
-import { getMembers } from '../../api/members';
+import { getMembers, deleteMemberFromProject } from '../../api/members';
 import { getUserAvatar } from '../../api/profile';
 import Loader from '../../components/Loader';
 import Notification from '../../components/Notification';
@@ -17,11 +17,13 @@ const Members = () => {
   const [memberAvatars, setMemberAvatars] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
   const controllerRef = useRef(null);
   const { roles } = useContext(ProjectContext);
   const [activeMenu, setActiveMenu] = useState(null);
   const [selectedMember, setSelectedMember] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(null);
 
   const fetchMembers = useCallback(async () => {
     controllerRef.current = new AbortController();
@@ -187,10 +189,66 @@ const Members = () => {
     }, 500);
   };
 
+  const handleDeleteClick = (member) => {
+    setActiveMenu(null);
+    setConfirmDelete(member);
+  };
+
+  const cancelDelete = () => {
+    setConfirmDelete(null);
+  };
+
+  const confirmDeleteMember = async () => {
+    try {
+      setLoading(true);
+      const deletedMember = confirmDelete;
+      
+      console.log('Отправка запроса на удаление участника:', {
+        orgId,
+        projectUuid,
+        memberUuid: confirmDelete.uuid
+      });
+      
+      const response = await deleteMemberFromProject(orgId, projectUuid, confirmDelete.uuid);
+      console.log('Ответ сервера:', response);
+      
+      setConfirmDelete(null);
+      
+      // Показываем сообщение об успехе
+      setSuccess(`Участник ${deletedMember.name || ''} ${deletedMember.surname || ''} успешно удален из проекта`);
+      
+      // Скрываем сообщение об успехе через 5 секунд
+      setTimeout(() => {
+        setSuccess(null);
+      }, 5000);
+      
+      setError(null);
+      // Обновляем список участников
+      await fetchMembers();
+    } catch (err) {
+      console.error('Ошибка при удалении участника:', err);
+      
+      // Более информативное сообщение об ошибке
+      const errorMessage = err.message || 'Ошибка при удалении участника';
+      setError(errorMessage);
+      
+      // Показываем сообщение об ошибке на 5 секунд, затем скрываем
+      setTimeout(() => {
+        setError(null);
+      }, 5000);
+    } finally {
+      setLoading(false);
+      setConfirmDelete(null);
+    }
+  };
+
   if (loading) return <Loader />;
-  if (error) return <Notification message={error} type="error" />;
+  
   return (
     <div className="project-members-container">
+      {success && <div className="success-notification">{success}</div>}
+      {error && <div className="error-notification">{error}</div>}
+      
       <div className="project-members-header">
         <h2>Участники проекта {project?.name}</h2>
         <AddMemberButton onMemberAdded={handleMemberAdded} />
@@ -232,6 +290,7 @@ const Members = () => {
                   {activeMenu === member.uuid && (
                     <div className="member-menu">
                       <button className="member-menu-option" onClick={() => openEditModal(member)}>Редактировать</button>
+                      <button className="member-menu-option delete-option" onClick={() => handleDeleteClick(member)}>Удалить</button>
                     </div>
                   )}
                 </div>
@@ -251,6 +310,22 @@ const Members = () => {
           onClose={closeModal}
           onRoleUpdated={handleRoleUpdated}
         />
+      )}
+
+      {confirmDelete && (
+        <div className="modal-overlay">
+          <div className="confirmation-modal">
+            <h3>Подтверждение удаления</h3>
+            <p>
+              Вы действительно хотите удалить пользователя <span className="highlighted-text">{confirmDelete.name || ''} {confirmDelete.surname || ''}</span> из проекта?
+            </p>
+            <p>Это действие невозможно отменить.</p>
+            <div className="confirmation-buttons">
+              <button className="cancel-button" onClick={cancelDelete}>Отмена</button>
+              <button className="confirm-button" onClick={confirmDeleteMember}>Удалить</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
